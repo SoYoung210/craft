@@ -1,7 +1,7 @@
 import { keyframes, style } from '@vanilla-extract/css';
 
-import { entries } from '../utils/object';
-import { radialGradient } from '../utils/style/gradient';
+import { entries } from '../../utils/object';
+import { radialGradient } from '../../utils/style/gradient';
 
 export const backgroundAnimation = keyframes({
   '0%': { backgroundPosition: '0% 50%' },
@@ -46,6 +46,7 @@ export const backgroundColorMap = {
     value: '#eea5ba',
   },
 };
+
 export const pageStyles = style({
   maxWidth: 760,
   padding: 64,

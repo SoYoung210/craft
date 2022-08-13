@@ -1,4 +1,3 @@
-import { style } from '@vanilla-extract/css';
 import React from 'react';
 
 import { headerStyle, rootStyle } from './ContentBox.css';

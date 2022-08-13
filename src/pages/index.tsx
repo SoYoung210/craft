@@ -1,16 +1,15 @@
 import React from 'react';
 import type { HeadFC } from 'gatsby';
 
-import * as styles from '../styles/index.css';
 import '../styles/global.css';
-import { ContentBox } from '../components/ContentBox/ContentBox';
+import { ContentBox } from '../components/content-box/ContentBox';
+import PageLayout from '../components/layout/PageLayout';
 
 const IndexPage = () => {
   return (
-    <main className={styles.pageStyles}>
-      <h1 className={styles.headingStyles}>uing</h1>
+    <PageLayout title="uing">
       <ContentBox title="test" />
-    </main>
+    </PageLayout>
   );
 };
 
