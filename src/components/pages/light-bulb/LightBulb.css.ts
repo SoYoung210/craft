@@ -14,7 +14,7 @@ const swing = keyframes({
 export const area = style({
   width: '200px',
   height: '500px',
-  // animation: `${swing} 1s infinite ease-in-out alternate`,
+  animation: `${swing} 1s infinite ease-in-out alternate`,
   transformOrigin: 'top',
 });
 
