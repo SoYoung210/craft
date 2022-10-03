@@ -9,6 +9,7 @@ export const rootStyle = style({
   borderRadius: '8px',
   height: 300,
 });
+
 export const headerStyle = style({
   display: 'flex',
   backgroundColor: vars.color.gray1,
@@ -16,4 +17,14 @@ export const headerStyle = style({
   alignItems: 'center',
   padding: '0 16px',
   color: vars.color.gray7,
+});
+
+export const dotStyle = style({
+  borderRadius: '50%',
+  backgroundColor: '#dee2e6',
+
+  width: 8,
+  height: 8,
+
+  marginRight: 6,
 });

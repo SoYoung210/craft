@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-import { headerStyle, rootStyle } from './ContentBox.css';
+import { dotStyle, headerStyle, rootStyle } from './ContentBox.css';
 
 interface Props {
-  title: string;
+  title: ReactNode;
 }
 
 export function ContentBox({ title }: Props) {
   return (
     <div className={rootStyle}>
-      <div className={headerStyle}>{title}</div>
-      <div></div>
+      <div className={headerStyle}>
+        <div className={dotStyle} />
+        <div className={dotStyle} />
+        <div className={dotStyle} />
+        {title}
+      </div>
     </div>
   );
 }
