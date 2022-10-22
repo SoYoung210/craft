@@ -4,9 +4,10 @@ import { dotStyle, headerStyle, rootStyle } from './ContentBox.css';
 
 interface Props {
   title: ReactNode;
+  children: ReactNode;
 }
 
-export function ContentBox({ title }: Props) {
+export function ContentBox({ title, children }: Props) {
   return (
     <div className={rootStyle}>
       <div className={headerStyle}>
@@ -15,6 +16,7 @@ export function ContentBox({ title }: Props) {
         <div className={dotStyle} />
         {title}
       </div>
+      {children}
     </div>
   );
 }

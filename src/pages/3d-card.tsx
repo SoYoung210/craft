@@ -30,9 +30,9 @@ export default function CardPage() {
 
     const distance = Math.sqrt(center.x ** 2 + center.y ** 2);
     const scale = `scale3d(1.07, 1.07, 1.07)`;
-    const rotate = `rotate3d(${center.y / 10}, ${-center.x / 10}, 0, ${Math.log(
-      distance
-    )}deg)`;
+    const rotate = `rotate3d(${center.y / 10}, ${-center.x / 10}, 0, ${
+      Math.log2(distance) * 2
+    }deg)`;
     return `${scale} ${rotate}`;
   }, [cardElement, center]);
 

@@ -16,6 +16,11 @@ globalStyle('a', {
   textDecoration: 'none',
 });
 
+globalStyle('ul, ol', {
+  listStyle: 'none',
+  paddingInlineStart: 0,
+});
+
 globalStyle(`___gatsby`, {
   isolation: `isolate`,
 });
