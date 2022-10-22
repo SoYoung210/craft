@@ -10,16 +10,18 @@ export default function CardPage() {
 
   const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = useCallback(
     e => {
-      const bounds = e.currentTarget.getBoundingClientRect();
+      if (cardElement != null) {
+        const bounds = cardElement.getBoundingClientRect();
 
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
-      const leftX = mouseX - bounds.x;
-      const topY = mouseY - bounds.y;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const leftX = mouseX - bounds.x;
+        const topY = mouseY - bounds.y;
 
-      setCenter({ x: leftX - bounds.x / 2, y: topY - bounds.height / 2 });
+        setCenter({ x: leftX - bounds.x / 2, y: topY - bounds.height / 2 });
+      }
     },
-    []
+    [cardElement]
   );
   const cardTransform = useMemo(() => {
     if (center == null || cardElement == null) {
@@ -28,9 +30,9 @@ export default function CardPage() {
 
     const distance = Math.sqrt(center.x ** 2 + center.y ** 2);
     const scale = `scale3d(1.07, 1.07, 1.07)`;
-    const rotate = `rotate3d(${center.y / 10}, ${-center.x / 10}, 0, ${
-      Math.log2(distance) * 2
-    }deg)`;
+    const rotate = `rotate3d(${center.y / 10}, ${-center.x / 10}, 0, ${Math.log(
+      distance
+    )}deg)`;
     return `${scale} ${rotate}`;
   }, [cardElement, center]);
 
@@ -47,23 +49,33 @@ export default function CardPage() {
 
   return (
     <Root>
-      <Card
-        ref={setCardElement}
+      <CardRoot
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setCenter(undefined)}
-        css={{ transform: cardTransform }}
       >
-        <Glow css={{ backgroundImage: glowBackgroundImage }} />
-      </Card>
+        <Card ref={setCardElement} css={{ transform: cardTransform }}>
+          <Glow css={{ backgroundImage: glowBackgroundImage }} />
+        </Card>
+      </CardRoot>
+
+      <Caption>hover and move mouse</Caption>
     </Root>
   );
 }
-/**
- *
- */
-const Root = styled('div', {
+
+const CardRoot = styled('div', {
+  padding: '10vh',
   perspective: 800,
+});
+
+const Caption = styled('caption', {
+  fontFamily: 'monospace',
+  color: '$gray8',
+});
+const Root = styled('div', {
   display: 'flex',
+  flexDirection: 'column',
+  gap: '6vh',
   alignItems: 'center',
   justifyContent: 'center',
 
@@ -71,8 +83,8 @@ const Root = styled('div', {
 });
 
 const Card = styled('div', {
-  width: 300,
-  height: 400,
+  height: '60vh',
+  aspectRatio: '3 / 4',
   boxShadow: '0 1px 5px #00000099',
   borderRadius: 10,
 
