@@ -22,7 +22,10 @@
     "@vanilla-extract/sprinkles": "^1.5.0",
     "@vanilla-extract/webpack-plugin": "^2.1.11",
     "gatsby": "^4.20.0",
+    "gatsby-plugin-image": "^2.24.0",
+    "gatsby-plugin-sharp": "^4.24.0",
     "gatsby-plugin-vanilla-extract": "^2.0.1",
+    "gatsby-source-filesystem": "^4.24.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
