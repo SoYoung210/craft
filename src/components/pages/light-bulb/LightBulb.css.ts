@@ -97,23 +97,6 @@ export const bulb = styleVariants({
       animation: `${bulbAnimation} 5s ease infinite`,
     },
   ],
-  // selectors: {
-  //   '&.off': {
-  //     background: 'hsla(0,0%,45%,.5)',
-  //   },
-  //   '&.on': {
-  //     background: `linear-gradient(
-  //       90deg,
-  //       rgba(246, 234, 193, 1) 0%,
-  //       rgba(226, 211, 161, 0.85) 60%,
-  //       rgba(133, 115, 58, 1) 100%
-  //     )`,
-  //     boxShadow: `0px 0px 300px 90px rgba(235, 209, 164, 1),
-  //     0px 0px 300px 900px rgba(235, 209, 164, 0.09),
-  //     0px 0px 3000px 20px rgba(235, 209, 164, 1)`,
-  //     animation: `${bulbAnimation} 5s ease infinite`,
-  //   },
-  // },
 });
 
 export const zig = style({
