@@ -14,6 +14,24 @@ const IndexPage = () => {
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
         <ContentItem>
+          <Link to="/blurred-logo">
+            <ContentBox title="blurred-logo">
+              <StaticImage
+                src="../images/thumbnails/blurred-logo.png"
+                alt="blurred logo content preview"
+                objectFit="contain"
+                height={250}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentItem>
+
+        <ContentItem>
           <Link to="/3d-card">
             <ContentBox title="3d card">
               <StaticImage
