@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { styled } from '../../stitches.config';
+import PageLayout from '../components/layout/PageLayout';
 
 export default function CardPage() {
   const [center, setCenter] = useState<{ x: number; y: number } | undefined>(
@@ -48,7 +49,17 @@ export default function CardPage() {
   }, [cardElement, center]);
 
   return (
-    <Root>
+    <PageLayout>
+      <PageLayout.Title>3D Card</PageLayout.Title>
+      <PageLayout.Details>
+        <PageLayout.Summary>
+          마우스 호버 위치에 따라 회전, 광원 효과 적용
+        </PageLayout.Summary>
+        <PageLayout.DetailsContent>
+          회전 각: Math.log2(x, y 좌표 거리), 광원 gradient: #ffffff55,
+          #0000000f
+        </PageLayout.DetailsContent>
+      </PageLayout.Details>
       <CardRoot
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setCenter(undefined)}
@@ -59,27 +70,21 @@ export default function CardPage() {
       </CardRoot>
 
       <Caption>hover and move mouse</Caption>
-    </Root>
+    </PageLayout>
   );
 }
 
 const CardRoot = styled('div', {
-  padding: '10vh',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
   perspective: 800,
 });
 
 const Caption = styled('caption', {
   fontFamily: 'monospace',
   color: '$gray8',
-});
-const Root = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6vh',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  height: '100vh',
 });
 
 const Card = styled('div', {
