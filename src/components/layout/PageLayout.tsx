@@ -76,4 +76,33 @@ const Title = styled('h1', {
   letterSpacing: '-0.03em',
 });
 
+const DetailContent = styled('div', {
+  padding: 12,
+
+  transform: 'scale(0.9)',
+  opacity: 0,
+
+  transition: 'opacity 0.1s ease, transform 0.1s ease',
+});
+
+const Details = styled('details', {
+  display: 'flex',
+  flexDirection: 'column',
+
+  marginBottom: 60,
+  color: '$gray6',
+
+  '&[open]': {
+    [`& ${DetailContent}`]: {
+      opacity: 1,
+      transform: 'scale(1)',
+    },
+  },
+});
+
+const Summary = styled('summary');
+
 PageLayout.Title = Title;
+PageLayout.Details = Details;
+PageLayout.DetailsContent = DetailContent;
+PageLayout.Summary = Summary;
