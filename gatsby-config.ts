@@ -13,6 +13,14 @@ const config: GatsbyConfig = {
     'gatsby-plugin-vanilla-extract',
     `gatsby-plugin-image`,
     `gatsby-plugin-sharp`,
+    {
+      resolve: 'gatsby-plugin-react-svg',
+      options: {
+        rule: {
+          include: /images/,
+        },
+      },
+    },
   ],
 };
 
