@@ -10,13 +10,14 @@ import { styled } from '../../stitches.config';
 
 const IndexPage = () => {
   return (
-    <PageLayout title="uing">
+    <PageLayout theme="gradient">
+      <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
         <ContentItem>
           <Link to="/3d-card">
             <ContentBox title="3d card">
               <StaticImage
-                src="../images/3d-card.png"
+                src="../images/thumbnails/3d-card.png"
                 alt="3d card content preview"
                 height={250}
                 objectFit="contain"
@@ -30,14 +31,14 @@ const IndexPage = () => {
           <Link to="/light-bulb">
             <ContentBox title="light-bulb">
               <StaticImage
-                src="../images/light-bulb.png"
+                src="../images/thumbnails/light-bulb.png"
                 alt="light bulb content preview"
                 objectFit="contain"
                 height={250}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  background: '#181612',
+                  backgroundColor: '#181612',
                 }}
                 quality={100}
               />
