@@ -29,6 +29,7 @@ export const {
       gray7: '#495057',
       gray8: '#343a40',
       gray9: '#212529',
+      gray10: '#171717',
       white: '#FFFFFF',
       black: '#000000',
     },
@@ -36,6 +37,9 @@ export const {
   utils: {
     bc: (value: Stitches.PropertyValue<'backgroundColor'>) => ({
       backgroundColor: value,
+    }),
+    br: (value: Stitches.PropertyValue<'borderRadius'>) => ({
+      borderRadius: value,
     }),
     mx: (value: string | number) => ({ marginLeft: value, marginRight: value }),
     my: (value: string | number) => ({ marginTop: value, marginBottom: value }),

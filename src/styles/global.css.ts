@@ -21,6 +21,11 @@ globalStyle('ul, ol', {
   paddingInlineStart: 0,
 });
 
+globalStyle('button', {
+  border: 0,
+  padding: 0,
+});
+
 globalStyle(`___gatsby`, {
   isolation: `isolate`,
 });
