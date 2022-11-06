@@ -14,8 +14,10 @@ export default function CofettiPage() {
     <PageLayout>
       <PageLayout.Title>Confetti Examples</PageLayout.Title>
       <PageLayout.Details>
-        <PageLayout.Summary>(TBA) summary</PageLayout.Summary>
-        <PageLayout.DetailsContent>(TBA) detail</PageLayout.DetailsContent>
+        <PageLayout.Summary>canvas-confetti + React</PageLayout.Summary>
+        <PageLayout.DetailsContent>
+          useConfetti hook / Portal / Canvas
+        </PageLayout.DetailsContent>
       </PageLayout.Details>
 
       <Command>
