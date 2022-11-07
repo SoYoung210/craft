@@ -27,19 +27,40 @@ export default function CofettiPage() {
           <Command.Item
             onSelect={() => {
               fire({
-                particleCount: 100,
+                particleCount: 700,
                 angle: 60,
-                spread: 55,
-                startVelocity: 55,
-                origin: { x: 0, y: 1 },
+                spread: 205,
+                startVelocity: 105,
+                colors: [
+                  '#73DBA9',
+                  '#AE92FE',
+                  '#FECC4F',
+                  '#FE7A7B',
+                  '#D64EA8',
+                  '#6BCAFD',
+                ],
+                scalar: 2,
+                drift: 1.6,
+                origin: { x: 0, y: 1.5 },
               });
 
               fire({
-                particleCount: 100,
+                particleCount: 700,
                 angle: 120,
-                spread: 55,
-                startVelocity: 55,
-                origin: { x: 1, y: 1 },
+                spread: 205,
+                drift: -1.6,
+                startVelocity: 105,
+                scalar: 2,
+                colors: [
+                  '#73DBA9',
+                  '#AE92FE',
+                  '#FECC4F',
+                  '#FE7A7B',
+                  '#D64EA8',
+                  '#6BCAFD',
+                ],
+
+                origin: { x: 1, y: 1.5 },
               });
             }}
           >
