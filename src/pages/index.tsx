@@ -4,7 +4,7 @@ import { StaticImage } from 'gatsby-plugin-image';
 import { Link } from 'gatsby';
 
 import '../styles/global.css';
-import { ContentBox } from '../components/content-box/ContentBox';
+import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import { styled } from '../../stitches.config';
 

@@ -1,9 +1,9 @@
-import { styled } from '@flexteam/stitches-react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Button, IconButton, Text } from '@flexteam/linear';
-import { useMemo, useState, useCallback } from 'react';
-import { keys } from '@flexteam/utils';
-import { DevicePcIcon, DownloadIcon } from '@flexteam/flex-icons';
 import html2Canvas from 'html2canvas';
+
+import { keys } from '../../../utils/object';
+import { styled } from '../../../../stitches.config';
 
 import IconSample from './IconSample';
 import {
@@ -458,8 +458,4 @@ function downloadFileFromUrl(params: { url: string; name: string }) {
   anchor.download = name;
 
   anchor.click();
-}
-
-function Pt(o: number, e = -20, t = 20) {
-  return Math.min(Math.max(o, e), t);
 }
