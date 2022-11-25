@@ -1,6 +1,7 @@
 import { useId, forwardRef, SVGAttributes } from 'react';
 
 import { ColorType, getColor } from '../../../utils/color';
+import { filterByKey } from '../../../utils/object';
 
 interface BaseIconProps extends SVGAttributes<SVGElement> {
   children?: never;
@@ -32,6 +33,10 @@ export const BoltIcon = forwardRef<SVGSVGElement, BoltIconProps>(
   ) => {
     const color = getColor(rawColor);
     const gradientId = useId();
+    const restProps =
+      'animate' in props
+        ? filterByKey(props, propName => propName !== 'animate')
+        : props;
 
     if (type === 'fill') {
       return (
@@ -41,13 +46,17 @@ export const BoltIcon = forwardRef<SVGSVGElement, BoltIconProps>(
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          {...props}
+          {...restProps}
           ref={forwardedRef}
           style={{ width: size, height: size, flexShrink: 0, ...style }}
         >
           <path
             d="M13.6646 1.5L5.25497 13.3399L6.00001 14.6804H10.3789L8.71888 21.8329L10.3428 22.5L18.7452 10.6601L18 9.31989H13.622L15.2881 2.16807L13.6646 1.5Z"
-            fill={'animate' in props ? `url(#${gradientId})` : color}
+            fill={
+              'animate' in props && props.animate
+                ? `url(#${gradientId})`
+                : color
+            }
             fillRule="evenodd"
             clipRule="evenodd"
           />
