@@ -40,7 +40,8 @@ export default function CardPage() {
   );
 }
 
-const Caption = styled('caption', {
+const Caption = styled('div', {
   fontFamily: 'monospace',
   color: '$gray5',
+  textAlign: 'center',
 });
