@@ -1,12 +1,13 @@
 import { useMemo, useState, useCallback } from 'react';
-import { DownloadIcon, MagicWandIcon } from '@radix-ui/react-icons';
+import { DownloadIcon } from '@radix-ui/react-icons';
 import html2Canvas from 'html2canvas';
 import { gsap } from 'gsap';
 
 import { keys } from '../../../utils/object';
-import { styled } from '../../../../stitches.config';
+import { styled, theme } from '../../../../stitches.config';
 import Text from '../../material/Text';
 import Button from '../../material/Button';
+import { BoltIcon } from '../../material/icon/Bolt';
 
 import IconSample from './IconSample';
 import {
@@ -22,6 +23,11 @@ import {
 import useShuffleResource from './hooks/useShuffleResource';
 
 export default function DynamicCard() {
+  const [shuffleButtonIcon, setShuffleButtonIcon] = useState<SVGElement | null>(
+    null
+  );
+  const q = gsap.utils.selector(shuffleButtonIcon);
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null);
   const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null);
 
@@ -144,6 +150,24 @@ export default function DynamicCard() {
     return `radial-gradient(circle at ${circleGradientX} ${circleGradientY}, #ffffff30, #0000000f)`;
   }, [cardElement]);
 
+  const onRandomButtonEnter = useCallback(() => {
+    if (shuffleButtonIcon != null) {
+      gsap.to(q('linearGradient stop'), {
+        attr: { offset: '0%' },
+        duration: 0.5,
+      });
+    }
+  }, [q, shuffleButtonIcon]);
+
+  const onRandomButtonLeave = useCallback(() => {
+    if (shuffleButtonIcon != null) {
+      gsap.to(q('linearGradient stop'), {
+        attr: { offset: '100%' },
+        duration: 0.5,
+      });
+    }
+  }, [q, shuffleButtonIcon]);
+
   return (
     <Root>
       <CardContentRoot
@@ -247,10 +271,23 @@ export default function DynamicCard() {
         <RandomButton
           color="white"
           size="small"
-          leftSlot={<MagicWandIcon />}
+          onMouseEnter={onRandomButtonEnter}
+          onMouseLeave={onRandomButtonLeave}
+          leftSlot={
+            <BoltIcon
+              color="gold3"
+              animate={true}
+              type="fill"
+              size={18}
+              style={{
+                stroke: theme.colors.gold3.value,
+              }}
+              ref={setShuffleButtonIcon}
+            />
+          }
           onClick={generateRandomColor}
         >
-          랜덤으로 바꾸기
+          Shuffle Color
         </RandomButton>
         <Button
           color="white"
@@ -318,7 +355,7 @@ const IllustRoot = styled('div', {
   alignItems: 'center',
   paddingBottom: 8,
 
-  minHeight: 208,
+  height: 214,
 
   position: 'relative',
 });
@@ -440,11 +477,16 @@ const ControlRoot = styled('div', {
 });
 
 const RandomButton = styled(Button, {
-  color: '$gray8 !important',
+  color: '$gray7',
+  fontWeight: 500,
 
   px: 16,
   minHeight: 34,
   borderRadius: 46,
+
+  '&::before': {
+    display: 'none',
+  },
 });
 
 const IdFrame = styled('div', {
@@ -452,7 +494,6 @@ const IdFrame = styled('div', {
   py: 4,
 
   background: 'rgba(255, 255, 255, 0.1)',
-  // boxShadow로 교체
   border: '0.5px solid rgba(255, 255, 255, 0.3)',
   borderRadius: '100px',
   color: '$white080',
