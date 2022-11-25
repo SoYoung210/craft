@@ -76,8 +76,9 @@ const Title = styled('h1', {
   letterSpacing: '-0.03em',
 });
 
-const DetailContent = styled('div', {
+const DetailContent = styled('p', {
   padding: 12,
+  lineHeight: 1.5,
 
   transform: 'scale(0.9)',
   opacity: 0,
