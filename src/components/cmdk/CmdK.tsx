@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
 import { Command as CmdkCommand } from 'cmdk';
 
 import { styled } from '../../../stitches.config';

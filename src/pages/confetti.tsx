@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { styled } from '../../stitches.config';
 import { Command } from '../components/cmdk/CmdK';
 import PageLayout from '../components/layout/PageLayout';

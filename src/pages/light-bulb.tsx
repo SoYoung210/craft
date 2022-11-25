@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { LightBulb } from '../components/content/light-bulb/LightBulb';
 import * as styles from '../components/content/light-bulb/page.css';
 import { useToggle } from '../hooks/useToggle';

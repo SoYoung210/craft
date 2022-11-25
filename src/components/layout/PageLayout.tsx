@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 import { styled } from '../../../stitches.config';
 import { entries } from '../../utils/object';

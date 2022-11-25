@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, HeadFC } from 'gatsby';
 
 const pageStyles = {
