@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@radix-ui/react-compose-refs": "^1.0.0",
+    "@radix-ui/react-icons": "^1.1.1",
     "@radix-ui/react-portal": "^1.0.1",
     "@radix-ui/react-primitive": "^1.0.1",
     "@stitches/react": "^1.2.8",
@@ -32,6 +33,8 @@
     "gatsby-plugin-sharp": "^4.24.0",
     "gatsby-plugin-vanilla-extract": "^2.0.1",
     "gatsby-source-filesystem": "^4.24.0",
+    "gsap": "^3.11.3",
+    "html2canvas": "^1.4.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },

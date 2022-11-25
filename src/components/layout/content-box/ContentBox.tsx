@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
-import { styled } from '../../../stitches.config';
+import { styled } from '../../../../stitches.config';
 
 interface Props {
   title: ReactNode;

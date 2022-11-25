@@ -1,10 +1,9 @@
-import React from 'react';
 import type { HeadFC } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 import { Link } from 'gatsby';
 
 import '../styles/global.css';
-import { ContentBox } from '../components/content-box/ContentBox';
+import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import { styled } from '../../stitches.config';
 
@@ -32,14 +31,15 @@ const IndexPage = () => {
         </ContentItem>
 
         <ContentItem>
-          <Link to="/3d-card">
-            <ContentBox title="3d card">
+          <Link to="/dynamic-card">
+            <ContentBox title="dynamic card">
               <StaticImage
-                src="../images/thumbnails/3d-card.png"
-                alt="3d card content preview"
+                src="../images/thumbnails/dynamic-card.png"
+                alt="dynamic card content preview"
                 height={250}
                 objectFit="contain"
                 style={{ display: 'flex', justifyContent: 'center' }}
+                quality={100}
               />
             </ContentBox>
           </Link>

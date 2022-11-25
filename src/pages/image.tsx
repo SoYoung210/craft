@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { keyframes, styled } from '../../stitches.config';
 import PageLayout from '../components/layout/PageLayout';

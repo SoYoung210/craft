@@ -1,9 +1,8 @@
-import React from 'react';
 import { StaticImage } from 'gatsby-plugin-image';
 
 import ArcLogo from '../images/blurred-logo-asset/arc.svg';
 import SlackLogo from '../images/blurred-logo-asset/slack.svg';
-import LogoButton from '../components/pages/blurred-logo/LogoButton';
+import LogoButton from '../components/content/blurred-logo/LogoButton';
 import FigmaLogo from '../images/blurred-logo-asset/figma.svg';
 import GoogleCalendarLogo from '../images/blurred-logo-asset/google_calendar.svg';
 import FirefoxLogo from '../images/blurred-logo-asset/firefox.svg';

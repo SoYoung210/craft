@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { keyframes, styled } from '../../../../stitches.config';
 import useInterval from '../../../hooks/useInterval';

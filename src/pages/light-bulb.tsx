@@ -1,7 +1,5 @@
-import React from 'react';
-
-import { LightBulb } from '../components/pages/light-bulb/LightBulb';
-import * as styles from '../components/pages/light-bulb/page.css';
+import { LightBulb } from '../components/content/light-bulb/LightBulb';
+import * as styles from '../components/content/light-bulb/page.css';
 import { useToggle } from '../hooks/useToggle';
 
 export default function LightBulbPage() {
