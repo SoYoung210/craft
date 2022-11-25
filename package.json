@@ -33,6 +33,7 @@
     "gatsby-plugin-sharp": "^4.24.0",
     "gatsby-plugin-vanilla-extract": "^2.0.1",
     "gatsby-source-filesystem": "^4.24.0",
+    "gsap": "^3.11.3",
     "html2canvas": "^1.4.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
