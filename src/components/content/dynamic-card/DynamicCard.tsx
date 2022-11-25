@@ -1,9 +1,11 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { Button, IconButton, Text } from '@flexteam/linear';
+import { useMemo, useState, useCallback } from 'react';
+// import { Button, IconButton } from '@flexteam/linear';
 import html2Canvas from 'html2canvas';
 
 import { keys } from '../../../utils/object';
 import { styled } from '../../../../stitches.config';
+import Text from '../../material/Text';
+import Button from '../../material/Button';
 
 import IconSample from './IconSample';
 import {
@@ -18,11 +20,7 @@ import {
 } from './constants';
 import useShuffleResource from './hooks/useShuffleResource';
 
-export default {
-  title: 'POC/EmployeeCard',
-};
-
-export const EmployeeCard = () => {
+export default function DynamicCard() {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null);
   const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null);
 
@@ -232,19 +230,18 @@ export const EmployeeCard = () => {
       </CardContentRoot>
       <ControlRoot>
         <RandomButton
-          variant="solid"
           color="white"
           size="small"
-          leftSlot={<DevicePcIcon />}
+          // leftSlot={<DevicePcIcon />}
           onClick={generateRandomColor}
         >
           랜덤으로 바꾸기
         </RandomButton>
-        <IconButton
+        <Button
           color="white"
           size="small"
-          description="다운로드"
-          icon={<DownloadIcon color="gray" />}
+          // description="다운로드"
+          // icon={<DownloadIcon color="gray" />}
           css={{ height: 34, width: 34, borderRadius: '50%' }}
           onClick={() => {
             const root = document.createElement('div');
@@ -286,7 +283,7 @@ export const EmployeeCard = () => {
       </ControlRoot>
     </Root>
   );
-};
+}
 
 const Root = styled('div', {
   backgroundColor: '$white',
@@ -428,13 +425,11 @@ const ControlRoot = styled('div', {
 });
 
 const RandomButton = styled(Button, {
-  // linear고치기
-  color: '$gray !important',
-  '&&': {
-    px: 16,
-    minHeight: 34,
-    borderRadius: 46,
-  },
+  color: '$gray8 !important',
+
+  px: 16,
+  minHeight: 34,
+  borderRadius: 46,
 });
 
 const IdFrame = styled('div', {
