@@ -39,6 +39,7 @@ const IndexPage = () => {
                 height={250}
                 objectFit="contain"
                 style={{ display: 'flex', justifyContent: 'center' }}
+                quality={100}
               />
             </ContentBox>
           </Link>
