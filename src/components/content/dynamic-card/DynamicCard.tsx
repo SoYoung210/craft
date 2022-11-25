@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react';
-// import { Button, IconButton } from '@flexteam/linear';
+import { DownloadIcon } from '@radix-ui/react-icons';
 import html2Canvas from 'html2canvas';
+import { gsap } from 'gsap';
 
 import { keys } from '../../../utils/object';
 import { styled } from '../../../../stitches.config';
@@ -85,17 +86,14 @@ export default function DynamicCard() {
           const cardRotateX = cardY / 100;
           const cardRotateY = (-1 * cardX) / 100;
 
-          const distance = Math.sqrt(cardX ** 2 + cardY ** 2);
-
           cardElement.style.setProperty('--ctX', `${cardX}px`);
           cardElement.style.setProperty('--ctY', `${cardY}px`);
-          cardElement.style.setProperty('--crX', `${cardRotateX}`);
-          cardElement.style.setProperty('--crY', `${cardRotateY}`);
-          cardElement.style.setProperty(
-            '--ctD',
-            `${Math.log2(distance) * 2}deg`
-          );
-          cardElement.style.setProperty('--ctS', '1.07');
+
+          gsap.to(cardElement, {
+            scale: 1.07,
+            rotateX: cardRotateX * 5,
+            rotateY: cardRotateY * 5,
+          });
 
           handleHologram(e);
         }
@@ -107,10 +105,13 @@ export default function DynamicCard() {
     if (cardElement != null) {
       cardElement.style.setProperty('--ctX', '0px');
       cardElement.style.setProperty('--ctY', '0px');
-      cardElement.style.setProperty('--crX', '0');
-      cardElement.style.setProperty('--crY', '0');
-      cardElement.style.setProperty('--ctD', '0deg');
-      cardElement.style.setProperty('--ctS', '1');
+
+      gsap.to(cardElement, {
+        scale: 1,
+
+        rotateX: 0,
+        rotateY: 0,
+      });
     }
   }, [cardElement]);
 
@@ -196,7 +197,7 @@ export default function DynamicCard() {
           </IllustRoot>
           <PersonalContent>
             <Text color="white" weight={800} size={26}>
-              유지훈
+              이소영
             </Text>
             <Text
               color="white"
@@ -204,7 +205,7 @@ export default function DynamicCard() {
               size={16}
               style={{ letterSpacing: '0.01em', marginTop: 8 }}
             >
-              tatiwillo@flex.team
+              ethdud1@gmail.com
             </Text>
             <Text
               color="white064"
@@ -240,8 +241,7 @@ export default function DynamicCard() {
         <Button
           color="white"
           size="small"
-          // description="다운로드"
-          // icon={<DownloadIcon color="gray" />}
+          aria-label="save card as image"
           css={{ height: 34, width: 34, borderRadius: '50%' }}
           onClick={() => {
             const root = document.createElement('div');
@@ -279,7 +279,9 @@ export default function DynamicCard() {
               });
             }
           }}
-        />
+        >
+          <DownloadIcon />
+        </Button>
       </ControlRoot>
     </Root>
   );
@@ -390,7 +392,6 @@ const Card = styled('div', {
   transitionDuration: '0.3s',
   transitionProperty: 'transform, box-shadow, background',
   transitionTimingFunction: 'ease-out',
-  transform: `scale3d(var(--ctS), var(--ctS), var(--ctS)) rotate3d(var(--crX), var(--crY), 0, var(--ctD))`,
 });
 
 function getBase64SvgUrl(data: string) {
