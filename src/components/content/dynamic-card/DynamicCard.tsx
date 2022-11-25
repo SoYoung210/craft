@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { DownloadIcon } from '@radix-ui/react-icons';
+import { DownloadIcon, MagicWandIcon } from '@radix-ui/react-icons';
 import html2Canvas from 'html2canvas';
 import { gsap } from 'gsap';
 
@@ -32,10 +32,24 @@ export default function DynamicCard() {
   const [bgColor, shuffleBgColor] = useShuffleResource(CARD_COLORS);
 
   const generateRandomColor = useCallback(() => {
+    if (cardElement != null) {
+      gsap
+        .timeline()
+        .to(cardElement, {
+          scale: 1.05,
+          duration: 0.15,
+          rotate: '+=1.4deg',
+        })
+        .to(cardElement, {
+          scale: 1,
+          rotate: '-=1.4deg',
+        });
+    }
+
     shuffleBgColor();
     shuffleGradientColorId();
     shuffleIllust();
-  }, [shuffleBgColor, shuffleGradientColorId, shuffleIllust]);
+  }, [cardElement, shuffleBgColor, shuffleGradientColorId, shuffleIllust]);
 
   const handleHologram: React.MouseEventHandler<HTMLDivElement> = useCallback(
     e => {
@@ -233,7 +247,7 @@ export default function DynamicCard() {
         <RandomButton
           color="white"
           size="small"
-          // leftSlot={<DevicePcIcon />}
+          leftSlot={<MagicWandIcon />}
           onClick={generateRandomColor}
         >
           랜덤으로 바꾸기
