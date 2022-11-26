@@ -44,11 +44,11 @@ export default function DynamicCard() {
         .to(cardElement, {
           scale: 1.05,
           duration: 0.15,
-          rotate: '+=1.4deg',
+          rotate: '1.4deg',
         })
         .to(cardElement, {
           scale: 1,
-          rotate: '-=1.4deg',
+          rotate: '0deg',
         });
     }
 
