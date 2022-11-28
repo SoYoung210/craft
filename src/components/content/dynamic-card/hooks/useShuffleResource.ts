@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 
+import { random } from '../../../../utils/number';
+
 type PrimitiveData = string | number;
 interface Options {
   min?: number;
@@ -22,14 +24,11 @@ export default function useShuffleResource<T extends PrimitiveData>(
 }
 
 function shuffledIndex(min: number, max: number, current: number) {
-  const result = rand(min, max);
+  const result = random(min, max);
 
   if (result === current) {
-    return rand(min, max);
+    return random(min, max);
   }
 
   return result;
-}
-function rand(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
 }
