@@ -27,8 +27,8 @@ export default function CofettiPage() {
               fire({
                 particleCount: 700,
                 angle: 60,
-                spread: 205,
-                startVelocity: 105,
+                spread: 200,
+                startVelocity: 180,
                 colors: [
                   '#73DBA9',
                   '#AE92FE',
@@ -45,9 +45,9 @@ export default function CofettiPage() {
               fire({
                 particleCount: 700,
                 angle: 120,
-                spread: 205,
+                spread: 200,
                 drift: -1.6,
-                startVelocity: 105,
+                startVelocity: 180,
                 scalar: 2,
                 colors: [
                   '#73DBA9',
