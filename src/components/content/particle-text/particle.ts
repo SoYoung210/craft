@@ -1,4 +1,7 @@
+export type EffectDirectionType = 'random' | 'top';
+
 export class Particle {
+  private effectDirection: EffectDirectionType;
   // destination: 최종적으로 파티클이 그려질 곳
   private destinationX: number;
   private destinationY: number;
@@ -7,11 +10,11 @@ export class Particle {
   private positionY: number;
   // 원 크기
   // tuning
-  private radius = Math.random() + 2;
+  private radius = Math.random() * 1.8 + 2;
 
   private velocityX = (Math.random() - 0.5) * 10;
   private velocityY = (Math.random() - 0.5) * 10;
-  private friction = Math.random() * 0.05 + 0.94;
+  private friction = Math.random() * 0.05 + 0.93;
 
   private accX = 0;
   private accY = 0;
@@ -19,16 +22,20 @@ export class Particle {
   private color: string;
 
   constructor(
-    particlePosition: { x: number; y: number },
+    particle: { x: number; y: number; effectDirection?: EffectDirectionType },
     canvasSize: { width: number; height: number },
     color: string
   ) {
-    const { x, y } = particlePosition;
+    const { x, y, effectDirection = 'random' } = particle;
     const { width, height } = canvasSize;
+
+    this.effectDirection = effectDirection;
     this.destinationX = x;
     this.destinationY = y;
+
     this.positionX = Math.random() * width;
-    this.positionY = Math.random() * height;
+    this.positionY =
+      this.effectDirection === 'top' ? 0 : Math.random() * height;
     this.color = color;
   }
 
@@ -45,10 +52,9 @@ export class Particle {
     this.positionY += this.velocityY;
 
     context.fillStyle = this.color;
+
     context.beginPath();
     context.arc(this.positionX, this.positionY, this.radius, 0, Math.PI * 2);
     context.fill();
   }
 }
-
-export type EffectDirectionType = 'random' | 'top';
