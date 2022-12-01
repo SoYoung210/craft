@@ -1,11 +1,24 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
+import { styled } from '../../stitches.config';
 import RandomWindEffect from '../components/content/particle-text/RandomWindEffect';
+import SnowFlake from '../components/content/particle-text/SnowFlake';
 import PageLayout from '../components/layout/PageLayout';
+import Button from '../components/material/Button';
 import TextField from '../components/material/TextField';
+import { isEnterKey } from '../utils/keyboard';
 
 export default function ParticleTextPage() {
+  const contentInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState('Hello World!');
+
+  const applyValue = useCallback(() => {
+    const newValue = contentInputRef.current?.value;
+
+    if (newValue != null) {
+      setValue(newValue);
+    }
+  }, []);
 
   return (
     <PageLayout>
@@ -23,8 +36,28 @@ export default function ParticleTextPage() {
         </PageLayout.DetailsContent>
       </PageLayout.Details>
 
-      <RandomWindEffect />
-      <TextField value={value} onChange={e => setValue(e.target.value)} />
+      <TextFieldRoot>
+        <TextField
+          ref={contentInputRef}
+          defaultValue="Hello World!"
+          onKeyDown={e => {
+            if (isEnterKey(e)) {
+              applyValue();
+            }
+          }}
+        />
+        <Button css={{ marginLeft: 16 }} onClick={applyValue}>
+          Apply
+        </Button>
+      </TextFieldRoot>
+
+      <RandomWindEffect key={value} textValue={value} />
+      <SnowFlake />
     </PageLayout>
   );
 }
+
+const TextFieldRoot = styled('div', {
+  display: 'flex',
+  width: '100%',
+});

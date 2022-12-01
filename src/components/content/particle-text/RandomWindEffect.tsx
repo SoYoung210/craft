@@ -2,9 +2,12 @@ import { useEffect } from 'react';
 
 import useParticleText from './useParticleText';
 
-export default function RandomWindEffect() {
+interface Props {
+  textValue: string;
+}
+export default function RandomWindEffect({ textValue }: Props) {
   const [canvasRef, { start }] = useParticleText({
-    defaultText: 'Hello World',
+    defaultText: textValue,
     effectDirection: 'random',
   });
 
@@ -12,5 +15,5 @@ export default function RandomWindEffect() {
     start();
   }, [start]);
 
-  return <canvas ref={canvasRef} />;
+  return <canvas style={{ backgroundColor: 'black' }} ref={canvasRef} />;
 }
