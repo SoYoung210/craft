@@ -5,12 +5,11 @@ import { random } from '../../../utils/number';
 import { EffectDirectionType, Particle } from './particle';
 
 interface InitParticlesParams {
-  // optional..
   defaultText?: string;
   font?: (canvasWidth: number, canvasHeight: number) => string;
   globalCompositeOperation?: GlobalCompositeOperation;
   particleSize?: (canvasWidth: number, canvasHeight: number) => number;
-  colorSet?: string;
+  colorSet?: string[];
   effectDirection: EffectDirectionType;
 }
 
@@ -22,6 +21,7 @@ export default function useParticleText(params: InitParticlesParams) {
     font,
     particleSize,
     colorSet = defaultColors,
+    effectDirection,
     globalCompositeOperation = 'screen',
   } = params;
 
@@ -58,8 +58,6 @@ export default function useParticleText(params: InitParticlesParams) {
 
       const imageData = context.getImageData(0, 0, vw, vh).data;
       context.clearRect(0, 0, vw, vh);
-      // TODO: ???? 약간 모르겠음.
-      // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
       context.globalCompositeOperation = globalCompositeOperation;
 
       const size = particleSize?.(vw, vh) ?? Math.round(vw / 150);
@@ -73,7 +71,7 @@ export default function useParticleText(params: InitParticlesParams) {
           if (alphaValue > 150) {
             particles.push(
               new Particle(
-                { x: i, y: j },
+                { x: i, y: j, effectDirection },
                 { width: vw, height: vh },
                 colorSet[random(0, colorSet.length - 1)]
               )
@@ -83,12 +81,11 @@ export default function useParticleText(params: InitParticlesParams) {
       }
       particleRef.current = particles;
     },
-    [colorSet, font, globalCompositeOperation, particleSize]
+    [colorSet, effectDirection, font, globalCompositeOperation, particleSize]
   );
 
   const runEffect = useCallback(
     (particles: Particle[]) => () => {
-      const effectDirection = params.effectDirection;
       const canvasElement = canvasRef.current;
       const context = canvasElement?.getContext('2d');
 
@@ -102,12 +99,11 @@ export default function useParticleText(params: InitParticlesParams) {
       const { width, height } = canvasElement.getBoundingClientRect();
       context.clearRect(0, 0, width, height);
       particles?.forEach(particle => {
-        // TODO: type대응
-        effectDirection === 'random' && particle.randomDirectionEffect(context);
+        particle.randomDirectionEffect(context);
       });
       rAfRef.current = requestAnimationFrame(renderParticle);
     },
-    [params.effectDirection]
+    []
   );
 
   const start = useCallback(() => {
