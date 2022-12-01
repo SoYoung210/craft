@@ -12,11 +12,18 @@ const TextField = forwardRef<HTMLInputElement, Props>((props, ref) => {
   );
 });
 const Root = styled('div', {
+  width: '100%',
+
   br: 8,
   boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.15)',
+  height: 40,
 
   py: 4,
   px: 10,
+
+  '&:focus-within': {
+    boxShadow: '0 0 0 2px #000',
+  },
 });
 
 const Input = styled('input', {
