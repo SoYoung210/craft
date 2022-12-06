@@ -13,8 +13,11 @@ interface InitParticlesParams {
   effectDirection: EffectDirectionType;
 }
 
+interface StartOption {
+  cancelPrev?: boolean;
+}
 export interface EffectControl {
-  start: () => void;
+  start: (options?: StartOption) => void;
   stop: () => void;
 }
 const defaultColors = ['#468966', '#FFF0A5', '#FFB03B', '#B64926', '#8E2800'];
@@ -32,7 +35,7 @@ export default function useParticleText(params: InitParticlesParams) {
   const [text, setText] = useState(defaultText);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rAfRef = useRef<number>(-1);
+  const rAfRef = useRef<number | undefined>(undefined);
 
   const particleRef = useRef<Particle[]>([]);
 
@@ -110,19 +113,27 @@ export default function useParticleText(params: InitParticlesParams) {
     []
   );
 
-  const start = useCallback(() => {
-    if (particleRef.current.length !== 0) {
-      const renderParticle = runEffect(particleRef.current);
+  const start = useCallback(
+    (options: StartOption = {}) => {
+      const { cancelPrev = true } = options;
+      if (particleRef.current.length !== 0) {
+        const renderParticle = runEffect(particleRef.current);
 
-      rAfRef.current = requestAnimationFrame(renderParticle);
-      return () => {
-        cancelAnimationFrame(rAfRef.current);
-      };
-    }
-  }, [runEffect]);
+        if (rAfRef.current != null && cancelPrev && text != null) {
+          cancelAnimationFrame(rAfRef.current);
+          init(text);
+        }
+        rAfRef.current = requestAnimationFrame(renderParticle);
+        return () => {
+          rAfRef.current != null && cancelAnimationFrame(rAfRef.current);
+        };
+      }
+    },
+    [init, runEffect, text]
+  );
 
   const stop = useCallback(() => {
-    cancelAnimationFrame(rAfRef.current);
+    rAfRef.current != null && cancelAnimationFrame(rAfRef.current);
   }, []);
 
   useEffect(() => {
