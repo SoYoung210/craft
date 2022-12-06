@@ -120,3 +120,4 @@ export const {
 });
 
 export type PresetColorType = keyof typeof colors;
+export type StitchesCssType = Stitches.CSS<typeof config>;
