@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { styled } from '../../stitches.config';
 import RandomWindEffect from '../components/content/particle-text/RandomWindEffect';
 import SnowFlake from '../components/content/particle-text/SnowFlake';
 import { EffectControl } from '../components/content/particle-text/useParticleText';
