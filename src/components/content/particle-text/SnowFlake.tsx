@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import Text from '../../material/Text';
 
-import useParticleText from './useParticleText';
+import useParticleText, { EffectControl } from './useParticleText';
 
-export default function SnowFlake() {
-  const [canvasRef, { start }] = useParticleText({
+const SnowFlake = forwardRef<EffectControl>((_, ref) => {
+  const [canvasRef, { start, stop }] = useParticleText({
     defaultText: 'so-so.dev 🎄🧦',
     effectDirection: 'top',
     colorSet: [
@@ -17,9 +17,16 @@ export default function SnowFlake() {
     ],
   });
 
-  useEffect(() => {
-    start();
-  }, [start]);
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        start,
+        stop,
+      };
+    },
+    [start, stop]
+  );
 
   return (
     <Root>
@@ -29,7 +36,7 @@ export default function SnowFlake() {
       </Text>
     </Root>
   );
-}
+});
 
 const Root = styled('div', {
   position: 'relative',
@@ -46,3 +53,5 @@ const Root = styled('div', {
     height: '100%',
   },
 });
+
+export default SnowFlake;

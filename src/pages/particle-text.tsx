@@ -3,14 +3,19 @@ import { useCallback, useRef, useState } from 'react';
 import { styled } from '../../stitches.config';
 import RandomWindEffect from '../components/content/particle-text/RandomWindEffect';
 import SnowFlake from '../components/content/particle-text/SnowFlake';
+import { EffectControl } from '../components/content/particle-text/useParticleText';
 import PageLayout from '../components/layout/PageLayout';
 import Button from '../components/material/Button';
+import Flex from '../components/material/Flex';
+import { HStack } from '../components/material/Stack';
 import TextField from '../components/material/TextField';
 import { isEnterKey } from '../utils/keyboard';
 
 export default function ParticleTextPage() {
   const contentInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState('Hello World!');
+
+  const snowFlakeControlRef = useRef<EffectControl>(null);
 
   const applyValue = useCallback(() => {
     const newValue = contentInputRef.current?.value;
@@ -36,7 +41,8 @@ export default function ParticleTextPage() {
         </PageLayout.DetailsContent>
       </PageLayout.Details>
 
-      <TextFieldRoot>
+      <PageLayout.SubTitle>Dynamic Text</PageLayout.SubTitle>
+      <HStack gap={16}>
         <TextField
           ref={contentInputRef}
           defaultValue="Hello World!"
@@ -46,18 +52,20 @@ export default function ParticleTextPage() {
             }
           }}
         />
-        <Button css={{ marginLeft: 16 }} onClick={applyValue}>
-          Apply
-        </Button>
-      </TextFieldRoot>
+        <Button onClick={applyValue}>Apply</Button>
+      </HStack>
 
       <RandomWindEffect key={value} textValue={value} />
-      <SnowFlake />
+      <Flex>
+        <PageLayout.SubTitle>Snowflake example</PageLayout.SubTitle>
+        <Button
+          css={{ marginLeft: 'auto' }}
+          onClick={() => snowFlakeControlRef.current?.start()}
+        >
+          Run
+        </Button>
+      </Flex>
+      <SnowFlake ref={snowFlakeControlRef} />
     </PageLayout>
   );
 }
-
-const TextFieldRoot = styled('div', {
-  display: 'flex',
-  width: '100%',
-});

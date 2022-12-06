@@ -13,6 +13,10 @@ interface InitParticlesParams {
   effectDirection: EffectDirectionType;
 }
 
+export interface EffectControl {
+  start: () => void;
+  stop: () => void;
+}
 const defaultColors = ['#468966', '#FFF0A5', '#FFB03B', '#B64926', '#8E2800'];
 
 export default function useParticleText(params: InitParticlesParams) {
