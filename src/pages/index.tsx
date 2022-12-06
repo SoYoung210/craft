@@ -13,11 +13,26 @@ const IndexPage = () => {
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
         <ContentItem>
-          <Link to="/blurred-logo">
-            <ContentBox title="blurred-logo">
+          <Link to="/dynamic-card">
+            <ContentBox title="dynamic card">
               <StaticImage
-                src="../images/thumbnails/blurred-logo.png"
-                alt="blurred logo content preview"
+                src="../images/thumbnails/dynamic-card.png"
+                alt="dynamic card content preview"
+                height={250}
+                objectFit="contain"
+                style={{ display: 'flex', justifyContent: 'center' }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentItem>
+
+        <ContentItem>
+          <Link to="/particle-text">
+            <ContentBox title="particle-text">
+              <StaticImage
+                src="../images/thumbnails/particle-text.png"
+                alt="particle text content preview"
                 objectFit="contain"
                 height={250}
                 style={{
@@ -31,14 +46,17 @@ const IndexPage = () => {
         </ContentItem>
 
         <ContentItem>
-          <Link to="/dynamic-card">
-            <ContentBox title="dynamic card">
+          <Link to="/blurred-logo">
+            <ContentBox title="blurred-logo">
               <StaticImage
-                src="../images/thumbnails/dynamic-card.png"
-                alt="dynamic card content preview"
-                height={250}
+                src="../images/thumbnails/blurred-logo.png"
+                alt="blurred logo content preview"
                 objectFit="contain"
-                style={{ display: 'flex', justifyContent: 'center' }}
+                height={250}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
                 quality={100}
               />
             </ContentBox>

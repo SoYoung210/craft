@@ -41,6 +41,7 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
     rightSlot,
     children,
     size,
+    type = 'button',
     ...buttonProps
   } = props;
   const space = size === 'xsmall' ? 2 : size === 'small' ? 4 : 6;
@@ -54,6 +55,7 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
           ...css,
           backgroundColor: getColor(color),
         }}
+        type={type}
       >
         <WhenValidGrandChildren>
           <ButtonLeftSlotRoot>{leftSlot}</ButtonLeftSlotRoot>
@@ -81,6 +83,9 @@ const StyledButton = styled(Primitive.button, {
     '0px 2px 6px rgba(0, 0, 0, 0.02), inset 0px -1px 0px rgba(0, 0, 0, 0.06), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
 
   interactivity: 'medium',
+
+  minHeight: 34,
+  px: 10,
 });
 
 export interface ButtonSlotRootProps

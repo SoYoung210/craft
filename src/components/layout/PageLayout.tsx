@@ -76,6 +76,13 @@ const Title = styled('h1', {
   letterSpacing: '-0.03em',
 });
 
+const SubTitle = styled('h2', {
+  fontSize: 36,
+  fontWeight: 700,
+  color: '$gray8',
+  letterSpacing: '-0.03em',
+});
+
 const DetailContent = styled('p', {
   padding: 12,
   lineHeight: 1.5,
@@ -104,6 +111,7 @@ const Details = styled('details', {
 const Summary = styled('summary');
 
 PageLayout.Title = Title;
+PageLayout.SubTitle = SubTitle;
 PageLayout.Details = Details;
 PageLayout.DetailsContent = DetailContent;
 PageLayout.Summary = Summary;

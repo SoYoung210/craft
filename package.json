@@ -36,7 +36,8 @@
     "gsap": "^3.11.3",
     "html2canvas": "^1.4.1",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "w3c-keys": "^1.0.3"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.4.3",
