@@ -42,7 +42,7 @@ export const VStack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const css = useMergeCss(
     {
       [`& > ${selector} + ${selector}`]: {
-        marginLeft: gap,
+        marginTop: gap,
       },
     },
     cssFromProps
