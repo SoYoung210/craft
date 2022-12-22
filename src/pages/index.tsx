@@ -28,6 +28,24 @@ const IndexPage = () => {
         </ContentItem>
 
         <ContentItem>
+          <Link to="/genie-window">
+            <ContentBox title="genie-window">
+              <StaticImage
+                src="../images/thumbnails/genie-effect.png"
+                alt="Modal Interaction with Genie Effect Preview"
+                objectFit="contain"
+                height={250}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentItem>
+
+        <ContentItem>
           <Link to="/particle-text">
             <ContentBox title="particle-text">
               <StaticImage
@@ -90,6 +108,8 @@ const ContentList = styled('ul', {
   display: 'flex',
   flexDirection: 'column',
   gap: 20,
+  listStyle: 'none',
+  paddingInlineStart: 0,
 });
 
 const ContentItem = styled('li', {});

@@ -19,6 +19,7 @@ export interface ButtonProps extends PrimitiveButtonProps {
   rightSlot?: ReactNode;
   align?: 'left' | 'center';
   size?: Size;
+  variant?: 'outline' | 'ghost';
 }
 interface ButtonContext {
   space: number;
@@ -42,6 +43,7 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
     children,
     size,
     type = 'button',
+    variant = 'outline',
     ...buttonProps
   } = props;
   const space = size === 'xsmall' ? 2 : size === 'small' ? 4 : 6;
@@ -51,6 +53,7 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
       <StyledButton
         ref={ref}
         {...buttonProps}
+        variant={variant}
         css={{
           ...css,
           backgroundColor: getColor(color),
@@ -79,13 +82,23 @@ const StyledButton = styled(Primitive.button, {
   alignItems: 'center',
   justifyContent: 'center',
   fontWeight: 700,
-  boxShadow:
-    '0px 2px 6px rgba(0, 0, 0, 0.02), inset 0px -1px 0px rgba(0, 0, 0, 0.06), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
 
   interactivity: 'medium',
 
   minHeight: 34,
   px: 10,
+
+  variants: {
+    variant: {
+      outline: {
+        boxShadow:
+          '0px 2px 6px rgba(0, 0, 0, 0.02), inset 0px -1px 0px rgba(0, 0, 0, 0.06), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
+      },
+      ghost: {
+        boxShadow: 'none',
+      },
+    },
+  },
 });
 
 export interface ButtonSlotRootProps

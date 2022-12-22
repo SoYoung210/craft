@@ -17,8 +17,7 @@ globalStyle('a', {
 });
 
 globalStyle('ul, ol', {
-  listStyle: 'none',
-  paddingInlineStart: 0,
+  paddingInlineStart: '1.4rem',
 });
 
 globalStyle('button', {
