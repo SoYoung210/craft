@@ -12,7 +12,7 @@ import { createContext } from '../utility/createContext';
 import WhenValidGrandChildren from '../utility/WhenValidGrandChildren';
 
 type PrimitiveButtonProps = ComponentPropsWithoutRef<typeof StyledButton>;
-type Size = 'xsmall' | 'small' | 'medium' | 'large';
+type Size = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 export interface ButtonProps extends PrimitiveButtonProps {
   color?: ColorType;
   leftSlot?: ReactNode;
@@ -59,6 +59,7 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
           backgroundColor: getColor(color),
         }}
         type={type}
+        size={size}
       >
         <WhenValidGrandChildren>
           <ButtonLeftSlotRoot>{leftSlot}</ButtonLeftSlotRoot>
@@ -96,6 +97,17 @@ const StyledButton = styled(Primitive.button, {
       },
       ghost: {
         boxShadow: 'none',
+      },
+    },
+    size: {
+      xsmall: {},
+      small: {},
+      medium: {},
+      large: {
+        px: 14,
+      },
+      xlarge: {
+        px: 16,
       },
     },
   },
