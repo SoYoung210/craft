@@ -21,8 +21,7 @@ const Root = styled('div', {
   '-webkit-mask-image': 'radial-gradient(white,black)',
   backgroundSize: '2rem 2rem',
 
-  px: '1.5rem',
-  minHeight: '36rem',
+  padding: '2rem',
   borderRadius: '1rem',
 
   variants: {
