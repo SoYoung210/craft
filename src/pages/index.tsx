@@ -28,6 +28,24 @@ const IndexPage = () => {
         </ContentItem>
 
         <ContentItem>
+          <Link to="/border-animation">
+            <ContentBox title="border-animation">
+              <StaticImage
+                src="../images/thumbnails/border-animation.jpg"
+                alt="Button Border Animation Preview Image"
+                objectFit="contain"
+                height={250}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentItem>
+
+        <ContentItem>
           <Link to="/genie-window">
             <ContentBox title="genie-window">
               <StaticImage
