@@ -1,16 +1,21 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-import { styled } from '../../../stitches.config';
+import { keyframes, styled } from '../../../stitches.config';
 import { entries } from '../../utils/object';
 import { radialGradient } from '../../utils/style/gradient';
 
-import * as styles from './PageLayout.css';
-import { backgroundAnimation, backgroundColorMap } from './PageLayout.css';
+import { backgroundColorMap } from './PageLayout.css';
 
 interface Props extends ComponentPropsWithoutRef<typeof Main> {
   children: ReactNode;
   theme?: 'gradient' | 'normal';
 }
+
+const backgroundAnimation = keyframes({
+  '0%': { backgroundPosition: '0% 50%' },
+  '50%': { backgroundPosition: '80% 100%' },
+  '100%': { backgroundPosition: '0% 50%' },
+});
 
 export default function PageLayout({
   children,
@@ -18,7 +23,7 @@ export default function PageLayout({
   ...props
 }: Props) {
   return (
-    <Main theme={theme} className={styles.pageStyles} {...props}>
+    <Main {...props} theme={theme}>
       {children}
     </Main>
   );
@@ -40,11 +45,13 @@ const Main = styled('main', {
     theme: {
       gradient: {
         '&::before': {
-          position: 'absolute',
+          position: 'fixed',
+          top: '0',
+          left: '50%',
+          transform: 'translateX(-50%)',
           content: '',
-          width: '100%',
+          width: '50%',
           height: '100%',
-
           backgroundImage: entries(backgroundColorMap)
             .map(([, { start, end, value }]) => {
               return radialGradient(start, end, [
