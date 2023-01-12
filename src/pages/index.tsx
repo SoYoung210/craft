@@ -5,14 +5,14 @@ import { Link } from 'gatsby';
 import '../styles/global.css';
 import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
-import { styled } from '../../stitches.config';
+import ContentList from '../components/layout/ContentList';
 
 const IndexPage = () => {
   return (
     <PageLayout theme="gradient">
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/dynamic-card">
             <ContentBox title="dynamic card">
               <StaticImage
@@ -25,9 +25,9 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
 
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/border-animation">
             <ContentBox title="border-animation">
               <StaticImage
@@ -43,9 +43,9 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
 
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/genie-window">
             <ContentBox title="genie-window">
               <StaticImage
@@ -61,9 +61,9 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
 
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/particle-text">
             <ContentBox title="particle-text">
               <StaticImage
@@ -79,9 +79,9 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
 
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/blurred-logo">
             <ContentBox title="blurred-logo">
               <StaticImage
@@ -97,9 +97,9 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
 
-        <ContentItem>
+        <ContentList.Item>
           <Link to="/light-bulb">
             <ContentBox title="light-bulb">
               <StaticImage
@@ -116,21 +116,11 @@ const IndexPage = () => {
               />
             </ContentBox>
           </Link>
-        </ContentItem>
+        </ContentList.Item>
       </ContentList>
     </PageLayout>
   );
 };
-
-const ContentList = styled('ul', {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 20,
-  listStyle: 'none',
-  paddingInlineStart: 0,
-});
-
-const ContentItem = styled('li', {});
 
 export default IndexPage;
 
