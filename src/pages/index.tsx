@@ -19,9 +19,10 @@ const IndexPage = () => {
                 src="../images/thumbnails/dynamic-card.png"
                 alt="dynamic card content preview"
                 height={250}
+                placeholder="blurred"
                 objectFit="contain"
                 style={{ display: 'flex', justifyContent: 'center' }}
-                quality={100}
+                quality={80}
               />
             </ContentBox>
           </Link>
@@ -33,13 +34,11 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/border-animation.jpg"
                 alt="Button Border Animation Preview Image"
-                objectFit="contain"
                 height={250}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
                 }}
-                quality={100}
               />
             </ContentBox>
           </Link>
@@ -53,11 +52,11 @@ const IndexPage = () => {
                 alt="Modal Interaction with Genie Effect Preview"
                 objectFit="contain"
                 height={250}
+                placeholder="blurred"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
                 }}
-                quality={100}
               />
             </ContentBox>
           </Link>
@@ -67,15 +66,14 @@ const IndexPage = () => {
           <Link to="/particle-text">
             <ContentBox title="particle-text">
               <StaticImage
-                src="../images/thumbnails/particle-text.png"
+                src="../images/thumbnails/particle-text.jpg"
                 alt="particle text content preview"
-                objectFit="contain"
                 height={250}
+                objectFit="contain"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
                 }}
-                quality={100}
               />
             </ContentBox>
           </Link>
@@ -89,11 +87,11 @@ const IndexPage = () => {
                 alt="blurred logo content preview"
                 objectFit="contain"
                 height={250}
+                placeholder="blurred"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
                 }}
-                quality={100}
               />
             </ContentBox>
           </Link>
@@ -105,12 +103,11 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/light-bulb.png"
                 alt="light bulb content preview"
-                objectFit="contain"
                 height={250}
+                placeholder="blurred"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  backgroundColor: '#181612',
                 }}
                 quality={100}
               />
