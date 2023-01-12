@@ -57,6 +57,8 @@ const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
       useContentListContext('ContentList.Item');
 
     const itemActivated = useMemo(() => {
+      console.log('activeItem: ', activeItem?.id, id);
+
       return activeItem?.id === id;
     }, [activeItem?.id, id]);
 
