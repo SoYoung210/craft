@@ -93,6 +93,7 @@ const StyledItem = styled('li', {
   $$blur: 0,
   $$grayScale: 1,
   filter: 'grayscale($$grayScale) blur($$blur)',
+  transform: 'translateZ(0px)',
 
   '&:hover': {
     $$grayScale: 0,

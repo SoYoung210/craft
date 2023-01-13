@@ -11,10 +11,12 @@ interface Props extends ComponentPropsWithoutRef<typeof Main> {
   theme?: 'gradient' | 'normal';
 }
 
+//https://web.dev/rendering-performance/
+// https://stackoverflow.com/questions/35906196/improve-css3-background-position-animations-performance
 const backgroundAnimation = keyframes({
-  '0%': { backgroundPosition: '0% 50%' },
-  '50%': { backgroundPosition: '80% 100%' },
-  '100%': { backgroundPosition: '0% 50%' },
+  '0%': { transform: 'translateX(-50%) rotate(0deg)' },
+  '50%': { transform: 'translateX(-50%) rotate(270deg)' },
+  '100%': { transform: 'translateX(-50%) rotate(0deg)' },
 });
 
 export default function PageLayout({
@@ -50,7 +52,7 @@ const Main = styled('main', {
           left: '50%',
           transform: 'translateX(-50%)',
           content: '',
-          width: '50%',
+          width: '60%',
           height: '100%',
           backgroundImage: entries(backgroundColorMap)
             .map(([, { start, end, value }]) => {
@@ -62,7 +64,7 @@ const Main = styled('main', {
             .join(', '),
           backgroundSize: '180%, 200%',
           filter: 'blur(100px) saturate(150%)',
-          animation: `${backgroundAnimation} infinite 10s linear`,
+          animation: `${backgroundAnimation} infinite 20s linear`,
           opacity: 0.2,
           zIndex: -1,
         },
