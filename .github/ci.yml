@@ -8,8 +8,9 @@ on:
 jobs:
   test:
     - name: Checkout
-      uses: actions/checkout@v2
-
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: Read Node version
       id: node_version
       run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
@@ -30,5 +31,5 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci
 
-    - name: Run test
-      run: npm run test
+    - name: Run test (changedSince)
+      run: npm run test:changed-since
