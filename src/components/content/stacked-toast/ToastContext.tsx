@@ -1,5 +1,6 @@
 import { Portal } from '@radix-ui/react-portal';
 import { ReactNode, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 import { createContext } from '../../utility/createContext';
 
@@ -89,8 +90,7 @@ export function ToastProvider({ children, limit }: ToastProviderProps) {
       update={update}
     >
       <Portal>
-        {/* <AnimatePresence>{items}</AnimatePresence> */}
-        <div
+        <ol
           style={{
             position: 'fixed',
             top: 0,
@@ -98,7 +98,7 @@ export function ToastProvider({ children, limit }: ToastProviderProps) {
             right: 320,
           }}
         >
-          <ol>
+          <AnimatePresence>
             {toasts.map((toast, index) => {
               const isLatestElement = index === toasts.length - 1;
 
@@ -112,11 +112,12 @@ export function ToastProvider({ children, limit }: ToastProviderProps) {
                   remove={remove}
                 >
                   {toast.content}
+                  <button onClick={() => remove(toast.id)}>hide</button>
                 </AnimationItem>
               );
             })}
-          </ol>
-        </div>
+          </AnimatePresence>
+        </ol>
       </Portal>
       {children}
     </ToastContextProvider>

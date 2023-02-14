@@ -15,6 +15,7 @@ import { RequiredKeys } from '../../../utils/type';
 
 import { ToastProps } from './model';
 
+// FIXME: remove 필요한가?
 export interface AnimationItemRef {
   remove: (id: string) => void;
 }
@@ -117,7 +118,8 @@ const slideInVariants: MotionProps = {
       x: 0,
     },
     exit: {
-      x: '100%',
+      // polishing
+      x: '105%',
     },
   },
   transition: {
