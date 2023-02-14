@@ -13,6 +13,9 @@ export default function useTimeout<T extends (...args: any[]) => any>(
 
   const start = useCallback(
     (duration: number) => {
+      timerRemainingTimeRef.current = duration;
+      // 존재하던 타이머 리셋 (e.g. resume으로 실행되는 경우)
+      window.clearTimeout(timerRef.current);
       timerStartTimeRef.current = new Date().getTime();
       timerRef.current = window.setTimeout(callbackHandler, duration);
       // 시작시간 기록
@@ -30,8 +33,7 @@ export default function useTimeout<T extends (...args: any[]) => any>(
   }, []);
 
   const resume = useCallback(() => {
-    // 재시작시 기존 타이머 리셋하고, setTimeout(fn, 남은시간)으로 다시 시작
-    window.clearTimeout(timerRef.current);
+    // 재시작시 setTimeout(fn, 남은시간)으로 다시 시작
     start(timerRemainingTimeRef.current);
   }, [start]);
 
