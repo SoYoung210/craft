@@ -5,7 +5,7 @@ import { createContext } from '../../utility/createContext';
 
 import { ToastContent, ToastOptions, ToastProps } from './model';
 import useToastState from './useToastState';
-import { ScaleDownAnimationItem, SlideInAnimationItem } from './ToastContent';
+import AnimationItem from './AnimationItem';
 
 interface ToastContextValue {
   message: (content: ToastContent, options?: ToastOptions) => string;
@@ -101,16 +101,18 @@ export function ToastProvider({ children, limit }: ToastProviderProps) {
           <ol>
             {toasts.map((toast, index) => {
               const isLatestElement = index === toasts.length - 1;
-              return isLatestElement ? (
-                <SlideInAnimationItem>{toast.content}</SlideInAnimationItem>
-              ) : (
-                <ScaleDownAnimationItem
+
+              return (
+                <AnimationItem
                   key={toast.id}
+                  toast={toast}
+                  animation={isLatestElement ? 'slideIn' : 'scaleDown'}
                   total={toasts.length}
                   index={index}
+                  remove={remove}
                 >
                   {toast.content}
-                </ScaleDownAnimationItem>
+                </AnimationItem>
               );
             })}
           </ol>
