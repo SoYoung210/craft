@@ -20,12 +20,17 @@ interface ToastContextValue {
 interface ToastProviderProps {
   limit: number;
   children: ReactNode;
+  autoClose?: number;
 }
 
 const [ToastContextProvider, useToastContext] =
   createContext<ToastContextValue>('Toast');
 
-export function ToastProvider({ children, limit }: ToastProviderProps) {
+export function ToastProvider({
+  children,
+  limit,
+  autoClose = 3000,
+}: ToastProviderProps) {
   const { toasts, add, remove, update } = useToastState({ limit });
 
   const message = useCallback(
@@ -110,6 +115,7 @@ export function ToastProvider({ children, limit }: ToastProviderProps) {
                   total={toasts.length}
                   index={index}
                   remove={remove}
+                  autoClose={toast.autoClose ?? autoClose}
                 >
                   {toast.content}
                   <button onClick={() => remove(toast.id)}>hide</button>

@@ -21,11 +21,12 @@ export interface AnimationItemRef {
 }
 interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   children: ReactNode;
-  toast: RequiredKeys<ToastProps, 'id'>;
+  toast: Omit<RequiredKeys<ToastProps, 'id'>, 'autoClose'>;
   remove(id: string): void;
   total: number;
   index: number;
   animation: 'slideIn' | 'scaleDown';
+  autoClose: false | number;
 }
 const STACKING_OVERLAP = 0.8;
 interface DynamicSlideVariantsValue {
@@ -34,24 +35,25 @@ interface DynamicSlideVariantsValue {
   opacity: number;
 }
 const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
-  const { animation, children, toast, remove, total, index, ...restProps } =
-    props;
-  const { setTimeout, clearTimeout } = useTimeout();
+  const {
+    animation,
+    children,
+    toast,
+    autoClose,
+    remove,
+    total,
+    index,
+    ...restProps
+  } = props;
+  const { start, clear } = useTimeout(() => remove(toast.id));
 
-  const removeToast = useCallback(() => {
-    remove(toast.id);
-    clearTimeout();
-  }, [clearTimeout, remove, toast.id]);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      remove: removeToast,
-    }),
-    [removeToast]
-  );
-
-  const autoClose = toast.autoClose ?? false;
+  // useImperativeHandle(
+  //   ref,
+  //   () => ({
+  //     remove: removeToast,
+  //   }),
+  //   [removeToast]
+  // );
 
   useEffect(() => {
     toast.onOpen?.();
@@ -59,10 +61,10 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
 
   useEffect(() => {
     if (typeof autoClose === 'number') {
-      setTimeout(removeToast, autoClose);
-      return clearTimeout;
+      start(autoClose);
+      return clear;
     }
-  }, [autoClose, clearTimeout, removeToast, setTimeout]);
+  }, [autoClose, clear, start]);
 
   const inverseIndex = total - index - 1;
   const scale = 1 - inverseIndex * 0.05;

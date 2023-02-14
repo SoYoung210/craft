@@ -15,7 +15,7 @@ function PageContent() {
     <div>
       <Button
         onClick={() => {
-          message(`message${count.current}`);
+          message(`message${count.current}`, { autoClose: 1000 });
           count.current = count.current + 1;
         }}
       >

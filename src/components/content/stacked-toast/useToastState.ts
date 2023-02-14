@@ -59,6 +59,7 @@ export default function useToastState({ limit }: { limit: number }) {
     },
     [updateToast]
   );
+
   const remove = useCallback(
     (id: string) => {
       updateToast(toasts =>
