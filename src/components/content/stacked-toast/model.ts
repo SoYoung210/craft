@@ -5,7 +5,7 @@ export type ToastOptions = Omit<ToastProps, 'content'>;
 
 export interface ToastProps {
   id?: string;
-  preserve?: boolean;
+  autoClose?: false | number;
   content: ToastContent;
   leftSlot?: ReactNode;
   role?: AriaRole;
