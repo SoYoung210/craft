@@ -1,5 +1,5 @@
 import { Portal } from '@radix-ui/react-portal';
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { createContext } from '../../utility/createContext';
@@ -32,6 +32,7 @@ export function ToastProvider({
   autoClose = 3000,
 }: ToastProviderProps) {
   const { toasts, add, remove, update } = useToastState({ limit });
+  const [containerPause, setContainerPause] = useState(false);
 
   const message = useCallback(
     (content: ToastContent, options: ToastOptions = {}) => {
@@ -85,6 +86,13 @@ export function ToastProvider({
     [add]
   );
 
+  const handlePause = useCallback(() => {
+    setContainerPause(true);
+  }, []);
+  const handleResume = useCallback(() => {
+    setContainerPause(false);
+  }, []);
+
   return (
     <ToastContextProvider
       message={message}
@@ -102,10 +110,14 @@ export function ToastProvider({
             // FIXME: same as toast defaultWidth(320)
             right: 320,
           }}
+          onMouseOver={handlePause}
+          onMouseOut={handleResume}
         >
           <AnimatePresence>
             {toasts.map((toast, index) => {
               const isLatestElement = index === toasts.length - 1;
+              const total = toasts.length;
+              const inverseIndex = total - index - 1;
 
               return (
                 <AnimationItem
@@ -113,9 +125,10 @@ export function ToastProvider({
                   toast={toast}
                   animation={isLatestElement ? 'slideIn' : 'scaleDown'}
                   total={toasts.length}
-                  index={index}
+                  order={inverseIndex}
                   remove={remove}
                   autoClose={toast.autoClose ?? autoClose}
+                  shouldPause={containerPause}
                 >
                   {toast.content}
                   <button onClick={() => remove(toast.id)}>hide</button>

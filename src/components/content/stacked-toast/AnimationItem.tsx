@@ -23,10 +23,11 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   children: ReactNode;
   toast: Omit<RequiredKeys<ToastProps, 'id'>, 'autoClose'>;
   remove(id: string): void;
+  order: number;
   total: number;
-  index: number;
   animation: 'slideIn' | 'scaleDown';
   autoClose: false | number;
+  shouldPause: boolean;
 }
 const STACKING_OVERLAP = 0.8;
 interface DynamicSlideVariantsValue {
@@ -42,10 +43,11 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     autoClose,
     remove,
     total,
-    index,
+    order,
+    shouldPause,
     ...restProps
   } = props;
-  const { start, clear } = useTimeout(() => remove(toast.id));
+  const { start, clear, pause, resume } = useTimeout(() => remove(toast.id));
 
   // useImperativeHandle(
   //   ref,
@@ -59,6 +61,15 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     toast.onOpen?.();
   }, [toast]);
 
+  // TODO: refactor?
+  useEffect(() => {
+    if (shouldPause) {
+      pause();
+      return;
+    }
+
+    resume();
+  }, [pause, resume, shouldPause]);
   useEffect(() => {
     if (typeof autoClose === 'number') {
       start(autoClose);
@@ -66,10 +77,9 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     }
   }, [autoClose, clear, start]);
 
-  const inverseIndex = total - index - 1;
-  const scale = 1 - inverseIndex * 0.05;
-  const opacity = 1 - (inverseIndex / total) * 0.1;
-  const y = inverseIndex * 100 * (1 - STACKING_OVERLAP);
+  const scale = 1 - order * 0.05;
+  const opacity = 1 - (order / total) * 0.1;
+  const y = order * 100 * (1 - STACKING_OVERLAP);
 
   const animationVariants =
     animation === 'scaleDown' ? scaleDownVariants : slideInVariants;
