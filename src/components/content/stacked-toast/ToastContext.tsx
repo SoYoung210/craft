@@ -1,5 +1,5 @@
 import { Portal } from '@radix-ui/react-portal';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { createContext } from '../../utility/createContext';
@@ -7,7 +7,7 @@ import { styled } from '../../../../stitches.config';
 
 import { ToastContent, ToastOptions, ToastProps } from './model';
 import useToastState from './useToastState';
-import AnimationItem from './AnimationItem';
+import AnimationItem, { AnimationItemRef } from './AnimationItem';
 
 interface ToastContextValue {
   message: (content: ToastContent, options?: ToastOptions) => string;
@@ -33,7 +33,7 @@ export function ToastProvider({
   autoClose = 3000,
 }: ToastProviderProps) {
   const { toasts, add, remove, update } = useToastState({ limit });
-  const [containerPause, setContainerPause] = useState(false);
+  const itemRefs = useRef<AnimationItemRef[]>([]);
 
   const message = useCallback(
     (content: ToastContent, options: ToastOptions = {}) => {
@@ -88,10 +88,14 @@ export function ToastProvider({
   );
 
   const handlePause = useCallback(() => {
-    setContainerPause(true);
+    itemRefs.current.forEach(item => {
+      item.pause();
+    });
   }, []);
   const handleResume = useCallback(() => {
-    setContainerPause(false);
+    itemRefs.current.forEach(item => {
+      item.resume();
+    });
   }, []);
 
   return (
@@ -120,7 +124,7 @@ export function ToastProvider({
                   order={inverseIndex}
                   remove={remove}
                   autoClose={toast.autoClose ?? autoClose}
-                  shouldPause={containerPause}
+                  ref={el => el != null && (itemRefs.current[index] = el)}
                 >
                   {toast.content}
                   <button onClick={() => remove(toast.id)}>hide</button>

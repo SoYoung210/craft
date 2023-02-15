@@ -7,6 +7,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useState,
 } from 'react';
 import type { MotionProps } from 'framer-motion';
 
@@ -18,7 +19,8 @@ import { ToastProps } from './model';
 
 // FIXME: remove 필요한가?
 export interface AnimationItemRef {
-  remove: (id: string) => void;
+  pause: VoidFunction;
+  resume: VoidFunction;
 }
 interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   children: ReactNode;
@@ -28,7 +30,6 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   total: number;
   animation: 'slideIn' | 'scaleDown';
   autoClose: false | number;
-  shouldPause: boolean;
 }
 const STACKING_OVERLAP = 0.8;
 const SPACING = 10;
@@ -46,31 +47,35 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     remove,
     total,
     order,
-    shouldPause,
     ...restProps
   } = props;
-  const { start, clear, pause, resume } = useTimeout(() => remove(toast.id));
-  // useImperativeHandle(
-  //   ref,
-  //   () => ({
-  //     remove: removeToast,
-  //   }),
-  //   [removeToast]
-  // );
+  const { start, clear, pause, resume } = useTimeout(() => {
+    remove(toast.id);
+  });
+  const [paused, setPaused] = useState(false);
+
+  const handlePause = useCallback(() => {
+    pause();
+    setPaused(true);
+  }, [pause]);
+
+  const handleResume = useCallback(() => {
+    resume();
+    setPaused(false);
+  }, [resume]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      pause: handlePause,
+      resume: handleResume,
+    }),
+    [handlePause, handleResume]
+  );
 
   useEffect(() => {
     toast.onOpen?.();
   }, [toast]);
-
-  // TODO: refactor?
-  useEffect(() => {
-    if (shouldPause) {
-      pause();
-      return;
-    }
-
-    resume();
-  }, [pause, resume, shouldPause]);
 
   useEffect(() => {
     if (typeof autoClose === 'number') {
@@ -82,19 +87,19 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   const scale = 1 - order * 0.05;
   const opacity = 1 - (order / total) * 0.1;
   const y = useMemo(() => {
-    if (shouldPause) {
+    if (paused) {
       return `calc(${order * 100}% + ${SPACING * order}px)`;
     }
     return `${order * 100 * (1 - STACKING_OVERLAP)}%`;
-  }, [order, shouldPause]);
+  }, [order, paused]);
 
   const animationVariants = useMemo(() => {
-    if (shouldPause) {
+    if (paused) {
       return originGeometryVariants;
     }
 
     return animation === 'scaleDown' ? scaleDownVariants : slideInVariants;
-  }, [animation, shouldPause]);
+  }, [animation, paused]);
 
   return (
     <StyledItem
