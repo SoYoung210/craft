@@ -1,8 +1,9 @@
 import { Portal } from '@radix-ui/react-portal';
-import { ReactNode, useCallback, useRef, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { createContext } from '../../utility/createContext';
+import { styled } from '../../../../stitches.config';
 
 import { ToastContent, ToastOptions, ToastProps } from './model';
 import useToastState from './useToastState';
@@ -103,16 +104,7 @@ export function ToastProvider({
       update={update}
     >
       <Portal>
-        <ol
-          style={{
-            position: 'fixed',
-            top: 0,
-            // FIXME: same as toast defaultWidth(320)
-            right: 320,
-          }}
-          onMouseOver={handlePause}
-          onMouseOut={handleResume}
-        >
+        <Ol onMouseOver={handlePause} onMouseOut={handleResume}>
           <AnimatePresence>
             {toasts.map((toast, index) => {
               const isLatestElement = index === toasts.length - 1;
@@ -136,10 +128,16 @@ export function ToastProvider({
               );
             })}
           </AnimatePresence>
-        </ol>
+        </Ol>
       </Portal>
       {children}
     </ToastContextProvider>
   );
 }
+const Ol = styled('ol', {
+  position: 'fixed',
+  top: 0,
+  // FIXME: same as toast defaultWidth(320)
+  right: 320,
+});
 export const useToast = () => useToastContext('Toast');

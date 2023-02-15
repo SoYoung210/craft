@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
 } from 'react';
 import type { MotionProps } from 'framer-motion';
 
@@ -30,6 +31,7 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   shouldPause: boolean;
 }
 const STACKING_OVERLAP = 0.8;
+const SPACING = 10;
 interface DynamicSlideVariantsValue {
   scale: number;
   y: number;
@@ -48,7 +50,6 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     ...restProps
   } = props;
   const { start, clear, pause, resume } = useTimeout(() => remove(toast.id));
-
   // useImperativeHandle(
   //   ref,
   //   () => ({
@@ -70,6 +71,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
 
     resume();
   }, [pause, resume, shouldPause]);
+
   useEffect(() => {
     if (typeof autoClose === 'number') {
       start(autoClose);
@@ -79,10 +81,20 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
 
   const scale = 1 - order * 0.05;
   const opacity = 1 - (order / total) * 0.1;
-  const y = order * 100 * (1 - STACKING_OVERLAP);
+  const y = useMemo(() => {
+    if (shouldPause) {
+      return `calc(${order * 100}% + ${SPACING * order}px)`;
+    }
+    return `${order * 100 * (1 - STACKING_OVERLAP)}%`;
+  }, [order, shouldPause]);
 
-  const animationVariants =
-    animation === 'scaleDown' ? scaleDownVariants : slideInVariants;
+  const animationVariants = useMemo(() => {
+    if (shouldPause) {
+      return originGeometryVariants;
+    }
+
+    return animation === 'scaleDown' ? scaleDownVariants : slideInVariants;
+  }, [animation, shouldPause]);
 
   return (
     <StyledItem
@@ -98,6 +110,23 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     </StyledItem>
   );
 });
+
+const originGeometryVariants: MotionProps = {
+  initial: 'initial',
+  animate: 'animate',
+  exit: 'exit',
+  variants: {
+    initial: {},
+    animate: (custom: { y: string }) => ({
+      ...custom,
+      scale: 1,
+    }),
+  },
+  transition: {
+    duration: 0.4,
+    type: 'ease',
+  },
+};
 
 const scaleDownVariants: MotionProps = {
   initial: 'initial',
