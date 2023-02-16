@@ -60,9 +60,11 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   }, [pause]);
 
   const handleResume = useCallback(() => {
-    resume();
+    if (typeof autoClose === 'number') {
+      resume();
+    }
     setPaused(false);
-  }, [resume]);
+  }, [autoClose, resume]);
 
   useImperativeHandle(
     ref,
