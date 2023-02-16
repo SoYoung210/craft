@@ -31,7 +31,7 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   animation: 'slideIn' | 'scaleDown';
   autoClose: false | number;
 }
-const STACKING_OVERLAP = 0.8;
+const STACKING_OVERLAP = 0.85;
 const SPACING = 10;
 interface DynamicSlideVariantsValue {
   scale: number;
@@ -180,12 +180,12 @@ const StyledItem = styled(motion.li, {
   top: 0,
   backdropFilter: 'blur(16px)',
   '-webkit-backdrop-filter': 'blur(16px)',
-  background: 'rgba(245, 245, 245, 0.6)',
+  background: 'rgba(245, 245, 245, 0.7)',
   border: '1px solid rgba(0, 0, 0, 0.06)',
   padding: '0 1rem',
   filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
   borderRadius: '0.5rem',
-  height: 80,
+  height: 82,
   minWidth: 320,
   py: 14,
   paddingLeft: 12,
