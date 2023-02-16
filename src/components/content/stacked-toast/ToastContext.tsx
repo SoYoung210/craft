@@ -1,31 +1,30 @@
 import { Portal } from '@radix-ui/react-portal';
 import { ReactNode, useCallback, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { Primitive } from '@radix-ui/react-primitive';
 
-import { createContext } from '../../utility/createContext';
 import { styled } from '../../../../stitches.config';
+import InfoIcon from '../../../images/icons/info.svg';
+import WarningIcon from '../../../images/icons/alert-triangle.svg';
+import ErrorIcon from '../../../images/icons/alert-octagon.svg';
+import SuccessIcon from '../../../images/icons/check.svg';
+import { HStack, VStack } from '../../material/Stack';
 
-import { ToastContent, ToastOptions, ToastProps } from './model';
+import { ToastContent, ToastOptions } from './model';
 import useToastState from './useToastState';
 import AnimationItem, { AnimationItemRef } from './AnimationItem';
-
-interface ToastContextValue {
-  message: (content: ToastContent, options?: ToastOptions) => string;
-  error: (content: ToastContent, options?: ToastOptions) => string;
-  success: (content: ToastContent, options?: ToastOptions) => string;
-  warning: (content: ToastContent, options?: ToastOptions) => string;
-  update: (id: string, props: ToastProps) => void;
-  remove: (id: string) => void;
-}
+import {
+  ToastContextProvider,
+  ToastItemContextProvider,
+  useToastContext,
+} from './context';
+import { Close, CloseIconButton } from './Close';
 
 interface ToastProviderProps {
   limit: number;
   children: ReactNode;
   autoClose?: number;
 }
-
-const [ToastContextProvider, useToastContext] =
-  createContext<ToastContextValue>('Toast');
 
 export function ToastProvider({
   children,
@@ -37,9 +36,22 @@ export function ToastProvider({
 
   const message = useCallback(
     (content: ToastContent, options: ToastOptions = {}) => {
+      const {
+        leftSlot = (
+          <IconFrame>
+            <IconBgFrame type="info">
+              <InfoIcon />
+            </IconBgFrame>
+          </IconFrame>
+        ),
+        ...rest
+      } = options;
+
       return add({
         content,
+        leftSlot,
         ...options,
+        ...rest,
       });
     },
     [add]
@@ -47,7 +59,16 @@ export function ToastProvider({
 
   const error = useCallback(
     (errorContent: ToastContent, errorToastOptions: ToastOptions = {}) => {
-      const { leftSlot = <div>⛔️</div>, ...rest } = errorToastOptions;
+      const {
+        leftSlot = (
+          <IconFrame>
+            <IconBgFrame type="error">
+              <ErrorIcon />
+            </IconBgFrame>
+          </IconFrame>
+        ),
+        ...rest
+      } = errorToastOptions;
 
       return add({
         leftSlot,
@@ -61,7 +82,16 @@ export function ToastProvider({
 
   const warning = useCallback(
     (warningContent: ToastContent, errorToastProps: ToastOptions = {}) => {
-      const { leftSlot = <div>⚠️</div>, ...rest } = errorToastProps;
+      const {
+        leftSlot = (
+          <IconFrame>
+            <IconBgFrame type="warning">
+              <WarningIcon />
+            </IconBgFrame>
+          </IconFrame>
+        ),
+        ...rest
+      } = errorToastProps;
 
       return add({
         leftSlot,
@@ -75,7 +105,16 @@ export function ToastProvider({
 
   const success = useCallback(
     (successContent: ToastContent, successToastProps: ToastOptions = {}) => {
-      const { leftSlot = <div>✅</div>, ...rest } = successToastProps;
+      const {
+        leftSlot = (
+          <IconFrame>
+            <IconBgFrame type="success">
+              <SuccessIcon />
+            </IconBgFrame>
+          </IconFrame>
+        ),
+        ...rest
+      } = successToastProps;
 
       return add({
         leftSlot,
@@ -116,19 +155,23 @@ export function ToastProvider({
               const inverseIndex = total - index - 1;
 
               return (
-                <AnimationItem
-                  key={toast.id}
-                  toast={toast}
-                  animation={isLatestElement ? 'slideIn' : 'scaleDown'}
-                  total={toasts.length}
-                  order={inverseIndex}
-                  remove={remove}
-                  autoClose={toast.autoClose ?? autoClose}
-                  ref={el => el != null && (itemRefs.current[index] = el)}
-                >
-                  {toast.content}
-                  <button onClick={() => remove(toast.id)}>hide</button>
-                </AnimationItem>
+                <ToastItemContextProvider id={toast.id} key={toast.id}>
+                  <AnimationItem
+                    toast={toast}
+                    animation={isLatestElement ? 'slideIn' : 'scaleDown'}
+                    total={toasts.length}
+                    order={inverseIndex}
+                    remove={remove}
+                    autoClose={toast.autoClose ?? autoClose}
+                    ref={el => el != null && (itemRefs.current[index] = el)}
+                  >
+                    <HStack gap="13px" alignItems="center">
+                      {toast.leftSlot}
+                      <VStack gap="3px">{toast.content}</VStack>
+                    </HStack>
+                    <CloseIconButton />
+                  </AnimationItem>
+                </ToastItemContextProvider>
               );
             })}
           </AnimatePresence>
@@ -140,8 +183,71 @@ export function ToastProvider({
 }
 const Ol = styled('ol', {
   position: 'fixed',
-  top: 0,
+  top: 20,
   // FIXME: same as toast defaultWidth(320)
   right: 320,
 });
+const IconFrame = styled('div', {
+  width: 36,
+  height: 36,
+  borderRadius: 8,
+  backgroundColor: '$white',
+
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const IconBgFrame = styled('div', {
+  width: 32,
+  height: 32,
+  borderRadius: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  variants: {
+    type: {
+      info: {
+        backgroundColor: '#60A5FA',
+      },
+      success: {
+        backgroundColor: '#10B981',
+      },
+      warning: {
+        backgroundColor: '#F59E0B',
+      },
+      error: {
+        backgroundColor: '#F87171',
+      },
+    },
+  },
+});
+
+const ToastTitle = styled(Primitive.div, {
+  fontWeight: 700,
+  fontSize: 13,
+  lineHeight: '17px',
+  letterSpacing: '-0.2px',
+  color: '#232526',
+});
+
+const ToastDescription = styled(Primitive.div, {
+  fontWeight: 400,
+  fontSize: 13,
+  lineHeight: '16px',
+  letterSpacing: '-0.1px',
+  color: '#232526',
+});
+
 export const useToast = () => useToastContext('Toast');
+
+const Toast = {
+  Provider: ToastProvider,
+  Title: ToastTitle,
+  Description: ToastDescription,
+  Close,
+};
+
+export default Toast;

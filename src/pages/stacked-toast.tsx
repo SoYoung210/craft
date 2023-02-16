@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
-import {
-  ToastProvider,
+import Toast, {
   useToast,
 } from '../components/content/stacked-toast/ToastContext';
 import PageLayout from '../components/layout/PageLayout';
@@ -15,7 +14,18 @@ function PageContent() {
     <div>
       <Button
         onClick={() => {
-          message(`message${count.current}`, { autoClose: 5000 });
+          message(
+            <>
+              <Toast.Title> message${count.current}</Toast.Title>
+              <Toast.Description asChild>
+                <p>
+                  OneSignal announces 500% growth, delivering 2 trillion
+                  messages annually...
+                </p>
+              </Toast.Description>
+            </>,
+            { autoClose: false }
+          );
           count.current = count.current + 1;
         }}
       >
@@ -36,9 +46,9 @@ export default function StackedNotification() {
         </li>
       </ul>
 
-      <ToastProvider limit={10}>
+      <Toast.Provider limit={10}>
         <PageContent />
-      </ToastProvider>
+      </Toast.Provider>
     </PageLayout>
   );
 }

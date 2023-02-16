@@ -175,14 +175,21 @@ const slideInVariants: MotionProps = {
 };
 
 const StyledItem = styled(motion.li, {
+  listStyle: 'none',
   position: 'absolute',
   top: 0,
-  backdropFilter: 'blur(0.5rem)',
-  background: `hsl(0 0% 100% / 40%)`,
+  backdropFilter: 'blur(16px)',
+  '-webkit-backdrop-filter': 'blur(16px)',
+  background: 'rgba(245, 245, 245, 0.6)',
+  border: '1px solid rgba(0, 0, 0, 0.06)',
   padding: '0 1rem',
+  filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
   borderRadius: '0.5rem',
-  height: 72,
+  height: 80,
   minWidth: 320,
+  py: 14,
+  paddingLeft: 12,
+  paddingRight: 10,
 });
 
 export default AnimationItem;
