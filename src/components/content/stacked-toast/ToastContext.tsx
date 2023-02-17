@@ -147,7 +147,7 @@ export function ToastProvider({
       update={update}
     >
       <Portal>
-        <Ol onMouseOver={handlePause} onMouseOut={handleResume}>
+        <Ol onMouseEnter={handlePause} onMouseLeave={handleResume}>
           <AnimatePresence>
             {toasts.map((toast, index) => {
               const isLatestElement = index === toasts.length - 1;
