@@ -186,8 +186,17 @@ export function ToastProvider({
 const Ol = styled('ol', {
   position: 'fixed',
   top: 20,
+  right: 0,
   // FIXME: same as toast defaultWidth(320) + offset 40
-  right: 360,
+  width: 360,
+  // top minus
+  /**
+   * 아이템 사이 간격에 커서가 있을때 의도치 않게 resume이 불리는 것을 방지한다.
+   * item요소에서 dom을 하나 더 두고 paddingTop을 처리하는 방법은 애니메이션과 layout shift측면에서 좋지 않음.
+   * 이 컴포넌트는 토스트의 래퍼이니 화면에 채워줘서 이벤트 영역을 적절히 판단한다.
+   * 더 나은 방법으로는 현재 토스트 아이템의 개수를 세서 height를 동적으로 늘려주는 방법.
+   */
+  height: 'calc(100vh - 20px)',
 });
 const IconFrame = styled('div', {
   width: 36,
