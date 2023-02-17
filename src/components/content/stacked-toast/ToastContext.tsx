@@ -157,7 +157,7 @@ export function ToastProvider({
 
               return (
                 <ToastItemContextProvider id={toast.id} key={toast.id}>
-                  <AnimationItem
+                  <ToastContentItem
                     onOpen={toast.onOpen}
                     animation={isLatestElement ? 'slideIn' : 'scaleDown'}
                     total={toasts.length}
@@ -171,8 +171,8 @@ export function ToastProvider({
                       <VStack gap="3px">{toast.content}</VStack>
                     </HStack>
                     {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
-                    <CloseIconButton />
-                  </AnimationItem>
+                    <StyledCloseIconButton />
+                  </ToastContentItem>
                 </ToastItemContextProvider>
               );
             })}
@@ -241,6 +241,18 @@ const ToastDescription = styled(Primitive.div, {
   lineHeight: '16px',
   letterSpacing: '-0.1px',
   color: '#232526',
+});
+
+const StyledCloseIconButton = styled(CloseIconButton, {
+  opacity: 0,
+  transition: 'opacity 0.18s ease',
+});
+const ToastContentItem = styled(AnimationItem, {
+  '&:hover': {
+    [`& ${StyledCloseIconButton}`]: {
+      opacity: 1,
+    },
+  },
 });
 
 export const useToast = () => useToastContext('Toast');
