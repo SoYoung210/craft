@@ -153,15 +153,16 @@ export function ToastProvider({
               const isLatestElement = index === toasts.length - 1;
               const total = toasts.length;
               const inverseIndex = total - index - 1;
+              const removeToastItem = () => remove(toast.id);
 
               return (
                 <ToastItemContextProvider id={toast.id} key={toast.id}>
                   <AnimationItem
-                    toast={toast}
+                    onOpen={toast.onOpen}
                     animation={isLatestElement ? 'slideIn' : 'scaleDown'}
                     total={toasts.length}
                     order={inverseIndex}
-                    remove={remove}
+                    remove={removeToastItem}
                     autoClose={toast.autoClose ?? autoClose}
                     ref={el => el != null && (itemRefs.current[index] = el)}
                   >
@@ -169,6 +170,7 @@ export function ToastProvider({
                       {toast.leftSlot}
                       <VStack gap="3px">{toast.content}</VStack>
                     </HStack>
+                    {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
                     <CloseIconButton />
                   </AnimationItem>
                 </ToastItemContextProvider>
@@ -184,8 +186,8 @@ export function ToastProvider({
 const Ol = styled('ol', {
   position: 'fixed',
   top: 20,
-  // FIXME: same as toast defaultWidth(320)
-  right: 320,
+  // FIXME: same as toast defaultWidth(320) + offset 40
+  right: 360,
 });
 const IconFrame = styled('div', {
   width: 36,

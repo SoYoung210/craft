@@ -13,9 +13,6 @@ import type { MotionProps } from 'framer-motion';
 
 import { styled } from '../../../../stitches.config';
 import useTimeout from '../../../hooks/useTimeout';
-import { RequiredKeys } from '../../../utils/type';
-
-import { ToastProps } from './model';
 
 // FIXME: remove 필요한가?
 export interface AnimationItemRef {
@@ -24,8 +21,8 @@ export interface AnimationItemRef {
 }
 interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   children: ReactNode;
-  toast: Omit<RequiredKeys<ToastProps, 'id'>, 'autoClose'>;
-  remove(id: string): void;
+  onOpen?: VoidFunction;
+  remove: VoidFunction;
   order: number;
   total: number;
   animation: 'slideIn' | 'scaleDown';
@@ -42,7 +39,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   const {
     animation,
     children,
-    toast,
+    onOpen,
     autoClose,
     remove,
     total,
@@ -50,7 +47,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     ...restProps
   } = props;
   const { start, clear, pause, resume } = useTimeout(() => {
-    remove(toast.id);
+    remove();
   });
   const [paused, setPaused] = useState(false);
 
@@ -76,8 +73,8 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   );
 
   useEffect(() => {
-    toast.onOpen?.();
-  }, [toast]);
+    onOpen?.();
+  }, [onOpen]);
 
   useEffect(() => {
     if (typeof autoClose === 'number') {
@@ -187,7 +184,7 @@ const StyledItem = styled(motion.li, {
   padding: '0 1rem',
   filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
   borderRadius: '0.5rem',
-  height: 82,
+  minHeight: 82,
   minWidth: 320,
   py: 14,
   paddingLeft: 12,
