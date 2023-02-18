@@ -48,18 +48,72 @@ export const CloseIconButton = forwardRef<
   );
 });
 
+const BaseButton = styled(Primitive.button, {
+  width: 22,
+  height: 22,
+  background: '#F5F5F5',
+  border: '1px solid rgba(0, 0, 0, 0.06)',
+  borderRadius: 11,
+});
+
 const StyledIconButton = styled(Primitive.button, {
   position: 'absolute',
   top: -8,
   left: -10,
 
-  width: 22,
-  height: 22,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
 
+  width: 22,
+  height: 22,
   background: '#F5F5F5',
   border: '1px solid rgba(0, 0, 0, 0.06)',
-  borderRadius: '100%',
+  borderRadius: 11,
+});
+
+export const CloseAllButton = () => {
+  return (
+    <ExpandAnimationIconButton>
+      <StyledXIcon />
+      <ButtonText>모두 지우기</ButtonText>
+    </ExpandAnimationIconButton>
+  );
+};
+
+const StyledXIcon = styled(XIcon, {
+  transition: 'opacity 0.16s linear, transform 0.3s linear',
+  flexShrink: 0,
+  transform: 'translateX(4px)',
+});
+const ButtonText = styled('span', {
+  opacity: 0,
+  transition: 'opacity 0.24s linear, transform 0.24s linear',
+  transitionDelay: '0.12s',
+  display: 'block',
+  flexShrink: 0,
+  width: 71,
+  color: '#566372',
+  fontSize: 10,
+  lineHeight: 1.2,
+});
+
+const ExpandAnimationIconButton = styled(StyledIconButton, {
+  justifyContent: 'flex-start',
+  transition: 'width 0.3s linear',
+
+  overflow: 'hidden',
+
+  '&:hover': {
+    width: 71,
+
+    [`${ButtonText}`]: {
+      opacity: 1,
+      transform: 'translateX(-13px)',
+    },
+    [`${StyledXIcon}`]: {
+      opacity: 0,
+      transform: 'translateX(-10px)',
+    },
+  },
 });

@@ -18,7 +18,7 @@ import {
   ToastItemContextProvider,
   useToastContext,
 } from './context';
-import { Close, CloseIconButton } from './Close';
+import { Close, CloseAllButton, CloseIconButton } from './Close';
 
 interface ToastProviderProps {
   limit: number;
@@ -137,6 +137,8 @@ export function ToastProvider({
     });
   }, []);
 
+  const hasMultipleToasts = toasts.length > 1;
+
   return (
     <ToastContextProvider
       message={message}
@@ -171,7 +173,11 @@ export function ToastProvider({
                       <VStack gap="3px">{toast.content}</VStack>
                     </HStack>
                     {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
-                    <StyledCloseIconButton />
+                    {hasMultipleToasts && isLatestElement ? (
+                      <CloseAllButton />
+                    ) : (
+                      <StyledCloseIconButton />
+                    )}
                   </ToastContentItem>
                 </ToastItemContextProvider>
               );
