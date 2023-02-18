@@ -5,12 +5,13 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import XIcon from '../../../images/icons/x.svg';
 import { styled } from '../../../../stitches.config';
 
-import { useToastContext, useToastItemContext } from './context';
-
-type ToastCloseButtonProps = ComponentPropsWithoutRef<typeof Primitive.button>;
+import { useToastContext } from './context';
+interface ToastCloseButtonProps
+  extends ComponentPropsWithoutRef<typeof Primitive.button> {
+  toastId: string;
+}
 export const Close = forwardRef<HTMLButtonElement, ToastCloseButtonProps>(
-  (props, ref) => {
-    const { id } = useToastItemContext('Toast.Close');
+  ({ toastId: id, ...props }, ref) => {
     const { remove } = useToastContext('Toast.Close');
 
     return (
@@ -22,39 +23,37 @@ export const Close = forwardRef<HTMLButtonElement, ToastCloseButtonProps>(
     );
   }
 );
-export const CloseAll = forwardRef<HTMLButtonElement, ToastCloseButtonProps>(
-  (props, ref) => {
-    const { removeAll } = useToastContext('Toast.CloseAll');
+export const CloseAll = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<typeof Primitive.button>
+>((props, ref) => {
+  const { removeAll } = useToastContext('Toast.CloseAll');
 
-    return (
-      <Primitive.button
-        {...props}
-        ref={ref}
-        onClick={composeEventHandlers(props.onClick, removeAll)}
-      />
-    );
-  }
-);
+  return (
+    <Primitive.button
+      {...props}
+      ref={ref}
+      onClick={composeEventHandlers(props.onClick, removeAll)}
+    />
+  );
+});
 
-type ToastCloseIconButtonProps = ComponentPropsWithoutRef<
-  typeof StyledIconButton
->;
+interface ToastCloseIconButtonProps
+  extends ComponentPropsWithoutRef<typeof StyledIconButton> {
+  toastId: string;
+}
 export const CloseIconButton = forwardRef<
   HTMLButtonElement,
   ToastCloseIconButtonProps
->((props, ref) => {
-  const { id } = useToastItemContext('Toast.Close');
-  const { remove } = useToastContext('Toast.Close');
-
+>(({ toastId, ...props }, ref) => {
   return (
     <StyledIconButton
       {...props}
       ref={ref}
-      onClick={composeEventHandlers(props.onClick, () => remove(id))}
       aria-label="toast close button"
       asChild
     >
-      <Close>
+      <Close toastId={toastId}>
         <XIcon />
       </Close>
     </StyledIconButton>
@@ -77,7 +76,9 @@ const StyledIconButton = styled(Primitive.button, {
   borderRadius: 11,
 });
 
-export const CloseAllButton = (props: ToastCloseIconButtonProps) => {
+export const CloseAllButton = (
+  props: ComponentPropsWithoutRef<typeof ExpandAnimationIconButton>
+) => {
   return (
     <ExpandAnimationIconButton {...props} asChild>
       <CloseAll>

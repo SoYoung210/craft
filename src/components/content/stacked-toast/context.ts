@@ -11,7 +11,7 @@ export interface ToastContextValue {
   warning: (content: ToastContent, options?: ToastOptions) => string;
   update: (id: string, props: ToastProps) => void;
   remove: (id: string) => void;
-  removeAll: VoidFunction
+  removeAll: VoidFunction;
 }
 
 export interface ToastProviderProps {
@@ -22,9 +22,3 @@ export interface ToastProviderProps {
 
 export const [ToastContextProvider, useToastContext] =
   createContext<ToastContextValue>('Toast');
-
-export interface ToastItemContextValue {
-  id: string;
-}
-export const [ToastItemContextProvider, useToastItemContext] =
-  createContext<ToastItemContextValue>('ToastItem');

@@ -125,6 +125,11 @@ const originGeometryVariants: MotionProps = {
       ...custom,
       scale: 1,
     }),
+    exit: {
+      // polishing
+      x: '105%',
+      opacity: 0,
+    },
   },
   transition: {
     duration: 0.4,
@@ -141,6 +146,7 @@ const scaleDownVariants: MotionProps = {
     animate: (custom: DynamicSlideVariantsValue) => custom,
     exit: {
       x: '100%',
+      opacity: 0,
     },
   },
   transition: {
@@ -165,6 +171,7 @@ const slideInVariants: MotionProps = {
     exit: {
       // polishing
       x: '105%',
+      opacity: 0,
     },
   },
   transition: {

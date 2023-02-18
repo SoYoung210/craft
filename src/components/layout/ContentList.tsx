@@ -44,7 +44,7 @@ const ContentListImpl = forwardRef<ContentListElement, ContentListProps>(
 type ContentItemProps = ComponentPropsWithoutRef<typeof StyledItem>;
 const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
   (props, forwardedRef) => {
-    const id = useId(props.id);
+    const id = useId(props.toastId);
 
     const [itemElement, setItemElement] = useState<ContentItemElement | null>(
       null
@@ -68,7 +68,7 @@ const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
       <StyledItem
         ref={composedRefs}
         {...props}
-        id={id}
+        toastId={id}
         onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
           onActiveItemChange(itemElement)
         )}

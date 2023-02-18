@@ -13,11 +13,7 @@ import { HStack, VStack } from '../../material/Stack';
 import { ToastContent, ToastOptions } from './model';
 import useToastState from './useToastState';
 import AnimationItem, { AnimationItemRef } from './AnimationItem';
-import {
-  ToastContextProvider,
-  ToastItemContextProvider,
-  useToastContext,
-} from './context';
+import { ToastContextProvider, useToastContext } from './context';
 import { Close, CloseAllButton, CloseIconButton } from './Close';
 
 interface ToastProviderProps {
@@ -159,28 +155,27 @@ export function ToastProvider({
               const removeToastItem = () => remove(toast.id);
 
               return (
-                <ToastItemContextProvider id={toast.id} key={toast.id}>
-                  <ToastContentItem
-                    onOpen={toast.onOpen}
-                    animation={isLatestElement ? 'slideIn' : 'scaleDown'}
-                    total={toasts.length}
-                    order={inverseIndex}
-                    remove={removeToastItem}
-                    autoClose={toast.autoClose ?? autoClose}
-                    ref={el => el != null && (itemRefs.current[index] = el)}
-                  >
-                    <HStack gap="13px" alignItems="center">
-                      {toast.leftSlot}
-                      <VStack gap="3px">{toast.content}</VStack>
-                    </HStack>
-                    {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
-                    {hasMultipleToasts && isLatestElement ? (
-                      <StyledCloseAllButton />
-                    ) : (
-                      <StyledCloseIconButton />
-                    )}
-                  </ToastContentItem>
-                </ToastItemContextProvider>
+                <ToastContentItem
+                  key={toast.id}
+                  onOpen={toast.onOpen}
+                  animation={isLatestElement ? 'slideIn' : 'scaleDown'}
+                  total={toasts.length}
+                  order={inverseIndex}
+                  remove={removeToastItem}
+                  autoClose={toast.autoClose ?? autoClose}
+                  ref={el => el != null && (itemRefs.current[index] = el)}
+                >
+                  <HStack gap="13px" alignItems="center">
+                    {toast.leftSlot}
+                    <VStack gap="3px">{toast.content}</VStack>
+                  </HStack>
+                  {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
+                  {hasMultipleToasts && isLatestElement ? (
+                    <StyledCloseAllButton />
+                  ) : (
+                    <StyledCloseIconButton toastId={toast.id} />
+                  )}
+                </ToastContentItem>
               );
             })}
           </AnimatePresence>
