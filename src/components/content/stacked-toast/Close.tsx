@@ -22,6 +22,19 @@ export const Close = forwardRef<HTMLButtonElement, ToastCloseButtonProps>(
     );
   }
 );
+export const CloseAll = forwardRef<HTMLButtonElement, ToastCloseButtonProps>(
+  (props, ref) => {
+    const { removeAll } = useToastContext('Toast.CloseAll');
+
+    return (
+      <Primitive.button
+        {...props}
+        ref={ref}
+        onClick={composeEventHandlers(props.onClick, removeAll)}
+      />
+    );
+  }
+);
 
 type ToastCloseIconButtonProps = ComponentPropsWithoutRef<
   typeof StyledIconButton
@@ -48,14 +61,6 @@ export const CloseIconButton = forwardRef<
   );
 });
 
-const BaseButton = styled(Primitive.button, {
-  width: 22,
-  height: 22,
-  background: '#F5F5F5',
-  border: '1px solid rgba(0, 0, 0, 0.06)',
-  borderRadius: 11,
-});
-
 const StyledIconButton = styled(Primitive.button, {
   position: 'absolute',
   top: -8,
@@ -72,11 +77,13 @@ const StyledIconButton = styled(Primitive.button, {
   borderRadius: 11,
 });
 
-export const CloseAllButton = () => {
+export const CloseAllButton = (props: ToastCloseIconButtonProps) => {
   return (
-    <ExpandAnimationIconButton>
-      <StyledXIcon />
-      <ButtonText>모두 지우기</ButtonText>
+    <ExpandAnimationIconButton {...props} asChild>
+      <CloseAll>
+        <StyledXIcon />
+        <ButtonText>모두 지우기</ButtonText>
+      </CloseAll>
     </ExpandAnimationIconButton>
   );
 };

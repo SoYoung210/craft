@@ -31,7 +31,7 @@ export function ToastProvider({
   limit,
   autoClose = 3000,
 }: ToastProviderProps) {
-  const { toasts, add, remove, update } = useToastState({ limit });
+  const { toasts, add, remove, update, removeAll } = useToastState({ limit });
   const itemRefs = useRef<AnimationItemRef[]>([]);
 
   const message = useCallback(
@@ -146,6 +146,7 @@ export function ToastProvider({
       warning={warning}
       success={success}
       remove={remove}
+      removeAll={removeAll}
       update={update}
     >
       <Portal>
@@ -174,7 +175,7 @@ export function ToastProvider({
                     </HStack>
                     {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
                     {hasMultipleToasts && isLatestElement ? (
-                      <CloseAllButton />
+                      <StyledCloseAllButton />
                     ) : (
                       <StyledCloseIconButton />
                     )}
@@ -258,12 +259,19 @@ const ToastDescription = styled(Primitive.div, {
   color: '#232526',
 });
 
+const StyledCloseAllButton = styled(CloseAllButton, {
+  opacity: 0,
+  transition: 'opacity 0.18s ease',
+});
 const StyledCloseIconButton = styled(CloseIconButton, {
   opacity: 0,
   transition: 'opacity 0.18s ease',
 });
 const ToastContentItem = styled(AnimationItem, {
   '&:hover': {
+    [`& ${StyledCloseAllButton}`]: {
+      opacity: 1,
+    },
     [`& ${StyledCloseIconButton}`]: {
       opacity: 1,
     },

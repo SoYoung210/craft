@@ -11,6 +11,7 @@ export interface ToastContextValue {
   warning: (content: ToastContent, options?: ToastOptions) => string;
   update: (id: string, props: ToastProps) => void;
   remove: (id: string) => void;
+  removeAll: VoidFunction
 }
 
 export interface ToastProviderProps {
