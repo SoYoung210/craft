@@ -188,9 +188,9 @@ export function ToastProvider({
 const Ol = styled('ol', {
   position: 'fixed',
   top: 20,
-  right: 0,
+  right: 'calc(10% + 20px)',
   // FIXME: same as toast defaultWidth(320) + offset 40
-  width: 360,
+  width: 340,
   // top minus
   /**
    * 아이템 사이 간격에 커서가 있을때 의도치 않게 resume이 불리는 것을 방지한다.

@@ -90,25 +90,25 @@ export const CloseAllButton = (
 };
 
 const StyledXIcon = styled(XIcon, {
-  transition: 'opacity 0.16s linear, transform 0.3s linear',
+  transition: 'opacity 0.15s linear, transform 0.25s linear',
   flexShrink: 0,
   transform: 'translateX(4px)',
 });
 const ButtonText = styled('span', {
   opacity: 0,
-  transition: 'opacity 0.24s linear, transform 0.24s linear',
-  transitionDelay: '0.12s',
+  transition: 'opacity 0.29s linear, transform 0.29s linear',
   display: 'block',
   flexShrink: 0,
   width: 71,
-  color: '#566372',
+  color: '#626A72',
+  fontWeight: 600,
   fontSize: 10,
   lineHeight: 1.2,
 });
 
 const ExpandAnimationIconButton = styled(StyledIconButton, {
   justifyContent: 'flex-start',
-  transition: 'width 0.3s linear',
+  transition: 'width 0.35s linear',
 
   overflow: 'hidden',
 
