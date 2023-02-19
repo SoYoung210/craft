@@ -31,7 +31,7 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
 const STACKING_OVERLAP = 0.85;
 const SPACING = 10;
 const SWIPE_THRESHOLD = 50;
-const EXIT_OFFSET = '180%';
+const EXIT_OFFSET = '150%';
 
 interface DynamicSlideVariantsValue {
   scale: number;
