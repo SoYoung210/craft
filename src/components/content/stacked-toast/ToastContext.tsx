@@ -4,11 +4,14 @@ import { AnimatePresence } from 'framer-motion';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import { styled } from '../../../../stitches.config';
-import WarningIcon from '../../../images/icons/alert-triangle.svg';
-import ErrorIcon from '../../../images/icons/alert-octagon.svg';
-import SuccessIcon from '../../../images/icons/check.svg';
+// import WarningIcon from '../../../images/icons/alert-triangle.svg';
+// import ErrorIcon from '../../../images/icons/alert-octagon.svg';
+// import SuccessIcon from '../../../images/icons/check.svg';
 import { HStack, VStack } from '../../material/Stack';
 import { InfoIcon } from '../../material/icon/Info';
+import { AlertTriangleIcon } from '../../material/icon/AlertTriangle';
+import { AlertOctagonIcon } from '../../material/icon/AlertOctagon';
+import { CheckIcon } from '../../material/icon/Check';
 
 import { ToastContent, ToastOptions } from './model';
 import useToastState from './useToastState';
@@ -59,7 +62,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="error">
-              <ErrorIcon />
+              <AlertOctagonIcon />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -82,7 +85,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="warning">
-              <WarningIcon />
+              <AlertTriangleIcon />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -105,7 +108,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="success">
-              <SuccessIcon />
+              <CheckIcon />
             </IconBgFrame>
           </IconFrame>
         ),
