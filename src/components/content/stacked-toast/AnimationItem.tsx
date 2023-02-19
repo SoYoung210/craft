@@ -30,6 +30,8 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
 }
 const STACKING_OVERLAP = 0.85;
 const SPACING = 10;
+const SWIPE_THRESHOLD = 200;
+const EXIT_OFFSET = '180%';
 interface DynamicSlideVariantsValue {
   scale: number;
   y: number;
@@ -106,6 +108,16 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     <StyledItem
       {...restProps}
       {...animationVariants}
+      drag="x"
+      whileDrag={{ cursor: 'grabbing' }}
+      dragSnapToOrigin={true}
+      dragConstraints={{ left: 0, right: 300 }}
+      dragElastic={{ right: 1 }}
+      onDragEnd={(_, info) => {
+        if (info.offset.x > SWIPE_THRESHOLD) {
+          remove();
+        }
+      }}
       custom={{
         scale,
         y,
@@ -130,8 +142,7 @@ const originGeometryVariants: MotionProps = {
       visibility: 'visible',
     }),
     exit: {
-      // polishing
-      x: '105%',
+      x: EXIT_OFFSET,
       opacity: 0,
     },
   },
@@ -149,7 +160,7 @@ const scaleDownVariants: MotionProps = {
     initial: {},
     animate: (custom: DynamicSlideVariantsValue) => custom,
     exit: {
-      x: '100%',
+      x: EXIT_OFFSET,
       opacity: 0,
     },
   },
@@ -166,14 +177,13 @@ const slideInVariants: MotionProps = {
   variants: {
     initial: {
       opacity: 0,
-      x: '100%',
+      x: EXIT_OFFSET,
     },
     animate: {
       opacity: 1,
       x: 0,
     },
     exit: {
-      // polishing
       x: '105%',
       opacity: 0,
     },
