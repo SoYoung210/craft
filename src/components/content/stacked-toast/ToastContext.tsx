@@ -36,7 +36,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="info">
-              <InfoIcon color="white" />
+              <InfoIcon color="white" size={22} />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -59,7 +59,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="error">
-              <AlertOctagonIcon />
+              <AlertOctagonIcon color="white" size={22} />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -82,7 +82,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="warning">
-              <AlertTriangleIcon />
+              <AlertTriangleIcon color="white" size={22} />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -105,7 +105,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="success">
-              <CheckIcon />
+              <CheckIcon color="white" size={22} />
             </IconBgFrame>
           </IconFrame>
         ),
