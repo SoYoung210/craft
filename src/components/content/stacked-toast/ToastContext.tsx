@@ -4,11 +4,11 @@ import { AnimatePresence } from 'framer-motion';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import { styled } from '../../../../stitches.config';
-import InfoIcon from '../../../images/icons/info.svg';
 import WarningIcon from '../../../images/icons/alert-triangle.svg';
 import ErrorIcon from '../../../images/icons/alert-octagon.svg';
 import SuccessIcon from '../../../images/icons/check.svg';
 import { HStack, VStack } from '../../material/Stack';
+import { InfoIcon } from '../../material/icon/Info';
 
 import { ToastContent, ToastOptions } from './model';
 import useToastState from './useToastState';
@@ -36,7 +36,7 @@ export function ToastProvider({
         leftSlot = (
           <IconFrame>
             <IconBgFrame type="info">
-              <InfoIcon />
+              <InfoIcon color="white" />
             </IconBgFrame>
           </IconFrame>
         ),
@@ -164,6 +164,9 @@ export function ToastProvider({
                   remove={removeToastItem}
                   autoClose={toast.autoClose ?? autoClose}
                   ref={el => el != null && (itemRefs.current[index] = el)}
+                  css={{
+                    visibility: inverseIndex > 2 ? 'hidden' : 'visible',
+                  }}
                 >
                   <HStack gap="13px" alignItems="center">
                     {toast.leftSlot}

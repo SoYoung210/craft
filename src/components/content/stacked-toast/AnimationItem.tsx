@@ -14,7 +14,6 @@ import type { MotionProps } from 'framer-motion';
 import { styled } from '../../../../stitches.config';
 import useTimeout from '../../../hooks/useTimeout';
 
-// FIXME: remove 필요한가?
 export interface AnimationItemRef {
   pause: VoidFunction;
   resume: VoidFunction;
@@ -124,6 +123,7 @@ const originGeometryVariants: MotionProps = {
     animate: (custom: { y: string }) => ({
       ...custom,
       scale: 1,
+      visibility: 'visible',
     }),
     exit: {
       // polishing

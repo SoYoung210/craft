@@ -76,7 +76,6 @@ export default function useToastState({ limit }: { limit: number }) {
     [updateToast]
   );
 
-  // TODO: ... hmm..
   const removeAll = useCallback(() => updateToast(() => []), [updateToast]);
 
   return useMemo(
