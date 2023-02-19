@@ -178,14 +178,14 @@ const slideInVariants: MotionProps = {
   variants: {
     initial: {
       opacity: 0,
-      x: EXIT_OFFSET,
+      x: '100%',
     },
     animate: {
       opacity: 1,
       x: 0,
     },
     exit: {
-      x: '105%',
+      x: EXIT_OFFSET,
       opacity: 0,
     },
   },
