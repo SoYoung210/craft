@@ -198,7 +198,7 @@ export function ToastProvider({
 const Ol = styled('ol', {
   position: 'fixed',
   top: 20,
-  right: 'calc(10% + 20px)',
+  right: 20,
   // FIXME: same as toast defaultWidth(320) + offset 40
   width: 340,
   // top minus
