@@ -112,7 +112,7 @@ const ExpandAnimationIconButton = styled(StyledIconButton, {
 
   overflow: 'hidden',
 
-  '&:hover': {
+  '&:hover, &:focus,  &:focus-visible': {
     width: 71,
 
     [`${ButtonText}`]: {

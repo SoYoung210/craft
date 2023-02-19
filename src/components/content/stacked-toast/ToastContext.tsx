@@ -40,12 +40,14 @@ export function ToastProvider({
             </IconBgFrame>
           </IconFrame>
         ),
+        type = 'background',
         ...rest
       } = options;
 
       return add({
         content,
         leftSlot,
+        type,
         ...options,
         ...rest,
       });
@@ -63,13 +65,14 @@ export function ToastProvider({
             </IconBgFrame>
           </IconFrame>
         ),
+        type = 'foreground',
         ...rest
       } = errorToastOptions;
 
       return add({
         leftSlot,
-        role: 'alert',
         content: errorContent,
+        type,
         ...rest,
       });
     },
@@ -86,12 +89,13 @@ export function ToastProvider({
             </IconBgFrame>
           </IconFrame>
         ),
+        type = 'foreground',
         ...rest
       } = errorToastProps;
 
       return add({
         leftSlot,
-        role: 'alert',
+        type,
         content: warningContent,
         ...rest,
       });
@@ -109,12 +113,13 @@ export function ToastProvider({
             </IconBgFrame>
           </IconFrame>
         ),
+        type = 'background',
         ...rest
       } = successToastProps;
 
       return add({
         leftSlot,
-        role: 'status',
+        type,
         content: successContent,
         ...rest,
       });
@@ -156,7 +161,12 @@ export function ToastProvider({
 
               return (
                 <ToastContentItem
+                  role="status"
+                  aria-live={
+                    toast.type === 'foreground' ? 'assertive' : 'polite'
+                  }
                   key={toast.id}
+                  tabIndex={0}
                   onOpen={toast.onOpen}
                   animation={isLatestElement ? 'slideIn' : 'scaleDown'}
                   total={toasts.length}

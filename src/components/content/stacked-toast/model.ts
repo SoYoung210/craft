@@ -1,4 +1,4 @@
-import type { AriaRole, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type ToastContent = Exclude<ReactNode, null | boolean | undefined>;
 export type ToastOptions = Omit<ToastProps, 'content'>;
@@ -8,7 +8,7 @@ export interface ToastProps {
   autoClose?: false | number;
   content: ToastContent;
   leftSlot?: ReactNode;
-  role?: AriaRole;
+  type?: 'foreground' | 'background';
   onOpen?: VoidFunction;
   onClose?: VoidFunction;
 }
