@@ -7,16 +7,17 @@ import PageLayout from '../components/layout/PageLayout';
 import Button from '../components/material/Button';
 
 function PageContent() {
-  const { message } = useToast();
+  const { message, error, warning, success } = useToast();
   const count = useRef(1);
+  const method = [message, error, warning, success];
 
   return (
     <div>
       <Button
         onClick={() => {
-          message(
+          method[count.current % method.length](
             <>
-              <Toast.Title> message${count.current}</Toast.Title>
+              <Toast.Title> message {count.current}</Toast.Title>
               <Toast.Description asChild>
                 <p>
                   OneSignal announces 500% growth, delivering 2 trillion
