@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import {
   ComponentPropsWithoutRef,
+  CSSProperties,
   forwardRef,
   ReactNode,
   useCallback,
@@ -33,6 +34,7 @@ interface DynamicSlideVariantsValue {
   scale: number;
   y: number;
   opacity: number;
+  visibility: CSSProperties['visibility'];
 }
 const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   const {
@@ -90,6 +92,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     }
     return `${order * 100 * (1 - STACKING_OVERLAP)}%`;
   }, [order, paused]);
+  const visibility = order > 2 ? 'hidden' : 'visible';
 
   const animationVariants = useMemo(() => {
     if (paused) {
@@ -107,6 +110,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
         scale,
         y,
         opacity,
+        visibility,
       }}
     >
       {children}
