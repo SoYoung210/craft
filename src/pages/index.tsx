@@ -13,6 +13,21 @@ const IndexPage = () => {
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
         <ContentList.Item>
+          <Link to="/stacked-toast">
+            <ContentBox title="stacked toast">
+              <StaticImage
+                src="../images/thumbnails/stacked-toast.jpg"
+                alt="stacked toast content preview"
+                height={250}
+                placeholder="blurred"
+                style={{ display: 'flex', justifyContent: 'center' }}
+                quality={80}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/dynamic-card">
             <ContentBox title="dynamic card">
               <StaticImage
