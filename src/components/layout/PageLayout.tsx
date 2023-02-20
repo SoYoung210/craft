@@ -93,7 +93,7 @@ const SubTitle = styled('h2', {
   lineHeight: 1.8,
 });
 
-const DetailContent = styled('p', {
+const DetailContent = styled('div', {
   padding: 12,
   lineHeight: 1.5,
 
