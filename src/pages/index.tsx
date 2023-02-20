@@ -20,7 +20,7 @@ const IndexPage = () => {
                 height={250}
                 placeholder="blurred"
                 style={{ display: 'flex', justifyContent: 'center' }}
-                quality={80}
+                quality={100}
               />
             </ContentBox>
           </Link>
