@@ -2,7 +2,6 @@ import type { HeadFC } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 import { Link } from 'gatsby';
 
-import '../styles/global.css';
 import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import ContentList from '../components/layout/ContentList';
