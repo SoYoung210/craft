@@ -29,9 +29,11 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   autoClose: false | number;
 }
 const STACKING_OVERLAP = 0.85;
-const SPACING = 10;
+export const SPACING = 10;
 const SWIPE_THRESHOLD = 50;
-const EXIT_OFFSET = '150%';
+const EXIT_OFFSET = '110%';
+// TODO: toast높이를 컨텐츠에 따라 다르게 설정한다면 변경되어야 함
+export const TOAST_HEIGHT = 82;
 
 interface DynamicSlideVariantsValue {
   scale: number;
@@ -206,7 +208,7 @@ const StyledItem = styled(motion.li, {
   padding: '0 1rem',
   filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
   borderRadius: '0.5rem',
-  minHeight: 82,
+  minHeight: TOAST_HEIGHT,
   minWidth: 320,
   py: 14,
   paddingLeft: 12,
