@@ -12,7 +12,7 @@ const IndexPage = () => {
     <PageLayout theme="gradient">
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
-        <ContentList.Item>
+        <ContentList.Item active>
           <Link to="/stacked-toast">
             <ContentBox title="stacked toast">
               <StaticImage

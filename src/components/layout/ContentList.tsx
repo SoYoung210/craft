@@ -41,9 +41,11 @@ const ContentListImpl = forwardRef<ContentListElement, ContentListProps>(
   }
 );
 
-type ContentItemProps = ComponentPropsWithoutRef<typeof StyledItem>;
+interface ContentItemProps extends ComponentPropsWithoutRef<typeof StyledItem> {
+  active?: boolean;
+}
 const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
-  (props, forwardedRef) => {
+  ({ active, ...props }, forwardedRef) => {
     const id = useId(props.id);
 
     const [itemElement, setItemElement] = useState<ContentItemElement | null>(
@@ -74,6 +76,7 @@ const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
         )}
         onMouseLeave={(props.onMouseLeave, () => onActiveItemChange(null))}
         blurred={haveToBlur}
+        activate={itemActivated || (active && activeItem == null)}
       />
     );
   }
@@ -95,14 +98,15 @@ const StyledItem = styled('li', {
   filter: 'grayscale($$grayScale) blur($$blur)',
   transform: 'translateZ(0px)',
 
-  '&:hover': {
-    $$grayScale: 0,
-  },
-
   variants: {
     blurred: {
       true: {
         $$blur: '2px',
+      },
+    },
+    activate: {
+      true: {
+        $$grayScale: 0,
       },
     },
   },
