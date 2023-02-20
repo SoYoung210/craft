@@ -101,7 +101,7 @@ const IndexPage = () => {
           <Link to="/light-bulb">
             <ContentBox title="light-bulb">
               <StaticImage
-                src="../images/thumbnails/light-bulb.png"
+                src="../images/thumbnails/light-bulb.jpg"
                 alt="light bulb content preview"
                 height={250}
                 placeholder="blurred"
