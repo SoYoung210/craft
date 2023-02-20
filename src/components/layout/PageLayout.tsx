@@ -79,17 +79,18 @@ const Main = styled('main', {
 });
 
 const Title = styled('h1', {
-  fontSize: 48,
+  fontSize: 40,
   fontWeight: 700,
   color: '$gray8',
   letterSpacing: '-0.03em',
 });
 
 const SubTitle = styled('h2', {
-  fontSize: 36,
-  fontWeight: 700,
+  fontSize: 20,
+  fontWeight: 500,
   color: '$gray8',
-  letterSpacing: '-0.03em',
+  letterSpacing: '-0.01em',
+  lineHeight: 1.8,
 });
 
 const DetailContent = styled('p', {
@@ -106,7 +107,6 @@ const Details = styled('details', {
   display: 'flex',
   flexDirection: 'column',
 
-  marginBottom: 60,
   color: '$gray6',
 
   '&[open]': {
