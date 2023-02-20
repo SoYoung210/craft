@@ -12,6 +12,21 @@ const IndexPage = () => {
     <PageLayout theme="gradient">
       <PageLayout.Title>uing</PageLayout.Title>
       <ContentList>
+        <ContentList.Item active>
+          <Link to="/stacked-toast">
+            <ContentBox title="stacked toast">
+              <StaticImage
+                src="../images/thumbnails/stacked-toast.jpg"
+                alt="stacked toast content preview"
+                height={250}
+                placeholder="blurred"
+                style={{ display: 'flex', justifyContent: 'center' }}
+                quality={80}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
         <ContentList.Item>
           <Link to="/dynamic-card">
             <ContentBox title="dynamic card">
@@ -101,7 +116,7 @@ const IndexPage = () => {
           <Link to="/light-bulb">
             <ContentBox title="light-bulb">
               <StaticImage
-                src="../images/thumbnails/light-bulb.png"
+                src="../images/thumbnails/light-bulb.jpg"
                 alt="light bulb content preview"
                 height={250}
                 placeholder="blurred"
@@ -121,4 +136,4 @@ const IndexPage = () => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Home Page</title>;
+export const Head: HeadFC = () => <title>Uing</title>;

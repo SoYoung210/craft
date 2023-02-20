@@ -17,6 +17,7 @@
     "test:changed-since": "jest --changedSince=origin/main"
   },
   "dependencies": {
+    "@radix-ui/primitive": "^1.0.0",
     "@radix-ui/react-compose-refs": "^1.0.0",
     "@radix-ui/react-icons": "^1.1.1",
     "@radix-ui/react-portal": "^1.0.1",
