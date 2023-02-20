@@ -1,6 +1,7 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 import { keyframes, styled } from '../../../stitches.config';
+import { globalStyles } from '../../styles/global';
 import { entries } from '../../utils/object';
 import { radialGradient } from '../../utils/style/gradient';
 
@@ -24,6 +25,8 @@ export default function PageLayout({
   theme = 'normal',
   ...props
 }: Props) {
+  globalStyles();
+
   return (
     <Main {...props} theme={theme}>
       {children}
@@ -93,7 +96,7 @@ const SubTitle = styled('h2', {
   lineHeight: 1.8,
 });
 
-const DetailContent = styled('p', {
+const DetailContent = styled('div', {
   padding: 12,
   lineHeight: 1.5,
 
