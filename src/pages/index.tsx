@@ -1,10 +1,10 @@
-import type { HeadFC } from 'gatsby';
+import { graphql, HeadFC, PageProps, Link } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
-import { Link } from 'gatsby';
 
 import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import ContentList from '../components/layout/ContentList';
+import SEO from '../components/layout/SEO';
 
 const IndexPage = () => {
   return (
@@ -135,4 +135,27 @@ const IndexPage = () => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Craft</title>;
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="soyoung — craft"
+      description="Build, Collect user interfaces of the future what is exciting and challenging to create."
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/index.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;

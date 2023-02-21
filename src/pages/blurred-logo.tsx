@@ -1,4 +1,5 @@
 import { StaticImage } from 'gatsby-plugin-image';
+import { PageProps, graphql } from 'gatsby';
 
 import ArcLogo from '../images/blurred-logo-asset/arc.svg';
 import SlackLogo from '../images/blurred-logo-asset/slack.svg';
@@ -9,6 +10,7 @@ import FirefoxLogo from '../images/blurred-logo-asset/firefox.svg';
 import SafariLogo from '../images/blurred-logo-asset/safari.svg';
 import { styled } from '../../stitches.config';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 
 export default function BlurredLogoPage() {
   return (
@@ -48,3 +50,28 @@ const Root = styled('div', {
   gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
   gap: 60,
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Gradient Border"
+      description="Gradient Button Border Animation"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/blurred-logo.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;

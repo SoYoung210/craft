@@ -1,3 +1,4 @@
+import { graphql, PageProps } from 'gatsby';
 import { useRef } from 'react';
 
 import { styled } from '../../stitches.config';
@@ -5,6 +6,7 @@ import Toast, {
   useToast,
 } from '../components/content/stacked-toast/ToastContext';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 import Button from '../components/material/Button';
 
 function PageContent() {
@@ -137,3 +139,28 @@ const Code = styled('code', {
   backgroundColor: 'hsl(0, 0%, 95.1%)',
   border: '1px solid hsl(0, 0%, 90.9%)',
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="stacked-toast"
+      description="macos style toast"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/stacked-toast.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;

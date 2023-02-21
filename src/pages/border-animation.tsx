@@ -1,8 +1,10 @@
+import { PageProps, graphql } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 
 import BorderAnimationButton from '../components/content/border-animation/Button';
 import FigureTabs from '../components/layout/FigureTab';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 import Flex from '../components/material/Flex';
 
 export default function BorderAnimation() {
@@ -98,3 +100,28 @@ export default function BorderAnimation() {
     </PageLayout>
   );
 }
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Gradient Border"
+      description="Gradient Button Border Animation"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/border-animation.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;
