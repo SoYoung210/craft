@@ -9,7 +9,7 @@ import ContentList from '../components/layout/ContentList';
 const IndexPage = () => {
   return (
     <PageLayout theme="gradient">
-      <PageLayout.Title>uing</PageLayout.Title>
+      <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
           <Link to="/stacked-toast">
@@ -135,4 +135,4 @@ const IndexPage = () => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Uing</title>;
+export const Head: HeadFC = () => <title>Craft</title>;

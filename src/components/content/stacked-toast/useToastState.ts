@@ -94,5 +94,5 @@ export default function useToastState({ limit }: { limit: number }) {
 
 let count = 0;
 function getToastId() {
-  return `uing-toast-${count++}`;
+  return `soyoung-craft-toast-${count++}`;
 }
