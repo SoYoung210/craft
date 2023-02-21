@@ -138,7 +138,7 @@ export default IndexPage;
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
     <SEO
-      title="soyoung — craft"
+      title="soyoung"
       description="Build, Collect user interfaces of the future what is exciting and challenging to create."
       thumbnailSrc={
         props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
