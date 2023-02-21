@@ -1,6 +1,9 @@
+import { PageProps, graphql } from 'gatsby';
+
 import { styled } from '../../stitches.config';
 import DynamicCard from '../components/content/dynamic-card/DynamicCard';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 import Text from '../components/material/Text';
 
 export default function CardPage() {
@@ -45,3 +48,28 @@ const Caption = styled('div', {
   color: '$gray5',
   textAlign: 'center',
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Dynamic Card"
+      description="3D Transform Gradient Card"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/dynamic-card.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;
