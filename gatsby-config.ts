@@ -1,6 +1,7 @@
 import type { GatsbyConfig } from 'gatsby';
 
 const config: GatsbyConfig = {
+  polyfill: false,
   siteMetadata: {
     title: `craft`,
     siteUrl: `https://craft.so-so.dev/`,
@@ -10,6 +11,15 @@ const config: GatsbyConfig = {
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Craft`,
+        description: `Build, Collect user interfaces of the future what is exciting and challenging to create.`,
+        lang: `ko`,
+        icon: `src/images/icon.png`,
+      },
+    },
     'gatsby-plugin-vanilla-extract',
     `gatsby-plugin-image`,
     `gatsby-plugin-sharp`,
