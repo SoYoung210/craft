@@ -54,8 +54,8 @@ const Root = styled('div', {
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
     <SEO
-      title="Gradient Border"
-      description="Gradient Button Border Animation"
+      title="Blurred Logo"
+      description="A selection of logos on top of a blurred and scaled background based on the given logo."
       thumbnailSrc={
         props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
           .fallback?.src

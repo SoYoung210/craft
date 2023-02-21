@@ -143,7 +143,7 @@ const Code = styled('code', {
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
     <SEO
-      title="stacked-toast"
+      title="Stacked Toast"
       description="macos style toast"
       thumbnailSrc={
         props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
