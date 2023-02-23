@@ -31,7 +31,6 @@ export default function SEO(props: Props) {
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:description" content={seo.description} />
-      <meta name="twitter:image" content={seo.image} />
       <meta property="og:description" content={seo.description} />
       <meta property="og:title" content={seo.title} />
       <meta property="og:url" content={seo.url} />
