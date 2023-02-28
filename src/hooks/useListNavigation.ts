@@ -54,6 +54,7 @@ export default function useListNavigation(params: Params) {
     const nextSelectedItem = validItems[nextIndex];
     if (nextSelectedItem != null) {
       setSelectedElement(nextSelectedItem);
+      return nextSelectedItem;
     }
   }
 
@@ -73,11 +74,10 @@ export default function useListNavigation(params: Params) {
     // TODO: extra key binding
     switch (e.key) {
       case 'ArrowDown': {
-        updateSelected('end');
-        break;
+        return updateSelected('end');
       }
       case 'ArrowUp': {
-        updateSelected('start');
+        return updateSelected('start');
       }
     }
   }
