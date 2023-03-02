@@ -5,19 +5,10 @@ interface Params {
   listRef: RefObject<HTMLElement>;
   loop?: boolean;
 }
+
 export default function useListNavigation(params: Params) {
   const { itemSelector = '*', listRef, loop } = params;
   const [selectedElement, setSelectedElement] = useState<Element>();
-
-  function getSelectedItem() {
-    if (listRef.current == null) {
-      return;
-    }
-
-    return listRef.current.querySelector(
-      `${itemSelector}[aria-selected="true"]`
-    );
-  }
 
   function getValidItems() {
     if (listRef.current == null) {
@@ -32,7 +23,6 @@ export default function useListNavigation(params: Params) {
   }
 
   function updateSelected(orientation: 'end' | 'start') {
-    const selected = getSelectedItem();
     const validItems = getValidItems();
 
     if (validItems == null) {
@@ -40,7 +30,8 @@ export default function useListNavigation(params: Params) {
     }
 
     const indexOffset = orientation === 'end' ? 1 : -1;
-    const currentIndex = validItems.findIndex(item => item === selected) ?? -1;
+    const currentIndex =
+      validItems.findIndex(item => item === selectedElement) ?? -1;
     const nextIndex = indexOffset + currentIndex;
 
     if (loop) {
@@ -58,12 +49,11 @@ export default function useListNavigation(params: Params) {
     }
   }
 
-  // TODO: index받도록 리팩토링
-  function selectFirstItem() {
-    const item = getValidItems()?.find(item => !item.ariaDisabled);
-    // const value = item?.getAttribute(VALUE_ATTR);
-    // store.setState('value', value || undefined);
-    setSelectedElement(item);
+  function selectItem(fn: (el: Element) => boolean) {
+    const nextSelectedItem = getValidItems()?.find(fn);
+    if (nextSelectedItem != null) {
+      setSelectedElement(nextSelectedItem);
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -82,5 +72,5 @@ export default function useListNavigation(params: Params) {
     }
   }
 
-  return [selectedElement, { handleKeyDown, selectFirstItem }] as const;
+  return [selectedElement, { handleKeyDown, selectItem }] as const;
 }
