@@ -15,7 +15,16 @@ export default function TreeView() {
               {({ open }) => <button>{open ? '⬇️' : '➡️'}</button>}
             </Tree.OpenControl>
             <Tree.SubList>
-              <Tree.Item value="item1-1">item 1 - 1</Tree.Item>
+              <Tree.Item value="item1-1">
+                item 1 - 1
+                <Tree.OpenControl>
+                  {({ open }) => <button>{open ? '⬇️' : '➡️'}</button>}
+                </Tree.OpenControl>
+                <Tree.SubList id="subsub">
+                  <Tree.Item value="item1-1-1">item 1 - 1 - 1</Tree.Item>
+                  <Tree.Item value="item1-1-2">item 1 - 1 - 2</Tree.Item>
+                </Tree.SubList>
+              </Tree.Item>
               <Tree.Item value="item1-2">item 1 - 2</Tree.Item>
             </Tree.SubList>
           </Tree.Item>

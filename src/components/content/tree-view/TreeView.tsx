@@ -87,15 +87,9 @@ const Root = forwardRef<HTMLDivElement, RootProps>((props, ref) => {
         // TODO: SearchInput이 사용될 경우 옮겨야 함
         aria-activedescendant={activeItem?.id}
         tabIndex={0}
-        onKeyDown={composeEventHandlers(
-          props.onKeyDown,
-          event => {
-            handleKeyDown(event);
-          },
-          {
-            checkForDefaultPrevented: true,
-          }
-        )}
+        onKeyDown={composeEventHandlers(props.onKeyDown, event => {
+          handleKeyDown(event);
+        })}
       >
         {props.children}
       </div>
@@ -112,9 +106,17 @@ const List = forwardRef<HTMLOListElement, HTMLAttributes<HTMLOListElement>>(
 interface ItemContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  level: number;
 }
-const [ItemProvider, useItemContext] =
-  createContext<ItemContextValue>('Tree.Item');
+const [ItemProvider, useItemContext] = createContext<ItemContextValue>(
+  'Tree.Item',
+  {
+    open: false,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onOpenChange: () => {},
+    level: 0,
+  }
+);
 interface ItemProps extends HTMLAttributes<HTMLLIElement> {
   value: string;
   open?: boolean;
@@ -133,6 +135,8 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
     id: idFromProps,
     ...restProps
   } = props;
+
+  const { level } = useItemContext('Tree.Item');
 
   const id = useId(idFromProps);
   const { activeItem, expandedState, onExpandedStateChange } =
@@ -157,17 +161,28 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
   const hasSubTree = getSubList(props.children) != null;
 
   return (
-    <ItemProvider open={open} onOpenChange={setOpen}>
+    <ItemProvider level={level + 1} open={open} onOpenChange={setOpen}>
       {/* eslint-disable-next-line react/no-unknown-property */}
       <Li
         ref={composedRefs}
         {...restProps}
+        style={{
+          ...restProps.style,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore CSS custom property
+          '--craft-tree-item-level': level,
+        }}
         id={id}
         tabIndex={0}
         role="treeitem"
+        aria-level={level}
         craft-tree-item=""
         data-craft-treeitem-state={active ? true : undefined}
         aria-expanded={!hasSubTree ? undefined : open}
+        onClick={composeEventHandlers(restProps.onClick, e => {
+          e.stopPropagation();
+          hasSubTree && setOpen(!open);
+        })}
       >
         {props.children}
       </Li>
@@ -189,7 +204,8 @@ const OpenControl = forwardRef<HTMLButtonElement, OpenControlProps>(
         asChild
         ref={ref}
         {...restProps}
-        onClick={composeEventHandlers(props.onClick, () => {
+        onClick={composeEventHandlers(props.onClick, e => {
+          e.stopPropagation();
           onOpenChange(!open);
         })}
       >
