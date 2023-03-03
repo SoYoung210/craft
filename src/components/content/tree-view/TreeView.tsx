@@ -28,13 +28,13 @@ interface TreeViewContextValue {
 const [TreeViewProvider, useTreeViewContext] =
   createContext<TreeViewContextValue>('TreeView');
 
-type RootProps = HTMLAttributes<HTMLUListElement>;
-const Root = forwardRef<HTMLUListElement, RootProps>((props, ref) => {
+type RootProps = HTMLAttributes<HTMLDivElement>;
+const Root = forwardRef<HTMLDivElement, RootProps>((props, ref) => {
   const [expandedState, setExpandedState] = useState<Map<string, boolean>>(
     new Map()
   );
 
-  const listRef = useRef<HTMLUListElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const composedRefs = useComposedRefs(ref, listRef);
 
   const [activeItem, { handleKeyDown: handleListNavigation }] =
@@ -51,7 +51,6 @@ const Root = forwardRef<HTMLUListElement, RootProps>((props, ref) => {
     event => {
       const nextElement = handleListNavigation(event) ?? activeItem;
 
-      console.log('nextElement', nextElement);
       if (nextElement == null) {
         return;
       }
@@ -80,10 +79,9 @@ const Root = forwardRef<HTMLUListElement, RootProps>((props, ref) => {
       expandedState={expandedState}
       onExpandedStateChange={onExpandedStateChange}
     >
-      <ul
+      <div
         ref={composedRefs}
         {...props}
-        role="tree"
         // eslint-disable-next-line react/no-unknown-property
         craft-tree-root=""
         // TODO: SearchInput이 사용될 경우 옮겨야 함
@@ -100,10 +98,16 @@ const Root = forwardRef<HTMLUListElement, RootProps>((props, ref) => {
         )}
       >
         {props.children}
-      </ul>
+      </div>
     </TreeViewProvider>
   );
 });
+
+const List = forwardRef<HTMLOListElement, HTMLAttributes<HTMLOListElement>>(
+  (props, ref) => {
+    return <ol role="tree" ref={ref} {...props} />;
+  }
+);
 
 interface ItemContextValue {
   open: boolean;
@@ -149,8 +153,8 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
 
   const listItemRef = useRef<HTMLLIElement>(null);
   const composedRefs = useComposedRefs(ref, listItemRef);
-  const selected = listItemRef.current === activeItem;
-  const hasSubTree = getSubTree(props.children) != null;
+  const active = listItemRef.current === activeItem;
+  const hasSubTree = getSubList(props.children) != null;
 
   return (
     <ItemProvider open={open} onOpenChange={setOpen}>
@@ -162,7 +166,7 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
         tabIndex={0}
         role="treeitem"
         craft-tree-item=""
-        aria-selected={selected || undefined}
+        data-craft-treeitem-state={active ? true : undefined}
         aria-expanded={!hasSubTree ? undefined : open}
       >
         {props.children}
@@ -195,27 +199,29 @@ const OpenControl = forwardRef<HTMLButtonElement, OpenControlProps>(
   }
 );
 
-const SubTree = forwardRef<HTMLOListElement, HTMLAttributes<HTMLOListElement>>(
+const SubList = forwardRef<HTMLOListElement, HTMLAttributes<HTMLOListElement>>(
   (props, ref) => {
-    const { open } = useItemContext('Tree.SubTree');
+    const { open } = useItemContext('Tree.SubList');
     return open ? <ol ref={ref} {...props} /> : null;
   }
 );
 
-function getSubTree(children: ReactNode) {
+function getSubList(children: ReactNode) {
   return Children.toArray(children).find(child => {
-    return isValidElement(child) && child.type === SubTree;
+    return isValidElement(child) && child.type === SubList;
   });
 }
 
 const Li = styled('li', {
-  '&[aria-selected="true"]': {
+  '&[data-craft-treeitem-state="true"]': {
     color: 'red',
   },
 });
+
 const Tree = Object.assign(Root, {
+  List,
   Item,
-  SubTree,
+  SubList,
   OpenControl,
 });
 
