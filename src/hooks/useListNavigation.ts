@@ -32,14 +32,14 @@ export default function useListNavigation(params: Params) {
     const indexOffset = orientation === 'end' ? 1 : -1;
     const currentIndex =
       validItems.findIndex(item => item === selectedElement) ?? -1;
-    const nextIndex = indexOffset + currentIndex;
+    let nextIndex = indexOffset + currentIndex;
 
     if (loop) {
-      nextIndex < 0
-        ? validItems.length - 1
-        : nextIndex === validItems.length
-        ? 0
-        : nextIndex;
+      if (nextIndex < 0) {
+        nextIndex = validItems.length - 1;
+      }
+
+      nextIndex = nextIndex === validItems.length ? 0 : nextIndex;
     }
 
     const nextSelectedItem = validItems[nextIndex];
