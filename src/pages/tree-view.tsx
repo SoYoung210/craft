@@ -9,28 +9,28 @@ export default function TreeView() {
       <Tree>
         <input />
         <Tree.List>
-          <Tree.Item value="value1">
+          <Tree.Item>
             value1
             <Tree.OpenControl>
               {({ open }) => <button>{open ? '⬇️' : '➡️'}</button>}
             </Tree.OpenControl>
             <Tree.SubList>
-              <Tree.Item value="item1-1">
+              <Tree.Item>
                 item 1 - 1
                 <Tree.OpenControl>
                   {({ open }) => <button>{open ? '⬇️' : '➡️'}</button>}
                 </Tree.OpenControl>
                 <Tree.SubList id="subsub">
-                  <Tree.Item value="item1-1-1">item 1 - 1 - 1</Tree.Item>
-                  <Tree.Item value="item1-1-2">item 1 - 1 - 2</Tree.Item>
+                  <Tree.Item>item 1 - 1 - 1</Tree.Item>
+                  <Tree.Item>item 1 - 1 - 2</Tree.Item>
                 </Tree.SubList>
               </Tree.Item>
-              <Tree.Item value="item1-2">item 1 - 2</Tree.Item>
+              <Tree.Item>item 1 - 2</Tree.Item>
             </Tree.SubList>
           </Tree.Item>
-          <Tree.Item value="value2">value2</Tree.Item>
-          <Tree.Item value="value3">value3</Tree.Item>
-          <Tree.Item value="value4">value4</Tree.Item>
+          <Tree.Item>value2</Tree.Item>
+          <Tree.Item>value3</Tree.Item>
+          <Tree.Item>value4</Tree.Item>
         </Tree.List>
       </Tree>
     </PageLayout>

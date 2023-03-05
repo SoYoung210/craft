@@ -87,8 +87,6 @@ const Root = forwardRef<HTMLDivElement, RootProps>((props, ref) => {
         {...props}
         // eslint-disable-next-line react/no-unknown-property
         craft-tree-root=""
-        // TODO: SearchInput이 사용될 경우 옮겨야 함
-        aria-activedescendant={activeItem?.id}
         tabIndex={0}
         onKeyDown={composeEventHandlers(props.onKeyDown, event => {
           handleKeyDown(event);
@@ -121,17 +119,14 @@ const [ItemProvider, useItemContext] = createContext<ItemContextValue>(
   }
 );
 interface ItemProps extends HTMLAttributes<HTMLLIElement> {
-  value: string;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-// TODO: level?
 // TODO: 전체를 클릭했을 때 expand
 const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
   const {
-    value,
     open: openFromProps,
     defaultOpen,
     onOpenChange: onOpenChangeFromProps,
@@ -181,6 +176,7 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
         role="treeitem"
         aria-level={level}
         craft-tree-item=""
+        aria-current={active ? true : undefined}
         data-craft-treeitem-state={active ? true : undefined}
         aria-expanded={!hasSubTree ? undefined : open}
         onClick={composeEventHandlers(restProps.onClick, e => {
@@ -222,7 +218,7 @@ const OpenControl = forwardRef<HTMLButtonElement, OpenControlProps>(
 const SubList = forwardRef<HTMLOListElement, HTMLAttributes<HTMLOListElement>>(
   (props, ref) => {
     const { open } = useItemContext('Tree.SubList');
-    return open ? <ol ref={ref} {...props} /> : null;
+    return open ? <ol ref={ref} role="group" {...props} /> : null;
   }
 );
 
