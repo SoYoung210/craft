@@ -44,7 +44,9 @@ const Root = forwardRef<HTMLDivElement, RootProps>((props, ref) => {
     });
 
   const onExpandedStateChange = useCallback((id: string, value: boolean) => {
-    setExpandedState(prev => new Map([...prev, [id, value]]));
+    setExpandedState(prev => {
+      return new Map(prev.set(id, value));
+    });
   }, []);
 
   const handleKeyDown: KeyboardEventHandler = useCallback(
@@ -54,6 +56,7 @@ const Root = forwardRef<HTMLDivElement, RootProps>((props, ref) => {
       if (nextElement == null) {
         return;
       }
+
       const nextElementId = nextElement.id;
       const itemHasSubTree = nextElement.getAttribute('aria-expanded') != null;
 
@@ -149,6 +152,7 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
     },
     [id, onExpandedStateChange, onOpenChangeFromProps]
   );
+
   const [open = false, setOpen] = useControllableState({
     prop: openFromProps ?? expandedState.get(id),
     defaultProp: defaultOpen,
