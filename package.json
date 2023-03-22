@@ -47,6 +47,7 @@
     "gatsby-source-filesystem": "^5.4.0",
     "gsap": "^3.11.3",
     "html2canvas": "^1.4.1",
+    "puppeteer": "^19.7.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.31.3",
