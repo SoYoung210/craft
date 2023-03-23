@@ -1,13 +1,47 @@
-import { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import {
+  Children,
+  cloneElement,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  isValidElement,
+  ReactNode,
+  useCallback,
+  useRef,
+} from 'react';
 
 import { styled } from '../../../stitches.config';
 
-type Props = ComponentPropsWithoutRef<typeof Input>;
+import { HStack } from './Stack';
 
-const TextField = forwardRef<HTMLInputElement, Props>((props, ref) => {
+interface Props extends ComponentPropsWithoutRef<typeof Input> {
+  leftSlot?: ReactNode;
+}
+
+const TextField = forwardRef<HTMLInputElement, Props>((props, forwardedRef) => {
+  const { leftSlot, ...inputProps } = props;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const composedRef = useComposedRefs(forwardedRef, inputRef);
+
+  const focusToInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const left = Children.only(leftSlot);
+  const leftSlotWithClickHandler = isValidElement(left)
+    ? cloneElement(left, {
+        ...left.props,
+        onClick: composeEventHandlers(left.props.onClick, focusToInput),
+      })
+    : null;
+
   return (
     <Root>
-      <Input ref={ref} {...props} />
+      <HStack gap={8} style={{ height: '100%', alignItems: 'center' }}>
+        {leftSlotWithClickHandler}
+        <Input ref={composedRef} {...inputProps} />
+      </HStack>
     </Root>
   );
 });
