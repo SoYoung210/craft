@@ -28,9 +28,11 @@ const slidedown = keyframes({
 const shiny = keyframes({
   from: {
     maskPosition: '100%',
+    '-webkit-mask-position': '100%',
   },
   to: {
     maskPosition: 0,
+    '-webkit-mask-position': 0,
   },
 });
 
@@ -64,7 +66,9 @@ const Image = styled('img', {
   )`,
   maskSize: '400%',
   maskPosition: '100%',
-  animation: `${shiny} ease 1s`,
+  animationName: `${shiny}`,
+  animationDuration: '1s',
+  animationTimingFunction: 'ease',
 });
 
 const loadingSkeletonAnimation = keyframes({
