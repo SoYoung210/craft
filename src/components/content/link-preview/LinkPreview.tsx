@@ -11,11 +11,9 @@ const LinkPreview = ({ label, preview, url }: Props) => {
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
         <Tooltip.Trigger asChild>
-          <span>
-            <a href={url} target="_blank" rel="noreferrer">
-              {label}
-            </a>
-          </span>
+          <a href={url} target="_blank" rel="noreferrer">
+            {label}
+          </a>
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
