@@ -1,7 +1,6 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
 import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
-import { executablePath } from 'puppeteer';
 
 async function screenshotHandler(
   req: GatsbyFunctionRequest,
@@ -15,9 +14,10 @@ async function screenshotHandler(
   }
 
   const browser = await puppeteer.launch({
+    // (hat-tip: https://spacejelly.dev/posts/how-to-use-puppeteer-to-automate-chrome-in-an-api-with-netlify-serverless-functions/)
+    executablePath:
+      process.env.CHROME_EXECUTABLE_PATH ?? (await chromium.executablePath),
     args: chromium.args,
-    executablePath: executablePath() ?? (await chromium.executablePath),
-    headless: chromium.headless,
   });
   const page = await browser.newPage();
   await page.goto(url);
