@@ -1,5 +1,10 @@
 import type { GatsbyConfig } from 'gatsby';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 const config: GatsbyConfig = {
   polyfill: false,
   siteMetadata: {
