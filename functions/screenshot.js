@@ -11,15 +11,20 @@ exports.handler = async function screenshotHandler(event) {
       status: 404,
     };
   }
+  console.log(
+    'process.env.CHROME_EXECUTABLE_PATH',
+    process.env.CHROME_EXECUTABLE_PATH
+  );
 
   const browser = await puppeteer.launch({
     // (hat-tip: https://spacejelly.dev/posts/how-to-use-puppeteer-to-automate-chrome-in-an-api-with-netlify-serverless-functions/)
     executablePath:
       process.env.CHROME_EXECUTABLE_PATH ?? (await chromium.executablePath()),
-    args: chromium.args,
+    args: process.env.IS_LOCAL ? undefined : chromium.args,
     headless: chromium.headless,
   });
   const page = await browser.newPage();
+  console.log('-------page', page);
   await page.goto(url, { waitUntil: 'networkidle2' });
   const imageBuffer = await page.screenshot();
 
