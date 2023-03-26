@@ -35,6 +35,7 @@
     "animejs": "^3.2.1",
     "babel-preset-gatsby": "^3.6.0",
     "canvas-confetti": "^1.6.0",
+    "chrome-aws-lambda": "^10.1.0",
     "cmdk": "^0.1.20",
     "framer-motion": "^8.1.9",
     "gatsby": "^5.4.0",

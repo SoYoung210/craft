@@ -1,5 +1,7 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import puppeteer from 'puppeteer';
+import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
+import { executablePath } from 'puppeteer';
 
 async function screenshotHandler(
   req: GatsbyFunctionRequest,
@@ -12,7 +14,11 @@ async function screenshotHandler(
     return;
   }
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: executablePath() ?? (await chromium.executablePath),
+    headless: chromium.headless,
+  });
   const page = await browser.newPage();
   await page.goto(url);
   const imageBuffer = await page.screenshot();
