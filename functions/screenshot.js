@@ -5,17 +5,13 @@ const puppeteer = require('puppeteer-core');
 exports.handler = async function screenshotHandler(event) {
   const url = event.body;
 
-  console.log('url', url);
   if (!isValidUrl(url)) {
     return {
       status: 404,
     };
   }
-  console.log(
-    'process.env.CHROME_EXECUTABLE_PATH',
-    process.env.CHROME_EXECUTABLE_PATH
-  );
 
+  // https://github.com/Sparticuz/chromium/issues/69#issuecomment-1483349113
   const browser = await puppeteer.launch({
     // (hat-tip: https://spacejelly.dev/posts/how-to-use-puppeteer-to-automate-chrome-in-an-api-with-netlify-serverless-functions/)
     executablePath:
@@ -29,15 +25,11 @@ exports.handler = async function screenshotHandler(event) {
   const imageBuffer = await page.screenshot();
 
   await browser.close();
-  // res.setHeader('Content-Type', 'image/png');
-  // res.setHeader('Cache-Control', 's-maxage=1440000');
-  // res.status(200).end(imageBuffer);
-  console.log('-----image');
+
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      buffer: imageBuffer,
-    }),
+    body: imageBuffer.toString('base64'),
+    isBase64Encoded: true,
   };
 };
 
