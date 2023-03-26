@@ -1,9 +1,56 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const fs = require('fs');
+const path = require('path');
+
+const puppeteer = require('puppeteer');
+// const chromium = require('chrome-aws-lambda');
+
 // eslint-disable-next-line no-undef
-exports.onCreateBabelConfig = ({ actions }) => {
-  actions.setBabelPreset({
-    name: 'babel-preset-gatsby',
-    options: {
-      reactRuntime: 'automatic',
-    },
-  });
+module.exports = {
+  onCreateBabelConfig: ({ actions }) => {
+    actions.setBabelPreset({
+      name: 'babel-preset-gatsby',
+      options: {
+        reactRuntime: 'automatic',
+      },
+    });
+  },
+  onPostBuild: async ({ graphql }) => {
+    // check if /link-preview page exists
+    const { data } = await graphql(`
+      query {
+        allSitePage(filter: { path: { eq: "/link-preview/" } }) {
+          nodes {
+            path
+          }
+        }
+      }
+    `);
+
+    if (data.allSitePage.nodes.length > 0) {
+      const browserFetcher = puppeteer.createBrowserFetcher();
+      const revisionInfo = await browserFetcher.download('982053');
+
+      const browser = await puppeteer.launch({
+        executablePath:
+          revisionInfo.executablePath || process.env.PUPPETEER_EXECUTABLE_PATH,
+        headless: true,
+      });
+      const page = await browser.newPage();
+
+      await page.goto('https://so-so.dev');
+
+      const screenshotBuffer = await page.screenshot();
+      const screenshotPath = path.join(
+        __dirname,
+        'src',
+        'images',
+        'link-preview',
+        'soso.png'
+      );
+      fs.writeFileSync(screenshotPath, screenshotBuffer);
+      await browser.close();
+    }
+  },
 };

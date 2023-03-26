@@ -1,5 +1,5 @@
 export const getScreenshot = async (url: string) => {
-  const res = await fetch('/api/screenshot', {
+  const res = await fetch('/.netlify/functions/screenshot', {
     method: 'POST',
     body: url,
   });

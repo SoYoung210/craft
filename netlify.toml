@@ -1,2 +1,15 @@
 [[plugins]]
 package = "@netlify/plugin-gatsby"
+
+[functions]
+  directory = "./functions"
+  external_node_modules = [
+    "@sparticuz/chromium",
+    "puppeteer-core"
+  ]
+  included_files = [
+    # For some reason this works to fix "bufferutil" error on
+    # Netlify Function and external_node_modules does not
+    "node_modules/bufferutil/**",
+    "node_modules/utf-8-validate/**"
+  ]
