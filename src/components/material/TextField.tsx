@@ -8,6 +8,7 @@ import {
   isValidElement,
   ReactNode,
   useCallback,
+  useMemo,
   useRef,
 } from 'react';
 
@@ -28,18 +29,26 @@ const TextField = forwardRef<HTMLInputElement, Props>((props, forwardedRef) => {
     inputRef.current?.focus();
   }, []);
 
-  const left = Children.only(leftSlot);
-  const leftSlotWithClickHandler = isValidElement(left)
-    ? cloneElement(left, {
-        ...left.props,
-        onClick: composeEventHandlers(left.props.onClick, focusToInput),
-      })
-    : null;
+  const left = useMemo(() => {
+    if (leftSlot == null) {
+      return;
+    }
+
+    const leftElement = Children.only(leftSlot);
+    if (!isValidElement(leftElement)) {
+      return;
+    }
+
+    return cloneElement(leftElement, {
+      ...leftElement.props,
+      onClick: composeEventHandlers(leftElement.props.onClick, focusToInput),
+    });
+  }, [focusToInput, leftSlot]);
 
   return (
     <Root>
       <HStack gap={8} style={{ height: '100%', alignItems: 'center' }}>
-        {leftSlotWithClickHandler}
+        {left}
         <Input ref={composedRef} {...inputProps} />
       </HStack>
     </Root>
