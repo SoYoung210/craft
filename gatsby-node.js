@@ -16,41 +16,41 @@ module.exports = {
       },
     });
   },
-  onPostBuild: async ({ graphql }) => {
-    // check if /link-preview page exists
-    const { data } = await graphql(`
-      query {
-        allSitePage(filter: { path: { eq: "/link-preview/" } }) {
-          nodes {
-            path
-          }
-        }
-      }
-    `);
+  // onPostBuild: async ({ graphql }) => {
+  //   // check if /link-preview page exists
+  //   const { data } = await graphql(`
+  //     query {
+  //       allSitePage(filter: { path: { eq: "/link-preview/" } }) {
+  //         nodes {
+  //           path
+  //         }
+  //       }
+  //     }
+  //   `);
 
-    if (data.allSitePage.nodes.length > 0) {
-      const browserFetcher = puppeteer.createBrowserFetcher();
-      const revisionInfo = await browserFetcher.download('982053');
+  //   if (data.allSitePage.nodes.length > 0) {
+  //     const browserFetcher = puppeteer.createBrowserFetcher();
+  //     const revisionInfo = await browserFetcher.download('982053');
 
-      const browser = await puppeteer.launch({
-        executablePath:
-          revisionInfo.executablePath || process.env.PUPPETEER_EXECUTABLE_PATH,
-        headless: true,
-      });
-      const page = await browser.newPage();
+  //     const browser = await puppeteer.launch({
+  //       executablePath:
+  //         revisionInfo.executablePath || process.env.PUPPETEER_EXECUTABLE_PATH,
+  //       headless: true,
+  //     });
+  //     const page = await browser.newPage();
 
-      await page.goto('https://so-so.dev');
+  //     await page.goto('https://so-so.dev');
 
-      const screenshotBuffer = await page.screenshot();
-      const screenshotPath = path.join(
-        __dirname,
-        'src',
-        'images',
-        'link-preview',
-        'soso.png'
-      );
-      fs.writeFileSync(screenshotPath, screenshotBuffer);
-      await browser.close();
-    }
-  },
+  //     const screenshotBuffer = await page.screenshot();
+  //     const screenshotPath = path.join(
+  //       __dirname,
+  //       'src',
+  //       'images',
+  //       'link-preview',
+  //       'soso.png'
+  //     );
+  //     fs.writeFileSync(screenshotPath, screenshotBuffer);
+  //     await browser.close();
+  //   }
+  // },
 };
