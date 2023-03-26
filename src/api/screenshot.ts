@@ -1,5 +1,5 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby';
-import chrome from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer';
 
 async function screenshotHandler(
   req: GatsbyFunctionRequest,
@@ -12,12 +12,9 @@ async function screenshotHandler(
     return;
   }
 
-  const browser = await chrome.puppeteer.launch();
-  console.log('browser launch');
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  console.log('page launch');
   await page.goto(url);
-  console.log('goto launch');
   const imageBuffer = await page.screenshot();
 
   await browser.close();
