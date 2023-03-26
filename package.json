@@ -47,13 +47,14 @@
     "gsap": "^3.11.3",
     "html2canvas": "^1.4.1",
     "puppeteer": "^19.7.5",
+    "puppeteer-core": "^19.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.31.3",
-    "w3c-keys": "^1.0.3",
-    "puppeteer-core": "^19.8.0"
+    "w3c-keys": "^1.0.3"
   },
   "devDependencies": {
+    "@netlify/plugin-gatsby": "^3.6.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
