@@ -2,9 +2,10 @@ export const getScreenshot = async (url: string) => {
   const res = await fetch('/.netlify/functions/screenshot', {
     method: 'POST',
     body: url,
+    mode: 'no-cors',
   });
 
-  const imageBlob = await res.blob();
+  const imageBlob = await (res.body as any)?.blob();
   return URL.createObjectURL(imageBlob);
 };
 
