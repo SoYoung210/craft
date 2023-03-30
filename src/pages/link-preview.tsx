@@ -31,7 +31,14 @@ function PageContent() {
 
     const urlLabel = getUrlLabel(value);
     if (urlLabel == null) {
-      error('올바르지 않은 url이에요.');
+      error(
+        <>
+          <Toast.Title>올바르지 않은 url</Toast.Title>
+          <Toast.Description>
+            vercel.com, so-so.dev와 같은 형식으로 입력해주세요.
+          </Toast.Description>
+        </>
+      );
       return;
     }
 
@@ -43,7 +50,14 @@ function PageContent() {
         prev.map(link => (link.url === value ? { ...link, preview } : link))
       );
     } catch {
-      error('링크 미리보기 가져오기에 실패했어요.');
+      error(
+        <>
+          <Toast.Title>실패</Toast.Title>
+          <Toast.Description>
+            사이트 미리보기 이미지를 가져오는데 실패했습니다.
+          </Toast.Description>
+        </>
+      );
       return;
     }
   };
@@ -55,6 +69,7 @@ function PageContent() {
 
       <form onSubmit={handleSubmit}>
         <TextField
+          placeholder="so-so.dev"
           leftSlot={<Text color="gray6">https://</Text>}
           value={value}
           onChange={e => setValue(e.target.value.replace('https://', ''))}
