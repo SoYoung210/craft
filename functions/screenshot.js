@@ -34,7 +34,7 @@ exports.handler = async function screenshotHandler(event) {
     headless: process.env.IS_LOCAL ? false : chromium.headless,
   });
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle2' });
+  await page.goto(url, { waitUntil: 'load' });
   const imageBuffer = await page.screenshot();
   await browser.close();
 
