@@ -58,14 +58,17 @@ const Root = styled('div', {
   width: '100%',
 
   br: 8,
-  boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.15)',
+  boxShadow: '0 0 0 2px hsl(0 0% 90.9%)',
   height: 40,
 
   py: 4,
   px: 10,
 
+  fontWeight: 500,
+  transition: 'box-shadow 0.2s',
+
   '&:focus-within': {
-    boxShadow: '0 0 0 2px #000',
+    boxShadow: '0 0 0 2px hsl(0 0% 78.0%)',
   },
 });
 
@@ -78,6 +81,11 @@ const Input = styled('input', {
 
   width: '100%',
   height: '100%',
+  fontWeight: 400,
+
+  '&::placeholder': {
+    color: '$gray5',
+  },
 });
 
 export default TextField;
