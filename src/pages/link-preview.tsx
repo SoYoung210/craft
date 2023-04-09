@@ -13,17 +13,27 @@ import Toast, {
 import PageLayout from '../components/layout/PageLayout';
 import TextField from '../components/material/TextField';
 import Text from '../components/material/Text';
+import example1 from '../images/link-preview/soso.png';
+import example2 from '../images/link-preview/radix-ui.png';
+import example3 from '../images/link-preview/apple.png';
+import errorView from '../images/link-preview/error_view.png';
 
 interface LinkData {
   url: string;
   label: string;
   preview?: string;
 }
+
+const initialData: LinkData[] = [
+  { url: 'https://so-so.dev', label: 'so-so', preview: example1 },
+  { url: 'https://radix-ui.com', label: 'radix-ui', preview: example2 },
+  { url: 'https://apple.com', label: 'apple', preview: example3 },
+];
 function PageContent() {
   const { error } = useToast();
 
   const [value, setValue] = useState('');
-  const [links, setLinks] = useState<LinkData[]>([]);
+  const [links, setLinks] = useState(initialData);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,14 +52,31 @@ function PageContent() {
       return;
     }
 
+    if (links.some(link => link.url === value)) {
+      error(
+        <>
+          <Toast.Title>이미 추가된 url</Toast.Title>
+          <Toast.Description>이미 추가된 url입니다.</Toast.Description>
+        </>
+      );
+      return;
+    }
+
+    setValue('');
+    setLinks(prev => [...prev, { url: value, label: urlLabel }]);
+
     try {
-      setValue('');
-      setLinks(prev => [...prev, { url: value, label: urlLabel }]);
       const preview = await getScreenshot(ensureUrlPrefix(value));
       setLinks(prev =>
         prev.map(link => (link.url === value ? { ...link, preview } : link))
       );
-    } catch {
+    } catch (e) {
+      setLinks(prev =>
+        prev.map(link =>
+          link.url === value ? { ...link, preview: errorView } : link
+        )
+      );
+
       error(
         <>
           <Toast.Title>실패</Toast.Title>
