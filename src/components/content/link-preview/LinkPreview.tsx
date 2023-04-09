@@ -1,7 +1,8 @@
 import { styled } from '../../../../stitches.config';
+import errorView from '../../../images/link-preview/error_view.png';
 
+import { useLinkPreview } from './hooks/useLinkPreview';
 import { LoadingSkeleton, Tooltip } from './styled';
-
 interface Props {
   label: string;
   url: string;
@@ -9,6 +10,11 @@ interface Props {
 }
 
 const LinkPreview = ({ label, preview, url }: Props) => {
+  const [linkPreview, setLinkPreview] = useLinkPreview(url, {
+    initialData: preview,
+    onError: () => setLinkPreview(errorView),
+  });
+
   return (
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
@@ -24,11 +30,11 @@ const LinkPreview = ({ label, preview, url }: Props) => {
             side="top"
             align="start"
           >
-            {preview === undefined ? (
+            {linkPreview === undefined ? (
               <LoadingSkeleton />
             ) : (
               <Tooltip.Image
-                src={preview}
+                src={linkPreview}
                 width={200}
                 height={120}
                 alt={`${label} site preview`}

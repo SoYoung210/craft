@@ -2,11 +2,7 @@ import { FormEvent, useState } from 'react';
 
 import { styled } from '../../stitches.config';
 import LinkPreview from '../components/content/link-preview/LinkPreview';
-import {
-  ensureUrlPrefix,
-  getScreenshot,
-  getUrlLabel,
-} from '../components/content/link-preview/utils';
+import { getUrlLabel } from '../components/content/link-preview/utils';
 import Toast, {
   useToast,
 } from '../components/content/stacked-toast/ToastContext';
@@ -16,7 +12,6 @@ import Text from '../components/material/Text';
 import example1 from '../images/link-preview/soso.png';
 import example2 from '../images/link-preview/radix-ui.png';
 import example3 from '../images/link-preview/apple.png';
-import errorView from '../images/link-preview/error_view.png';
 import { VStack } from '../components/material/Stack';
 
 interface LinkData {
@@ -27,18 +22,18 @@ interface LinkData {
 
 const initialData: LinkData[] = [
   { url: 'https://so-so.dev', label: 'so-so', preview: example1 },
+  // { url: 'https://so-so1.dev', label: 'so-so1' },
   { url: 'https://radix-ui.com', label: 'radix-ui', preview: example2 },
   { url: 'https://apple.com', label: 'apple', preview: example3 },
 ];
 function PageContent() {
   const { error } = useToast();
 
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('stripe.com');
   const [links, setLinks] = useState(initialData);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // check if is a valid apex domain
 
     const urlLabel = getUrlLabel(value);
     if (urlLabel == null) {
@@ -65,29 +60,6 @@ function PageContent() {
 
     setValue('');
     setLinks(prev => [...prev, { url: value, label: urlLabel }]);
-
-    try {
-      const preview = await getScreenshot(ensureUrlPrefix(value));
-      setLinks(prev =>
-        prev.map(link => (link.url === value ? { ...link, preview } : link))
-      );
-    } catch (e) {
-      setLinks(prev =>
-        prev.map(link =>
-          link.url === value ? { ...link, preview: errorView } : link
-        )
-      );
-
-      error(
-        <>
-          <Toast.Title>실패</Toast.Title>
-          <Toast.Description>
-            사이트 미리보기 이미지를 가져오는데 실패했습니다.
-          </Toast.Description>
-        </>
-      );
-      return;
-    }
   };
 
   return (
