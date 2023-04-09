@@ -17,6 +17,7 @@ import example1 from '../images/link-preview/soso.png';
 import example2 from '../images/link-preview/radix-ui.png';
 import example3 from '../images/link-preview/apple.png';
 import errorView from '../images/link-preview/error_view.png';
+import { VStack } from '../components/material/Stack';
 
 interface LinkData {
   url: string;
@@ -102,9 +103,9 @@ function PageContent() {
           onChange={e => setValue(e.target.value.replace('https://', ''))}
         />
       </form>
-      <Ul>
-        {links &&
-          links.map(link => (
+      <VStack asChild gap={8}>
+        <Ul>
+          {links.map(link => (
             <Li key={link.label}>
               <LinkPreview
                 label={link.label}
@@ -113,7 +114,8 @@ function PageContent() {
               />
             </Li>
           ))}
-      </Ul>
+        </Ul>
+      </VStack>
     </PageLayout>
   );
 }
@@ -130,6 +132,8 @@ const Ul = styled('ul', {
 });
 
 const Li = styled('li', {
+  lineHeight: '24px',
+
   '&:before': {
     content: '-',
     color: '#999',
