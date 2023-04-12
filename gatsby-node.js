@@ -16,7 +16,7 @@ module.exports = {
       },
     });
   },
-  onPrebuild: async () => {
+  onPreBuild: async () => {
     const browserFetcher = puppeteer.createBrowserFetcher();
     const revisionInfo = await browserFetcher.download('982053');
 
