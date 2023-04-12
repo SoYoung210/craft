@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { styled } from '../../../../stitches.config';
 import errorView from '../../../images/link-preview/error_view.png';
 
@@ -10,6 +12,7 @@ interface Props {
 }
 
 const LinkPreview = ({ label, preview, url }: Props) => {
+  const [imgLoading, setImgLoading] = useState(true);
   const [linkPreview, setLinkPreview] = useLinkPreview(url, {
     initialData: preview,
     onError: () => setLinkPreview(errorView),
@@ -30,16 +33,15 @@ const LinkPreview = ({ label, preview, url }: Props) => {
             side="top"
             align="start"
           >
-            {linkPreview === undefined ? (
-              <LoadingSkeleton />
-            ) : (
-              <Tooltip.Image
-                src={linkPreview}
-                width={200}
-                height={120}
-                alt={`${label} site preview`}
-              />
-            )}
+            {imgLoading && <LoadingSkeleton />}
+            <Tooltip.Image
+              src={linkPreview}
+              onLoad={() => setImgLoading(false)}
+              width={200}
+              height={120}
+              style={{ display: imgLoading ? 'none' : 'block' }}
+              alt={`${label} site preview`}
+            />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
