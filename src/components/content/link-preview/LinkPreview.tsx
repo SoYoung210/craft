@@ -52,6 +52,11 @@ const LinkPreview = ({ label, preview, url }: Props) => {
 const Link = styled('a', {
   position: 'relative',
   display: 'inline-block',
+  color: '$black',
+
+  '&:visited': {
+    color: '$black',
+  },
 
   '&::after': {
     content: '""',
