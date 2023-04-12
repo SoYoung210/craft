@@ -1,4 +1,4 @@
-import { graphql, HeadFC, PageProps, Link } from 'gatsby';
+import { graphql, PageProps, Link } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 
 import { ContentBox } from '../components/layout/content-box/ContentBox';

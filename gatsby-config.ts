@@ -1,5 +1,10 @@
 import type { GatsbyConfig } from 'gatsby';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 const config: GatsbyConfig = {
   polyfill: false,
   siteMetadata: {
@@ -12,6 +17,17 @@ const config: GatsbyConfig = {
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
+    `gatsby-plugin-image`,
+    `gatsby-plugin-sharp`,
+    `gatsby-transformer-sharp`,
+    {
+      resolve: 'gatsby-plugin-react-svg',
+      options: {
+        rule: {
+          include: /images\/.*\.svg$/,
+        },
+      },
+    },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -30,18 +46,8 @@ const config: GatsbyConfig = {
         icon: `src/images/icon.png`,
       },
     },
+    'gatsby-plugin-netlify',
     'gatsby-plugin-vanilla-extract',
-    `gatsby-plugin-image`,
-    `gatsby-plugin-sharp`,
-    `gatsby-transformer-sharp`,
-    {
-      resolve: 'gatsby-plugin-react-svg',
-      options: {
-        rule: {
-          include: /images/,
-        },
-      },
-    },
   ],
 };
 

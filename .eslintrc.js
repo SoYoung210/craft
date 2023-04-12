@@ -16,6 +16,10 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:react/jsx-runtime',
   ],
+  env: {
+    browser: true,
+    node: true,
+  },
   settings: {
     react: {
       version: 'detect',
@@ -27,7 +31,14 @@ module.exports = {
       'warn',
       {
         'newlines-between': 'always',
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
         pathGroups: [
           {
             pattern: 'react*',
@@ -65,5 +76,5 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     'react/jsx-filename-extension': ['error', { extensions: ['tsx'] }],
-  }
-}
+  },
+};
