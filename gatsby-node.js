@@ -26,20 +26,19 @@ module.exports = {
     });
     const page = await browser.newPage();
 
-    await Promise.all([
-      screenshot(page, {
-        url: 'https://www.radix-ui.com/',
-        filename: 'radix-ui',
-      }),
-      screenshot(page, {
-        url: 'https://so-so.dev/',
-        filename: 'soso',
-      }),
-      screenshot(page, {
-        url: 'https://apple.com',
-        filename: 'apple',
-      }),
-    ]);
+    // 병렬로 할 수 없음
+    await screenshot(page, {
+      url: 'https://www.radix-ui.com/',
+      filename: 'radix-ui',
+    });
+    await screenshot(page, {
+      url: 'https://so-so.dev/',
+      filename: 'soso',
+    });
+    await screenshot(page, {
+      url: 'https://apple.com',
+      filename: 'apple',
+    });
 
     await browser.close();
   },
