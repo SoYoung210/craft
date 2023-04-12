@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 const puppeteer = require('puppeteer');
-// const chromium = require('chrome-aws-lambda');
 
 // eslint-disable-next-line no-undef
 module.exports = {
@@ -27,17 +26,35 @@ module.exports = {
     });
     const page = await browser.newPage();
 
-    await page.goto('https://www.radix-ui.com/');
+    await Promise.all([
+      screenshot(page, {
+        url: 'https://www.radix-ui.com/',
+        filename: 'radix-ui',
+      }),
+      screenshot(page, {
+        url: 'https://so-so.dev/',
+        filename: 'soso',
+      }),
+      screenshot(page, {
+        url: 'https://apple.com',
+        filename: 'apple',
+      }),
+    ]);
 
-    const screenshotBuffer = await page.screenshot();
-    const screenshotPath = path.join(
-      __dirname,
-      'src',
-      'images',
-      'link-preview',
-      'radix-ui.png'
-    );
-    fs.writeFileSync(screenshotPath, screenshotBuffer);
     await browser.close();
   },
 };
+
+async function screenshot(page, { url, filename }) {
+  await page.goto(url);
+
+  const screenshotBuffer = await page.screenshot();
+  const screenshotPath = path.join(
+    __dirname,
+    'src',
+    'images',
+    'link-preview',
+    `${filename}.png`
+  );
+  fs.writeFileSync(screenshotPath, screenshotBuffer);
+}
