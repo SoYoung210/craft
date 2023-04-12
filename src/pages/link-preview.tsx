@@ -22,14 +22,13 @@ interface LinkData {
 
 const initialData: LinkData[] = [
   { url: 'https://so-so.dev', label: 'so-so', preview: example1 },
-  // { url: 'https://so-so1.dev', label: 'so-so1' },
   { url: 'https://radix-ui.com', label: 'radix-ui', preview: example2 },
   { url: 'https://apple.com', label: 'apple', preview: example3 },
 ];
 function PageContent() {
   const { error } = useToast();
 
-  const [value, setValue] = useState('stripe.com');
+  const [value, setValue] = useState('');
   const [links, setLinks] = useState(initialData);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
