@@ -13,7 +13,7 @@ const IndexPage = () => {
       <ContentList>
         <ContentList.Item active>
           <Link to="/link-preview">
-            <ContentBox title="stacked toast">
+            <ContentBox title="link preview">
               <StaticImage
                 src="../images/thumbnails/link_preview.jpg"
                 alt="link Preview content preview"
