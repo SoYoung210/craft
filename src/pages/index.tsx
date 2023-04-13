@@ -17,9 +17,12 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/stacked-toast.jpg"
                 alt="stacked toast content preview"
-                height={250}
                 placeholder="blurred"
-                style={{ display: 'flex', justifyContent: 'center' }}
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
                 quality={100}
               />
             </ContentBox>
@@ -32,11 +35,14 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/dynamic-card.png"
                 alt="dynamic card content preview"
-                height={250}
                 placeholder="blurred"
                 objectFit="contain"
-                style={{ display: 'flex', justifyContent: 'center' }}
-                quality={80}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  height: 250,
+                }}
+                quality={100}
               />
             </ContentBox>
           </Link>
@@ -48,10 +54,10 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/border-animation.jpg"
                 alt="Button Border Animation Preview Image"
-                height={250}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
+                  height: 250,
                 }}
               />
             </ContentBox>
@@ -65,10 +71,10 @@ const IndexPage = () => {
                 src="../images/thumbnails/genie-effect.png"
                 alt="Modal Interaction with Genie Effect Preview"
                 objectFit="contain"
-                height={250}
                 placeholder="blurred"
                 style={{
                   display: 'flex',
+                  height: 250,
                   justifyContent: 'center',
                 }}
               />
@@ -82,10 +88,10 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/particle-text.jpg"
                 alt="particle text content preview"
-                height={250}
                 objectFit="contain"
                 style={{
                   display: 'flex',
+                  height: 250,
                   justifyContent: 'center',
                 }}
               />
@@ -100,10 +106,10 @@ const IndexPage = () => {
                 src="../images/thumbnails/blurred-logo.png"
                 alt="blurred logo content preview"
                 objectFit="contain"
-                height={250}
                 placeholder="blurred"
                 style={{
                   display: 'flex',
+                  height: 250,
                   justifyContent: 'center',
                 }}
               />
@@ -117,10 +123,10 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/light-bulb.jpg"
                 alt="light bulb content preview"
-                height={250}
                 placeholder="blurred"
                 style={{
                   display: 'flex',
+                  height: 250,
                   justifyContent: 'center',
                 }}
                 quality={100}
