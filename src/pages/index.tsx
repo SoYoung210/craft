@@ -12,6 +12,24 @@ const IndexPage = () => {
       <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/link-preview">
+            <ContentBox title="stacked toast">
+              <StaticImage
+                src="../images/thumbnails/link_preview.jpg"
+                alt="link Preview content preview"
+                placeholder="blurred"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+        <ContentList.Item>
           <Link to="/stacked-toast">
             <ContentBox title="stacked toast">
               <StaticImage
