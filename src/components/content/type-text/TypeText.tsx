@@ -1,21 +1,44 @@
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Expo, gsap, SteppedEase, Power4, Power3 } from 'gsap';
-import { forwardRef, useCallback, useRef } from 'react';
+import { Children, forwardRef, useCallback, useRef, useState } from 'react';
 
 import { css } from '../../../../stitches.config';
 import { useIsomorphicLayoutEffect } from '../../../hooks/useIsomorphicLayoutEffect';
+import { createContext } from '../../utility/createContext';
 
 import { splitText } from './splitText';
 
 /**
- * <TypeText>
+ * <TypingText>
  *  github.com/
- *  <TypeText.Highlight>SoYoung210</TypeText.Highlight>
- * </TypeText>
+ *  <TypingText.Highlight>SoYoung210</TypingText.Highlight>
+ * </TypingText>
  */
-export default function TypeText() {
+// FIXME: TypingHighlightText
+interface TypingTextContextValue {
+  fontSize: number;
+}
+const [TypingTextProvider, useTypingTextContext] =
+  createContext<TypingTextContextValue>('TypingText');
+
+interface TypingTextProps {
+  blinkCount?: number;
+  children: React.ReactNode;
+}
+
+const INITIAL_FONT_SIZE = '0';
+export default function TypingText({
+  children,
+  blinkCount = 5,
+}: TypingTextProps) {
   const bar = useRef<HTMLDivElement>(null);
   const text1 = useRef<HTMLDivElement>(null);
   const text2 = useRef<HTMLDivElement>(null);
+
+  const [fontSize, setFontSize] = useState(INITIAL_FONT_SIZE);
+  const combinedDefaultTextRefs = useComposedRefs(text1, ref =>
+    setFontSize(ref?.style.fontSize ?? INITIAL_FONT_SIZE)
+  );
 
   const moveBar = useCallback(() => {
     gsap.set(bar.current, {
@@ -23,6 +46,7 @@ export default function TypeText() {
     });
   }, []);
 
+  // gsap from, to?
   useIsomorphicLayoutEffect(() => {
     gsap
       .timeline({ delay: 0.2 })
@@ -91,32 +115,54 @@ export default function TypeText() {
       .timeScale(1.45);
   }, []);
 
+  // FIXME: 하이라아팅 된걸 거르고, 나머지 타이핑할게 있으면 이어주는.. api가 좋을듯?
+  const [firstChild, ...restChild] = Children.toArray(children);
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        height: 53,
-        width: '100%',
-        fontFamily: 'Red Hat Display',
-      }}
-    >
-      <div ref={text1} style={{ overflow: 'hidden', display: 'inline-block' }}>
-        github.com/
-      </div>
+    <TypingTextProvider fontSize={14}>
       <div
-        ref={text2}
-        id="text2"
-        style={{ position: 'absolute', display: 'inline-block' }}
+        style={{
+          position: 'relative',
+          height: 53,
+          width: '100%',
+          fontFamily: 'Red Hat Display',
+          // display: 'flex',
+          // alignItems: 'center',
+          // justifyContent: 'center',
+          fontSize: 40,
+        }}
+        // for ios a11y
+        role="text"
+        // for android a11y
+        tabIndex={0}
       >
-        SoYoung210
+        <div
+          ref={combinedDefaultTextRefs}
+          style={{
+            overflow: 'hidden',
+            display: 'inline-block',
+          }}
+        >
+          {firstChild}
+          {/* github.com */}
+        </div>
+        <div
+          ref={text2}
+          id="text2"
+          style={{ position: 'absolute', display: 'inline-block' }}
+        >
+          {restChild}
+        </div>
+        <Bar ref={bar} />
       </div>
-      <Bar ref={bar} />
-    </div>
+    </TypingTextProvider>
   );
 }
 
 // TODO: fontSize에 따라 결정되도록 하면 좋을듯?
 const Bar = forwardRef<HTMLDivElement>((props, ref) => {
+  const { fontSize } = useTypingTextContext('TypingText/Bar');
+
   return (
     <span
       ref={ref}

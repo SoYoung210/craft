@@ -26,7 +26,10 @@ export default function TypeTextPage() {
           },
         })()}
       >
-        <TypeText />
+        <TypeText>
+          github.com
+          <span>/soyoung</span>
+        </TypeText>
       </Figure>
     </PageLayout>
   );
