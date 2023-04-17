@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { graphql, PageProps } from 'gatsby';
 
 import { styled } from '../../stitches.config';
 import LinkPreview from '../components/content/link-preview/LinkPreview';
@@ -13,6 +14,7 @@ import example1 from '../images/link-preview/soso.png';
 import example2 from '../images/link-preview/radix-ui.png';
 import example3 from '../images/link-preview/apple.png';
 import { VStack } from '../components/material/Stack';
+import SEO from '../components/layout/SEO';
 
 interface LinkData {
   url: string;
@@ -112,3 +114,28 @@ const Li = styled('li', {
     marginLeft: -16,
   },
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Link Preview"
+      description="preview of the link on hover and focus to maintain attention."
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/link_preview.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;
