@@ -27,6 +27,7 @@ export default function TypingText({
   fontSize = 40,
   blinkCount = 5,
   highlightColor = '#17c0fd',
+  style,
   ...restProps
 }: TypingTextProps) {
   const tl = useRef(gsap.timeline({ delay: 0.2 }));
@@ -91,6 +92,10 @@ export default function TypingText({
       .timeScale(1.45);
 
     copied.play();
+
+    return () => {
+      copied.reverse();
+    };
   }, [blinkCount, highlightColor, moveBar]);
 
   const [firstChild, ...restChild] = Children.toArray(children);
@@ -102,9 +107,10 @@ export default function TypingText({
         position: 'relative',
         height: `calc(${withUnit(fontSize)} * ${LINE_HEIGHT})`,
         width: '100%',
-        fontFamily: 'Red Hat Display',
+        fontFamily: '"Red Hat Display"',
         fontSize,
-        ...restProps.style,
+        overflow: 'hidden',
+        ...style,
       }}
       // for ios a11y
       role="text"

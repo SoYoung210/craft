@@ -64,7 +64,15 @@ function PageContent() {
   return (
     <PageLayout>
       <PageLayout.Title>Link Preview</PageLayout.Title>
-      <PageLayout.Details>-</PageLayout.Details>
+      <PageLayout.Details>
+        <PageLayout.Summary>puppeteer + netlify function</PageLayout.Summary>
+        <PageLayout.DetailsContent>
+          <PageLayout.SubTitle>puppeteer</PageLayout.SubTitle>
+          <p>capture screenshot. use puppeteer-core for reduce size.</p>
+          <PageLayout.SubTitle>netlify function</PageLayout.SubTitle>
+          <p>gatsby cloud doesn't support headless chromium.</p>
+        </PageLayout.DetailsContent>
+      </PageLayout.Details>
 
       <form onSubmit={handleSubmit}>
         <TextField
