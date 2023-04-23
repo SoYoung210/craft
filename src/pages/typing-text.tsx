@@ -1,7 +1,10 @@
+import { graphql, PageProps } from 'gatsby';
+
 import { css } from '../../stitches.config';
 import TypingText from '../components/content/type-text/TypingText';
 import Figure from '../components/layout/Figure';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 
 export default function TypingTextPage() {
   return (
@@ -35,11 +38,32 @@ export default function TypingTextPage() {
   );
 }
 
-export const Head = () => {
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
-    <link
-      href="https://fonts.googleapis.com/css?family=Red+Hat+Display:400,700&display=swap"
-      rel="stylesheet"
-    />
+    <SEO
+      title="Typing Text"
+      description="Typing Text Effect"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    >
+      <link
+        href="https://fonts.googleapis.com/css?family=Red+Hat+Display:400,700&display=swap"
+        rel="stylesheet"
+      />
+    </SEO>
   );
 };
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/typing-text.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;

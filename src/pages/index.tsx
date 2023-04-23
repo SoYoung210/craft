@@ -83,6 +83,22 @@ const IndexPage = () => {
         </ContentList.Item>
 
         <ContentList.Item>
+          <Link to="/typing-text">
+            <ContentBox title="typing-text">
+              <StaticImage
+                src="../images/thumbnails/typing-text.png"
+                alt="Typing Text Effect Preview Image"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  height: 250,
+                }}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/genie-window">
             <ContentBox title="genie-window">
               <StaticImage
