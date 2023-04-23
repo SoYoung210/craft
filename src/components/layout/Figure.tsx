@@ -1,14 +1,20 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 import { styled } from '../../../stitches.config';
 
 interface Props {
   theme?: 'dark' | 'light';
   children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
 }
 export default function Figure(props: Props) {
-  const { theme, children } = props;
-  return <Root theme={theme}>{children}</Root>;
+  const { theme, children, className, style } = props;
+  return (
+    <Root theme={theme} className={className} style={style}>
+      {children}
+    </Root>
+  );
 }
 
 const Root = styled('div', {

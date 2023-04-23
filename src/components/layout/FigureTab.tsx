@@ -1,12 +1,4 @@
-import {
-  Root,
-  List,
-  Trigger,
-  Content,
-  TabsProps,
-  TabsListProps,
-  TabsTriggerProps,
-} from '@radix-ui/react-tabs';
+import { Root, List, Trigger, Content, TabsProps } from '@radix-ui/react-tabs';
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react';
 
 import { styled } from '../../../stitches.config';
