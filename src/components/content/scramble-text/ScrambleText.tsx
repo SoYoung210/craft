@@ -18,7 +18,7 @@ interface ScrambleTextProps extends Omit<PrimitiveDivProps, 'children'> {
 
 export default function ScrambleText({
   children,
-  size = 10,
+  size = 8,
   __index = 0,
   ...restProps
 }: ScrambleTextProps) {
