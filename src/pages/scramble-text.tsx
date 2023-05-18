@@ -1,9 +1,7 @@
 import ScrambleContent from '../components/content/scramble-text/ScrambleContent';
+import Figure from '../components/layout/Figure';
 import PageLayout from '../components/layout/PageLayout';
-/**
- * 
- Lorem ipsum dolor sit amet, consectetur adipisicing elit.
- */
+
 export default function ScrambleTextPage() {
   return (
     <PageLayout>
@@ -11,12 +9,26 @@ export default function ScrambleTextPage() {
       <PageLayout.Details>
         <PageLayout.Summary>scrabmle</PageLayout.Summary>
       </PageLayout.Details>
-      <ScrambleContent interval={50}>
-        <ScrambleContent.Text>Lorem ipsum dolor sit amet,</ScrambleContent.Text>
-        <ScrambleContent.Text style={{ marginLeft: 2 }}>
-          consectetur adipisicing elit.
-        </ScrambleContent.Text>
-      </ScrambleContent>
+      <Figure
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '300px',
+        }}
+      >
+        <ScrambleContent
+          interval={30}
+          style={{ fontSize: 18, fontWeight: 300 }}
+        >
+          <ScrambleContent.Text>
+            Lorem ipsum dolor sit amet,
+          </ScrambleContent.Text>
+          <ScrambleContent.Text style={{ marginLeft: 2 }}>
+            consectetur adipisicing elit.
+          </ScrambleContent.Text>
+        </ScrambleContent>
+      </Figure>
     </PageLayout>
   );
 }

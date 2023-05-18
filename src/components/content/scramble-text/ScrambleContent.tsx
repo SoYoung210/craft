@@ -24,6 +24,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export default function ScrambleContent({
   children,
   interval = 30,
+  style,
   ...restProps
 }: Props) {
   const [completeIndexList, setCompleteIndexList] = useState([-1]);
@@ -37,7 +38,10 @@ export default function ScrambleContent({
       completeIndexList={completeIndexList}
       addCompleteIndex={addCompleteIndex}
     >
-      <div style={{ display: 'flex', flexWrap: 'wrap' }} {...restProps}>
+      <div
+        style={{ display: 'flex', flexWrap: 'wrap', ...style }}
+        {...restProps}
+      >
         {Children.toArray(children)
           .filter(isValidElement)
           .filter(isScrambleTextElement)
