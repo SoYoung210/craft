@@ -30,12 +30,12 @@ export default function ScrambleTextPage() {
           style={{ fontSize: 18, fontWeight: 300 }}
         >
           <ScrambleContent.Text>
-            Lorem ipsum dolor sit amet,
+            Unstyled, Composable Random Text Animation
           </ScrambleContent.Text>
           <ScrambleContent.Text
-            style={{ marginLeft: 2, textDecoration: 'underline' }}
+            style={{ marginLeft: 4, textDecoration: 'underline' }}
           >
-            consec tetur adipisicing elit.
+            React Component
           </ScrambleContent.Text>
         </ScrambleContent>
         <Button
