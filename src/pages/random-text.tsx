@@ -1,8 +1,10 @@
+import { graphql, PageProps } from 'gatsby';
 import { useReducer } from 'react';
 
 import RandomText from '../components/content/random-text/RandomText';
 import Figure from '../components/layout/Figure';
 import PageLayout from '../components/layout/PageLayout';
+import SEO from '../components/layout/SEO';
 import Button from '../components/material/Button';
 import { RotateLeftIcon } from '../components/material/icon/RotateLeft';
 
@@ -14,6 +16,9 @@ export default function RandomTextPage() {
       <PageLayout.Title>Random Text Effect</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>scrabmle</PageLayout.Summary>
+        <PageLayout.DetailsContent>
+          use defined characters to scramble text
+        </PageLayout.DetailsContent>
       </PageLayout.Details>
       <Figure
         style={{
@@ -49,3 +54,28 @@ export default function RandomTextPage() {
     </PageLayout>
   );
 }
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Random Text Animation"
+      description="scrambled text reveal animation"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/random-text.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+  }
+`;

@@ -30,6 +30,24 @@ const IndexPage = () => {
           </Link>
         </ContentList.Item>
         <ContentList.Item>
+          <Link to="/random-text">
+            <ContentBox title="random text">
+              <StaticImage
+                src="../images/thumbnails/random-text.png"
+                alt="Random Text content preview"
+                placeholder="blurred"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+        <ContentList.Item>
           <Link to="/stacked-toast">
             <ContentBox title="stacked toast">
               <StaticImage
