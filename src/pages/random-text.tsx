@@ -1,17 +1,17 @@
 import { useReducer } from 'react';
 
-import ScrambleContent from '../components/content/scramble-text/ScrambleContent';
+import RandomText from '../components/content/random-text/RandomText';
 import Figure from '../components/layout/Figure';
 import PageLayout from '../components/layout/PageLayout';
 import Button from '../components/material/Button';
 import { RotateLeftIcon } from '../components/material/icon/RotateLeft';
 
-export default function ScrambleTextPage() {
+export default function RandomTextPage() {
   const [key, increaseKey] = useReducer(state => state + 1, 0);
 
   return (
     <PageLayout>
-      <PageLayout.Title>Scramble Text</PageLayout.Title>
+      <PageLayout.Title>Random Text Effect</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>scrabmle</PageLayout.Summary>
       </PageLayout.Details>
@@ -24,22 +24,22 @@ export default function ScrambleTextPage() {
           position: 'relative',
         }}
       >
-        <ScrambleContent
+        <RandomText
           key={key}
           interval={30}
           style={{ fontSize: 18, fontWeight: 300 }}
         >
-          <ScrambleContent.Text>
+          <RandomText.Block>
             Unstyled, Composable Random Text Animation
-          </ScrambleContent.Text>
-          <ScrambleContent.Text
+          </RandomText.Block>
+          <RandomText.Block
             style={{ marginLeft: 4, textDecoration: 'underline' }}
           >
             React Component
-          </ScrambleContent.Text>
-        </ScrambleContent>
+          </RandomText.Block>
+        </RandomText>
         <Button
-          aria-label="reload scramble text animation"
+          aria-label="reload random text animation"
           style={{ position: 'absolute', top: 10, right: 32 }}
           onClick={increaseKey}
         >

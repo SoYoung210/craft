@@ -5,5 +5,5 @@ interface ContextValue {
   completeIndexList: number[];
   addCompleteIndex: (index: number) => void;
 }
-export const [ScrambleContentProvider, useScrambleContentContext] =
-  createContext<ContextValue>('ScrambleContent');
+export const [RandomTextProvider, useRandomTextContext] =
+  createContext<ContextValue>('RadomText');

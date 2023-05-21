@@ -4,11 +4,11 @@ import { ComponentProps, useEffect, useReducer, useState } from 'react';
 import useInterval from '../../../hooks/useInterval';
 
 import { alphanumericChars } from './constants';
-import { useScrambleContentContext } from './context';
+import { useRandomTextContext } from './context';
 
 type PrimitiveDivProps = ComponentProps<typeof Primitive.div>;
 
-interface ScrambleTextProps extends Omit<PrimitiveDivProps, 'children'> {
+interface RandomTextBlockProps extends Omit<PrimitiveDivProps, 'children'> {
   children: string;
   size?: number;
   // internal usage
@@ -16,14 +16,14 @@ interface ScrambleTextProps extends Omit<PrimitiveDivProps, 'children'> {
   onAnimationEnd?: () => void;
 }
 
-export default function ScrambleText({
+export function RandomTextBlock({
   children,
   size = 8,
   __index = 0,
   ...restProps
-}: ScrambleTextProps) {
+}: RandomTextBlockProps) {
   const { interval, completeIndexList, addCompleteIndex } =
-    useScrambleContentContext('ScrambleContent.Text');
+    useRandomTextContext('RandomText.Block');
 
   const start = completeIndexList.some(index => index === __index - 1);
   const [scrambledText, setScrambledText] = useState(

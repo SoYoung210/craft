@@ -8,8 +8,8 @@ import {
   useState,
 } from 'react';
 
-import { ScrambleContentProvider } from './context';
-import ScrambleText from './ScrambleText';
+import { RandomTextProvider } from './context';
+import { RandomTextBlock } from './Block';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   children: ReactElement | ReactElement[];
@@ -18,10 +18,10 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 /**
  *
- * @description ScrambleContent 하위에는 Scramble.Text컴포넌트로만 구성하는 것 추천
+ * @description RadomText 하위에는 RandomText.Content컴포넌트로만 구성하는 것 추천
  */
 
-export default function ScrambleContent({
+export default function RandomText({
   children,
   interval = 30,
   style,
@@ -33,7 +33,7 @@ export default function ScrambleContent({
   }, []);
 
   return (
-    <ScrambleContentProvider
+    <RandomTextProvider
       interval={interval}
       completeIndexList={completeIndexList}
       addCompleteIndex={addCompleteIndex}
@@ -44,7 +44,7 @@ export default function ScrambleContent({
       >
         {Children.toArray(children)
           .filter(isValidElement)
-          .filter(isScrambleTextElement)
+          .filter(isRandomTextBlockElement)
           .map((child, index) => {
             return cloneElement(child, {
               ...child.props,
@@ -52,12 +52,14 @@ export default function ScrambleContent({
             });
           })}
       </div>
-    </ScrambleContentProvider>
+    </RandomTextProvider>
   );
 }
 
-function isScrambleTextElement(element: ReactElement): element is ReactElement {
-  return element.type === ScrambleText;
+function isRandomTextBlockElement(
+  element: ReactElement
+): element is ReactElement {
+  return element.type === RandomTextBlock;
 }
 
-ScrambleContent.Text = ScrambleText;
+RandomText.Block = RandomTextBlock;
