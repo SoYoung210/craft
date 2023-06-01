@@ -2,18 +2,29 @@ import * as RadixSlider from '@radix-ui/react-slider';
 
 import { styled } from '../../../../stitches.config';
 
-interface Props {
-  width: number;
+interface Props
+  extends Omit<RadixSlider.SliderProps, 'value' | 'onValueChange'> {
+  width: number | string;
   height?: number;
   max: number;
   value: number;
   onValueChange: (value: number) => void;
 }
 export function Slider(props: Props) {
-  const { width, height = 3, max, value } = props;
+  const { width, height = 20, max, value, onValueChange, ...restProps } = props;
 
   return (
-    <SliderRoot value={[value]} max={max} step={1}>
+    <SliderRoot
+      value={[value]}
+      max={max}
+      step={0.01}
+      style={{
+        width,
+        height,
+      }}
+      onValueChange={v => onValueChange(v[0])}
+      {...restProps}
+    >
       <SliderTrack>
         <SliderRange />
       </SliderTrack>
@@ -27,7 +38,6 @@ const SliderRoot = styled(RadixSlider.Root, {
   alignItems: 'center',
   userSelect: 'none',
   touchAction: 'none',
-  width: 200,
   height: 20,
 });
 
