@@ -14,7 +14,7 @@ export const PauseIcon = forwardRef<SVGSVGElement, PauseIconProps>(
     forwardedRef
   ) => {
     const color = getColor(rawColor);
-    console.log('PauseIcon color', color);
+
     return (
       <svg
         width={size}

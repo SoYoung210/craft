@@ -2,13 +2,13 @@ import { forwardRef, SVGAttributes } from 'react';
 
 import { ColorType, getColor } from '../../../utils/color';
 
-export interface PlayIconProps extends SVGAttributes<SVGElement> {
+export interface ArrowUpLeftIconProps extends SVGAttributes<SVGElement> {
   children?: never;
   color?: ColorType;
   size?: number;
 }
 
-export const PlayIcon = forwardRef<SVGSVGElement, PlayIconProps>(
+export const ArrowUpLeft = forwardRef<SVGSVGElement, ArrowUpLeftIconProps>(
   (
     { color: rawColor = 'currentColor', size = 24, style, ...restProps },
     forwardedRef
@@ -21,16 +21,22 @@ export const PlayIcon = forwardRef<SVGSVGElement, PlayIconProps>(
         height={size}
         viewBox="0 0 24 24"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...restProps}
         ref={forwardedRef}
+        {...restProps}
         style={{ width: size, height: size, flexShrink: 0, ...style }}
+        xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M10.125 15.375V8.625L15.375 12L10.125 15.375Z"
-          fill={color}
+          d="M5 12L12 5L19 12"
           stroke={color}
-          strokeWidth="2.25"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 19V8.5V8"
+          stroke={color}
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
