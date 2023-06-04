@@ -76,6 +76,10 @@ export const {
     colors,
   },
   utils: {
+    size: (value: string | number) => ({
+      width: value,
+      height: value,
+    }),
     bc: (value: Stitches.PropertyValue<'backgroundColor'>) => ({
       backgroundColor: value,
     }),
