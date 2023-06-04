@@ -19,6 +19,7 @@ const ASPECT_RATIO = 632 / 355.5;
 interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   visible: boolean;
   onPlayingChange: (playing: boolean) => void;
+  addPlayer: (player: ReactPlayer) => void;
 }
 
 export function FloatingVideo(props: FloatingVideoProps) {
@@ -27,10 +28,12 @@ export function FloatingVideo(props: FloatingVideoProps) {
     visible,
     playing = false,
     onPlayingChange,
+    addPlayer,
     ...restProps
   } = props;
   const floatingContainerRef = useRef<HTMLDivElement>(null);
 
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [minimize, setMinimize] = useState(false);
   const floatingVideoHeight = minimize ? 'unset' : '100%';
   const floatingVideoRootHeight = minimize ? 40 : 'auto';
@@ -39,7 +42,8 @@ export function FloatingVideo(props: FloatingVideoProps) {
     <VideoController
       asChild
       className={css({
-        width: DEFAULT_WIDTH,
+        // width: DEFAULT_WIDTH,
+        width,
         height: floatingVideoRootHeight,
         aspectRatio: ASPECT_RATIO,
         willChange: 'transform',
@@ -49,6 +53,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
         // TODO: move to motion.div
         display: visible ? 'block' : 'none',
       })()}
+      ref={floatingContainerRef}
     >
       <motion.div
         style={{ position: 'fixed', bottom: 0, left: 0 }}
@@ -59,6 +64,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
       >
         <ReactPlayer
           width="100%"
+          ref={addPlayer}
           height={floatingVideoHeight}
           controls={controls}
           playing={playing}
@@ -102,6 +108,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
                       info.delta.x,
                       info.delta.y
                     );
+
                     const originWidth =
                       floatingContainerRef.current?.offsetWidth;
                     const originHeight =
@@ -114,10 +121,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
                         direction
                       );
 
-                      floatingContainerRef.current?.setAttribute(
-                        'style',
-                        `width: ${width}px`
-                      );
+                      setWidth(Math.max(width, 246));
                     }
                   }}
                   dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}

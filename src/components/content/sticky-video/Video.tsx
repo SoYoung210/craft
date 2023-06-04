@@ -80,6 +80,7 @@ export function Video(props: ReactPlayerProps) {
         controls={controls}
         onPlayingChange={onPlayingChange}
         playing={playing}
+        addPlayer={addPlayer}
         {...restProps}
       />
     </>
