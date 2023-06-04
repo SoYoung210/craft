@@ -1,8 +1,8 @@
 import { HTMLAttributes, useMemo } from 'react';
 
-import { styled } from '../../../../stitches.config';
-import { PauseIcon } from '../../material/icon/PauseIcon';
-import { PlayIcon } from '../../material/icon/Play';
+import { styled } from '../../../../../stitches.config';
+import { PauseIcon } from '../../../material/icon/PauseIcon';
+import { PlayIcon } from '../../../material/icon/Play';
 
 interface PlayControlProps extends HTMLAttributes<HTMLButtonElement> {
   playing: boolean;
@@ -33,29 +33,5 @@ export function PlayControl({
 }
 
 const ResetButton = styled('button', {
-  display: 'inline-flex',
-  whiteSpace: 'nowrap',
-  userSelect: 'none',
-  '-webkit-tap-highlight-color': 'rgba(0, 0, 0, 0)',
-  overflow: 'hidden',
-
-  margin: '0',
-  padding: '0',
-
-  outline: '0',
-  border: '0 solid transparent',
-  background: 'transparent',
-  cursor: 'pointer',
-
-  fontFamily: 'inherit',
-  fontWeight: '600',
-  '-webkit-font-smoothing': 'antialiased',
-
-  '&:hover,&:focus': {
-    textDecoration: 'none',
-  },
-
-  '&:focus': {
-    outline: 'none',
-  },
+  resetButton: 'inline-flex',
 });

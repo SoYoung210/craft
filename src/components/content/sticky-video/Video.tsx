@@ -1,12 +1,11 @@
-import { useState, lazy } from 'react';
-import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy';
+import { lazy } from 'react';
+import { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
 
-import { ease, styled } from '../../../../stitches.config';
-
-import { PlayControl as PlayControlRaw } from './Control';
 import { Slider } from './Slider';
 import { FloatingVideo } from './FloatingVideo';
+import { VideoController } from './shared/VideoController';
+import { useMultiVideoControl } from './useVideoControl';
 
 const VideoPlayer = lazy(() => import('react-player/lazy'));
 
@@ -25,132 +24,64 @@ export function Video(props: ReactPlayerProps) {
   const { ref, inView: originVideoInView } = useInView({
     threshold: 0,
   });
-  const [playing, setPlaying] = useState(false);
-  const [played, setPlayed] = useState(0);
-  const [seeking, setSeeking] = useState(false);
-
-  const [player, setPlayer] = useState<ReactPlayer | null>(null);
-  const handleSeekChange = (value: number) => {
-    setSeeking(true);
-    setPlayed(value);
-  };
-
-  const handleSeekMouseUp = () => {
-    setSeeking(false);
-    player?.seekTo(played);
-  };
-
-  const handleSeekMouseDown = () => {
-    setSeeking(true);
-  };
+  const [
+    { addPlayer },
+    {
+      playing,
+      onPlayingChange,
+      played,
+      onPlayedChange,
+      seeking,
+      onSeekingChange,
+      onSeekMouseDown,
+      onSeekMouseUp,
+    },
+  ] = useMultiVideoControl();
 
   return (
     <>
-      <Root ref={ref} data-todo-role="root">
+      <VideoController ref={ref}>
         <VideoPlayer
           width="100%"
           height="auto"
-          ref={player => setPlayer(player)}
+          ref={addPlayer}
           controls={controls}
           playing={playing}
           playsinline={true}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
+          onPlay={() => onPlayingChange(true)}
+          onPause={() => onPlayingChange(false)}
           style={{ aspectRatio: ASPECT_RATIO }}
           onProgress={(state: ProgressData) => {
             if (!seeking) {
-              setPlayed(state.played);
+              onPlayedChange(state.played);
             }
           }}
           {...restProps}
         />
-        <PlayControl
-          data-todo-role="control-button"
+        <VideoController.PlayControl
           playing={playing}
-          onPlayingChange={setPlaying}
+          onPlayingChange={onPlayingChange}
           size={200}
         />
-        <ControlContainer>
+        <VideoController.BottomControlContainer>
           <Slider
             width="100%"
             value={played}
-            onValueChange={handleSeekChange}
+            onValueChange={onSeekingChange}
             max={0.999999}
-            onPointerDown={handleSeekMouseDown}
-            onPointerUp={handleSeekMouseUp}
+            onPointerDown={onSeekMouseDown}
+            onPointerUp={onSeekMouseUp}
           />
-        </ControlContainer>
-      </Root>
+        </VideoController.BottomControlContainer>
+      </VideoController>
       {/** TODO: 나타날 때 약간 scale 효과주기 */}
       <FloatingVideo
         visible={!originVideoInView}
         controls={controls}
+        onPlayingChange={onPlayingChange}
+        playing={playing}
         {...restProps}
       />
     </>
   );
 }
-
-const ControlContainer = styled('div', {
-  position: 'absolute',
-  bottom: 6,
-  width: '95%',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  zIndex: 2,
-  opacity: 0,
-  transition: `opacity 0.24s ${ease.easeOutCubic}`,
-});
-
-const PlayControl = styled(PlayControlRaw, {
-  // opacity: 0,
-  opacity: 1,
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  zIndex: 2,
-  scale: 1,
-  transition: `opacity 0.24s ${ease.easeOutCubic}`,
-
-  // FIXME: svg 사이즈좀 줄여야겠다..
-  '& > svg': {
-    transition: 'scale 0.24s ease',
-  },
-
-  '&:hover': {
-    '& > svg': {
-      scale: 1.1,
-    },
-  },
-});
-
-const Root = styled('div', {
-  position: 'relative',
-
-  '&::after': {
-    content: '""',
-    opacity: 0,
-    transition: `opacity 0.24s ${ease.easeOutCubic}`,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.18)',
-  },
-
-  '&:hover': {
-    '&::after': { opacity: 1 },
-    [`& ${ControlContainer}, & ${PlayControl}`]: {
-      opacity: 1,
-    },
-  },
-
-  // reset video wrapper style
-  '& > div': {
-    lineHeight: 0,
-  },
-});

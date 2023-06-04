@@ -6,18 +6,29 @@ import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { css, styled } from '../../../../stitches.config';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
 import { Underline } from '../../material/icon/Underline';
+import { External } from '../../material/icon/External';
 import { HStack } from '../../material/Stack';
+import { RequiredKeys } from '../../../utils/type';
+
+import { VideoController } from './shared/VideoController';
 
 // TODO: prop으로 받으면 좋음..
 const DEFAULT_WIDTH = 384;
 const ASPECT_RATIO = 632 / 355.5;
 
-interface FloatingVideoProps extends ReactPlayerProps {
+interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   visible: boolean;
+  onPlayingChange: (playing: boolean) => void;
 }
 
 export function FloatingVideo(props: FloatingVideoProps) {
-  const { controls = false, visible, ...restProps } = props;
+  const {
+    controls = false,
+    visible,
+    playing = false,
+    onPlayingChange,
+    ...restProps
+  } = props;
   const floatingContainerRef = useRef<HTMLDivElement>(null);
 
   const [minimize, setMinimize] = useState(false);
@@ -25,34 +36,98 @@ export function FloatingVideo(props: FloatingVideoProps) {
   const floatingVideoRootHeight = minimize ? 40 : 'auto';
 
   return (
-    <motion.div
-      style={{ position: 'fixed', bottom: 0, left: 0 }}
-      drag={true}
-      dragMomentum={false}
-      // FIXME: 오른쪽도 window size맞춰서 잡아주기
-      dragConstraints={{ left: 0, bottom: 0 }}
+    <VideoController
+      asChild
+      className={css({
+        width: DEFAULT_WIDTH,
+        height: floatingVideoRootHeight,
+        aspectRatio: ASPECT_RATIO,
+        willChange: 'transform',
+        borderRadius: 12,
+        boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
+        overflow: 'hidden',
+        // TODO: move to motion.div
+        display: visible ? 'block' : 'none',
+      })()}
     >
-      <FloatingContainer
-        ref={floatingContainerRef}
-        style={{
-          display: visible ? 'block' : 'none',
-          height: floatingVideoRootHeight,
-        }}
+      <motion.div
+        style={{ position: 'fixed', bottom: 0, left: 0 }}
+        drag={true}
+        dragMomentum={false}
+        // FIXME: 오른쪽도 window size맞춰서 잡아주기
+        dragConstraints={{ left: 0, bottom: 0 }}
       >
         <ReactPlayer
           width="100%"
           height={floatingVideoHeight}
           controls={controls}
+          playing={playing}
+          onPlay={() => onPlayingChange(true)}
+          onPause={() => onPlayingChange(false)}
           playsinline={true}
           {...restProps}
         />
-        <FloatingIconContainer gap={8}>
-          <FloatingIconRoot asChild>
-            <button className={css({ resetButton: 'inline-flex' })()}>
-              <Underline onClick={() => setMinimize(true)} color="white" />
-            </button>
-          </FloatingIconRoot>
-          <FloatingIconRoot asChild>
+        <VideoController.PlayControl
+          playing={playing}
+          onPlayingChange={onPlayingChange}
+          size={100}
+        />
+        {minimize ? (
+          <FloatingIconContainer gap={0} css={{ top: 6 }}>
+            <FloatingIconRoot asChild>
+              <button
+                className={css({ resetButton: 'inline-flex', size: 30 })()}
+              >
+                <External
+                  size={20}
+                  onClick={() => setMinimize(false)}
+                  color="white"
+                />
+              </button>
+            </FloatingIconRoot>
+          </FloatingIconContainer>
+        ) : (
+          <>
+            <FloatingIconContainer gap={8}>
+              <FloatingIconRoot asChild>
+                <button className={css({ resetButton: 'inline-flex' })()}>
+                  <Underline onClick={() => setMinimize(true)} color="white" />
+                </button>
+              </FloatingIconRoot>
+              <FloatingIconRoot asChild>
+                <ResizeDiv
+                  drag={true}
+                  onDrag={(event, info) => {
+                    const { offset, direction } = getBiggerOffset(
+                      info.delta.x,
+                      info.delta.y
+                    );
+                    const originWidth =
+                      floatingContainerRef.current?.offsetWidth;
+                    const originHeight =
+                      floatingContainerRef.current?.offsetHeight;
+
+                    if (originWidth != null && originHeight != null) {
+                      const { width } = getNextSize(
+                        { width: originWidth, height: originHeight },
+                        offset,
+                        direction
+                      );
+
+                      floatingContainerRef.current?.setAttribute(
+                        'style',
+                        `width: ${width}px`
+                      );
+                    }
+                  }}
+                  dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                  dragElastic={0}
+                  dragMomentum={false}
+                >
+                  <ArrowUpLeft color="white" />
+                </ResizeDiv>
+              </FloatingIconRoot>
+            </FloatingIconContainer>
             <ResizeDiv
               drag={true}
               onDrag={(event, info) => {
@@ -82,51 +157,12 @@ export function FloatingVideo(props: FloatingVideoProps) {
             >
               <ArrowUpLeft color="white" />
             </ResizeDiv>
-          </FloatingIconRoot>
-        </FloatingIconContainer>
-        <ResizeDiv
-          drag={true}
-          onDrag={(event, info) => {
-            const { offset, direction } = getBiggerOffset(
-              info.delta.x,
-              info.delta.y
-            );
-            const originWidth = floatingContainerRef.current?.offsetWidth;
-            const originHeight = floatingContainerRef.current?.offsetHeight;
-
-            if (originWidth != null && originHeight != null) {
-              const { width } = getNextSize(
-                { width: originWidth, height: originHeight },
-                offset,
-                direction
-              );
-
-              floatingContainerRef.current?.setAttribute(
-                'style',
-                `width: ${width}px`
-              );
-            }
-          }}
-          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-          dragElastic={0}
-          dragMomentum={false}
-        >
-          <ArrowUpLeft color="white" />
-        </ResizeDiv>
-      </FloatingContainer>
-    </motion.div>
+          </>
+        )}
+      </motion.div>
+    </VideoController>
   );
 }
-
-const FloatingContainer = styled('div', {
-  width: DEFAULT_WIDTH,
-  height: 'auto',
-  aspectRatio: ASPECT_RATIO,
-  willChange: 'transform',
-  borderRadius: 16,
-  boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
-  overflow: 'hidden',
-});
 
 // TODO: size를 별도로 관리해야..
 // 아이콘 래퍼같은게..
@@ -134,6 +170,7 @@ const FloatingIconContainer = styled(HStack, {
   position: 'absolute',
   top: 10,
   right: 10,
+  zIndex: 1,
 });
 const FloatingIconRoot = styled(Primitive.div, {
   width: 40,
