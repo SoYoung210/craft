@@ -11,7 +11,7 @@ interface Props
   onValueChange: (value: number) => void;
 }
 export function Slider(props: Props) {
-  const { width, height = 20, max, value, onValueChange, ...restProps } = props;
+  const { width, height = 30, max, value, onValueChange, ...restProps } = props;
 
   return (
     <SliderRoot
@@ -38,15 +38,20 @@ const SliderRoot = styled(RadixSlider.Root, {
   alignItems: 'center',
   userSelect: 'none',
   touchAction: 'none',
-  height: 20,
+  cursor: 'pointer',
+  transition: 'transform 0.2s ease',
+
+  '&:hover': {
+    transform: 'scaleY(1.3)',
+  },
 });
 
 const SliderTrack = styled(RadixSlider.Track, {
   backgroundColor: 'rgba(255, 255, 255, 0.4)',
   position: 'relative',
   flexGrow: 1,
-  borderRadius: '3px',
-  height: 3,
+  borderRadius: '999px',
+  height: 8,
 });
 
 const SliderRange = styled(RadixSlider.Range, {

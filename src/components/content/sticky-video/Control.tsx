@@ -10,7 +10,6 @@ interface PlayControlProps extends HTMLAttributes<HTMLButtonElement> {
   size?: number;
 }
 
-// const ICON_COLOR = 'white';
 const ICON_COLOR = 'gray0';
 export function PlayControl({
   playing,
@@ -33,8 +32,6 @@ export function PlayControl({
   );
 }
 
-export function SeekControl() {}
-
 const ResetButton = styled('button', {
   display: 'inline-flex',
   whiteSpace: 'nowrap',
@@ -44,8 +41,6 @@ const ResetButton = styled('button', {
 
   margin: '0',
   padding: '0',
-
-  color: 'red',
 
   outline: '0',
   border: '0 solid transparent',

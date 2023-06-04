@@ -4,16 +4,16 @@ import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
 
 import { styled } from '../../../../stitches.config';
-import { HStack } from '../../material/Stack';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
 
-import { PlayControl } from './Control';
+import { PlayControl as PlayControlRaw } from './Control';
 import { Slider } from './Slider';
 
 const VideoPlayer = lazy(() => import('react-player/lazy'));
 
 const DEFAULT_WIDTH = 384;
 const DEFAULT_HEIGHT = 216;
+const ASPECT_RATIO = 632 / 355.5;
 
 interface ProgressData {
   loaded: number;
@@ -28,7 +28,6 @@ export function Video(props: ReactPlayerProps) {
   });
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [seeking, setSeeking] = useState(false);
   const floatingContainerRef = useRef<HTMLDivElement>(null);
 
@@ -48,46 +47,43 @@ export function Video(props: ReactPlayerProps) {
   };
 
   return (
-    <Root ref={ref} data-todo-role="root">
-      <VideoPlayer
-        width="100%"
-        ref={player => setPlayer(player)}
-        controls={controls}
-        playing={playing}
-        onDuration={setDuration}
-        playsinline={true}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onProgress={(state: ProgressData) => {
-          // TODO: seeking 처리하기
-          if (!seeking) {
-            setPlayed(state.played);
-          }
-        }}
-        {...restProps}
-      />
-      <PlayControl
-        data-todo-role="control-button"
-        playing={playing}
-        onPlayingChange={setPlaying}
-        size={200}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        }}
-      />
-      <ControlContainer>
-        <Slider
+    <>
+      <Root ref={ref} data-todo-role="root">
+        <VideoPlayer
           width="100%"
-          value={played}
-          onValueChange={handleSeekChange}
-          max={0.999999}
-          onPointerDown={handleSeekMouseDown}
-          onPointerUp={handleSeekMouseUp}
+          height="auto"
+          ref={player => setPlayer(player)}
+          controls={controls}
+          playing={playing}
+          playsinline={true}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          style={{ aspectRatio: ASPECT_RATIO }}
+          onProgress={(state: ProgressData) => {
+            if (!seeking) {
+              setPlayed(state.played);
+            }
+          }}
+          {...restProps}
         />
-      </ControlContainer>
+        <PlayControl
+          data-todo-role="control-button"
+          playing={playing}
+          onPlayingChange={setPlaying}
+          size={200}
+        />
+        <ControlContainer>
+          <Slider
+            width="100%"
+            value={played}
+            onValueChange={handleSeekChange}
+            max={0.999999}
+            onPointerDown={handleSeekMouseDown}
+            onPointerUp={handleSeekMouseUp}
+          />
+        </ControlContainer>
+      </Root>
+      {/** TODO: 나타날 때 약간 scale 효과주기 */}
       <motion.div
         style={{ position: 'fixed', bottom: 0, left: 0 }}
         drag={true}
@@ -99,8 +95,6 @@ export function Video(props: ReactPlayerProps) {
           ref={floatingContainerRef}
           style={{
             display: originVideoInView ? 'none' : 'block',
-            width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
           }}
         >
           <ReactPlayer
@@ -111,6 +105,7 @@ export function Video(props: ReactPlayerProps) {
             playsinline={true}
             {...restProps}
           />
+          {/** FIXME: 항상 auto로 두고.. aspectRatio만 설정해두면 될수도.. */}
           <ResizeDiv
             drag={true}
             onDrag={(event, info) => {
@@ -122,7 +117,7 @@ export function Video(props: ReactPlayerProps) {
               const originHeight = floatingContainerRef.current?.offsetHeight;
 
               if (originWidth != null && originHeight != null) {
-                const { width, height } = getNextSize(
+                const { width } = getNextSize(
                   { width: originWidth, height: originHeight },
                   offset,
                   direction
@@ -130,7 +125,7 @@ export function Video(props: ReactPlayerProps) {
 
                 floatingContainerRef.current?.setAttribute(
                   'style',
-                  `width: ${width}px; height: ${height}px;`
+                  `width: ${width}px`
                 );
               }
             }}
@@ -142,39 +137,91 @@ export function Video(props: ReactPlayerProps) {
           </ResizeDiv>
         </FloatingContainer>
       </motion.div>
-    </Root>
+    </>
   );
 }
 
-const Root = styled('div', {
-  position: 'relative',
-});
 const ControlContainer = styled('div', {
   position: 'absolute',
-  bottom: 0,
-  width: '100%',
+  bottom: 6,
+  width: '95%',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 2,
+  opacity: 0,
+  transition: 'opacity 0.24s cubic-bezier(0.33, 1, 0.68, 1)',
+});
+
+const PlayControl = styled(PlayControlRaw, {
+  // opacity: 0,
+  opacity: 1,
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  zIndex: 2,
+  scale: 1,
+  transition: 'opacity 0.24s cubic-bezier(0.33, 1, 0.68, 1)',
+
+  // FIXME: svg 사이즈좀 줄여야겠다..
+  '& > svg': {
+    transition: 'scale 0.24s ease',
+  },
+
+  '&:hover': {
+    '& > svg': {
+      scale: 1.1,
+    },
+  },
+});
+
+const Root = styled('div', {
+  position: 'relative',
+
+  '&::after': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+
+  '&:hover': {
+    '&::after': { content: '""' },
+    [`& ${ControlContainer}, & ${PlayControl}`]: {
+      opacity: 1,
+    },
+  },
+
+  // reset video wrapper style
+  '& > div': {
+    lineHeight: 0,
+  },
 });
 
 const FloatingContainer = styled('div', {
-  background: '#A5A7A7',
   width: DEFAULT_WIDTH,
-  height: DEFAULT_HEIGHT,
+  height: 'auto',
+  aspectRatio: ASPECT_RATIO,
   willChange: 'transform',
   zIndex: 4,
   borderRadius: 16,
-  border: '1px solid #A5A7A7',
   boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
   overflow: 'hidden',
 });
 
 const ResizeDiv = styled(motion.div, {
-  width: 100,
-  height: 30,
-  backgroundColor: 'steelblue',
+  width: 40,
+  height: 40,
+  borderRadius: 8,
+  backgroundColor: '$white024',
   cursor: 'ne-resize',
   position: 'absolute',
-  top: 0,
-  right: 0,
+  top: 10,
+  right: 10,
 
   svg: {
     transform: 'rotate(45deg)',
