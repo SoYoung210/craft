@@ -11,17 +11,32 @@ import { HStack } from '../../material/Stack';
 import { RequiredKeys } from '../../../utils/type';
 
 import { VideoController } from './shared/VideoController';
+import { Slider } from './Slider';
 
 // TODO: prop으로 받으면 좋음..
 const DEFAULT_WIDTH = 384;
+const MIN_SIZE = 342;
 const ASPECT_RATIO = 632 / 355.5;
 
 interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   visible: boolean;
   onPlayingChange: (playing: boolean) => void;
   addPlayer: (player: ReactPlayer) => void;
+  played: number;
+  onSeekingChange: (v: number) => void;
+  onSeekMouseDown: () => void;
+  onSeekMouseUp: () => void;
 }
 
+/**
+ * TODO: 0605주에 할일
+ * - minimize되었을 때의 control추가하기
+ * - 각각 등장/exit? 애니메이션 넣기
+ * - 코드 인터페이스 정리하기
+ * - minimize 에서 expand누를 때 화살표 살짝 증가하게
+ * - 최소화 누르는 액션
+ * - minimize추가기능 (like arc)
+ */
 export function FloatingVideo(props: FloatingVideoProps) {
   const {
     controls = false,
@@ -29,8 +44,13 @@ export function FloatingVideo(props: FloatingVideoProps) {
     playing = false,
     onPlayingChange,
     addPlayer,
+    played,
+    onSeekingChange,
+    onSeekMouseDown,
+    onSeekMouseUp,
     ...restProps
   } = props;
+  const [canDrag, setCanDrag] = useState(true);
   const floatingContainerRef = useRef<HTMLDivElement>(null);
 
   const [width, setWidth] = useState(DEFAULT_WIDTH);
@@ -42,8 +62,6 @@ export function FloatingVideo(props: FloatingVideoProps) {
     <VideoController
       asChild
       className={css({
-        // width: DEFAULT_WIDTH,
-        width,
         height: floatingVideoRootHeight,
         aspectRatio: ASPECT_RATIO,
         willChange: 'transform',
@@ -53,14 +71,18 @@ export function FloatingVideo(props: FloatingVideoProps) {
         // TODO: move to motion.div
         display: visible ? 'block' : 'none',
       })()}
+      style={{ width: `min(${width}px, 80vw)` }}
       ref={floatingContainerRef}
     >
       <motion.div
         style={{ position: 'fixed', bottom: 0, left: 0 }}
-        drag={true}
+        drag={canDrag}
         dragMomentum={false}
         // FIXME: 오른쪽도 window size맞춰서 잡아주기
         dragConstraints={{ left: 0, bottom: 0 }}
+        onDragEnd={() => {
+          setCanDrag(true);
+        }}
       >
         <ReactPlayer
           width="100%"
@@ -73,11 +95,43 @@ export function FloatingVideo(props: FloatingVideoProps) {
           playsinline={true}
           {...restProps}
         />
-        <VideoController.PlayControl
-          playing={playing}
-          onPlayingChange={onPlayingChange}
-          size={100}
-        />
+        {minimize ? (
+          <FloatingIconRoot css={{ size: 30 }} asChild>
+            <VideoController.PlayControl
+              playing={playing}
+              onPlayingChange={onPlayingChange}
+              style={{ opacity: 1, transition: 'none' }}
+              reduceMotion={true}
+              size={20}
+            />
+          </FloatingIconRoot>
+        ) : (
+          <VideoController.PlayControl
+            playing={playing}
+            onPlayingChange={onPlayingChange}
+            size={80}
+          />
+        )}
+
+        {minimize ? null : (
+          <VideoController.BottomControlContainer>
+            <Slider
+              width="100%"
+              value={played}
+              onValueChange={onSeekingChange}
+              max={0.999999}
+              draggable={false}
+              onPointerDown={() => {
+                setCanDrag(false);
+                onSeekMouseDown();
+              }}
+              onPointerUp={() => {
+                setCanDrag(true);
+                onSeekMouseUp();
+              }}
+            />
+          </VideoController.BottomControlContainer>
+        )}
         {minimize ? (
           <FloatingIconContainer gap={0} css={{ top: 6 }}>
             <FloatingIconRoot asChild>
@@ -104,24 +158,13 @@ export function FloatingVideo(props: FloatingVideoProps) {
                 <ResizeDiv
                   drag={true}
                   onDrag={(event, info) => {
-                    const { offset, direction } = getBiggerOffset(
-                      info.delta.x,
-                      info.delta.y
-                    );
+                    const offset = getBiggerOffset(info.delta.x, info.delta.y);
 
                     const originWidth =
                       floatingContainerRef.current?.offsetWidth;
-                    const originHeight =
-                      floatingContainerRef.current?.offsetHeight;
 
-                    if (originWidth != null && originHeight != null) {
-                      const { width } = getNextSize(
-                        { width: originWidth, height: originHeight },
-                        offset,
-                        direction
-                      );
-
-                      setWidth(Math.max(width, 246));
+                    if (originWidth != null) {
+                      setWidth(Math.max(offset + originWidth, MIN_SIZE));
                     }
                   }}
                   dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
@@ -132,35 +175,6 @@ export function FloatingVideo(props: FloatingVideoProps) {
                 </ResizeDiv>
               </FloatingIconRoot>
             </FloatingIconContainer>
-            <ResizeDiv
-              drag={true}
-              onDrag={(event, info) => {
-                const { offset, direction } = getBiggerOffset(
-                  info.delta.x,
-                  info.delta.y
-                );
-                const originWidth = floatingContainerRef.current?.offsetWidth;
-                const originHeight = floatingContainerRef.current?.offsetHeight;
-
-                if (originWidth != null && originHeight != null) {
-                  const { width } = getNextSize(
-                    { width: originWidth, height: originHeight },
-                    offset,
-                    direction
-                  );
-
-                  floatingContainerRef.current?.setAttribute(
-                    'style',
-                    `width: ${width}px`
-                  );
-                }
-              }}
-              dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-              dragElastic={0}
-              dragMomentum={false}
-            >
-              <ArrowUpLeft color="white" />
-            </ResizeDiv>
           </>
         )}
       </motion.div>
@@ -215,38 +229,23 @@ const ResizeDiv = styled(motion.div, {
   },
 });
 
-function getBiggerOffset(
-  x: number,
-  y: number
-): { offset: number; direction: 'x' | 'y' } {
-  if (Math.abs(x) > Math.abs(y)) {
-    return { offset: x, direction: 'x' };
-  } else {
-    return { offset: y, direction: 'y' };
-  }
+/**
+ *
+ * @param x 양수: 우측으로 움직임 / 음수: 왼쪽으로 움직임
+ * @param y 양수: 아래로 / 음수: 위로
+ * @returns
+ */
+function getBiggerOffset(x: number, y: number) {
+  const toIncrease = x > 0 || y < 0;
+  const offset = Math.abs(x) > Math.abs(y) ? x : y;
+
+  return toIncrease ? toPositive(offset) : toNegative(offset);
 }
 
-function getNextSize(
-  originSize: {
-    width: number;
-    height: number;
-  },
-  offset: number,
-  direction: 'x' | 'y'
-) {
-  const aspectRatio = originSize.height / originSize.width;
+function toPositive(num: number) {
+  return num > 0 ? num : -num;
+}
 
-  if (direction === 'x') {
-    const offsetHeight = aspectRatio * offset;
-    return {
-      width: originSize.width + offset,
-      height: originSize.height + offsetHeight,
-    };
-  } else {
-    const offsetWidth = offset / aspectRatio;
-    return {
-      width: originSize.width + offsetWidth,
-      height: originSize.height + offset,
-    };
-  }
+function toNegative(num: number) {
+  return num < 0 ? num : -num;
 }

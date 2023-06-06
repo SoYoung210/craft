@@ -27,7 +27,7 @@ export const PlayIcon = forwardRef<SVGSVGElement, PlayIconProps>(
         style={{ width: size, height: size, flexShrink: 0, ...style }}
       >
         <path
-          d="M10.125 15.375V8.625L15.375 12L10.125 15.375Z"
+          d="M8.54076 20.0094C7.87525 20.4372 7 19.9594 7 19.1682V4.38705C7 3.58464 7.89752 3.10902 8.5615 3.55957L19.7473 11.1499C20.3408 11.5526 20.3299 12.4307 19.7266 12.8185L8.54076 20.0094Z"
           fill={color}
           stroke={color}
           strokeWidth="2.25"

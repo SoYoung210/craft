@@ -61,7 +61,7 @@ export function Video(props: ReactPlayerProps) {
         <VideoController.PlayControl
           playing={playing}
           onPlayingChange={onPlayingChange}
-          size={200}
+          size={100}
         />
         <VideoController.BottomControlContainer>
           <Slider
@@ -81,6 +81,10 @@ export function Video(props: ReactPlayerProps) {
         onPlayingChange={onPlayingChange}
         playing={playing}
         addPlayer={addPlayer}
+        onSeekingChange={onSeekingChange}
+        onSeekMouseDown={onSeekMouseDown}
+        onSeekMouseUp={onSeekMouseUp}
+        played={played}
         {...restProps}
       />
     </>

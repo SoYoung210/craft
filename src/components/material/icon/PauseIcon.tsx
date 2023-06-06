@@ -27,9 +27,9 @@ export const PauseIcon = forwardRef<SVGSVGElement, PauseIconProps>(
         style={{ width: size, height: size, flexShrink: 0, ...style }}
       >
         <path
-          d="M9.375 8.625V15.375M14.625 8.625V15.375"
+          d="M8 4V19.3M17 4V19.3"
           stroke={color}
-          strokeWidth="2.25"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
         />

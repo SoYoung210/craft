@@ -31,8 +31,10 @@ const BottomControlContainer = styled('div', {
   transition: `opacity 0.24s ${ease.easeOutCubic}`,
 });
 
+// TODO: reduce motion을 만들까?
 const PlayControl = styled(PlayControlRaw, {
-  opacity: 0,
+  // opacity: 0,
+  opacity: 1,
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -40,17 +42,6 @@ const PlayControl = styled(PlayControlRaw, {
   zIndex: 2,
   scale: 1,
   transition: `opacity 0.24s ${ease.easeOutCubic}`,
-
-  // FIXME: svg 사이즈좀 줄여야겠다..
-  '& > svg': {
-    transition: 'scale 0.24s ease',
-  },
-
-  '&:hover': {
-    '& > svg': {
-      scale: 1.1,
-    },
-  },
 });
 
 const Root = styled(Primitive.div, {
