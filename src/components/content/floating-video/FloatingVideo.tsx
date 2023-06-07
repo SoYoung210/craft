@@ -36,6 +36,7 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
  * - minimize 에서 expand누를 때 화살표 살짝 증가하게
  * - 최소화 누르는 액션
  * - minimize추가기능 (like arc)
+ * - 결국 MinimalVideo는 분리하는게 나을듯.
  */
 export function FloatingVideo(props: FloatingVideoProps) {
   const {
