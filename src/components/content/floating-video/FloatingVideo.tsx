@@ -1,17 +1,18 @@
-import { Primitive } from '@radix-ui/react-primitive';
 import { motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy';
 
 import { css, styled } from '../../../../stitches.config';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
 import { Underline } from '../../material/icon/Underline';
-import { External } from '../../material/icon/External';
 import { HStack } from '../../material/Stack';
 import { RequiredKeys } from '../../../utils/type';
+import { useBooleanState } from '../../../hooks/useBooleanState';
 
 import { VideoController } from './shared/VideoController';
 import { Slider } from './Slider';
+import { MinimalVideo } from './MinimalVideo';
+import { FloatingIconRoot } from './shared/FloatingIcon';
 
 // TODO: prop으로 받으면 좋음..
 const DEFAULT_WIDTH = 384;
@@ -38,6 +39,7 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
  * - minimize추가기능 (like arc)
  * - 결국 MinimalVideo는 분리하는게 나을듯.
  */
+
 export function FloatingVideo(props: FloatingVideoProps) {
   const {
     controls = false,
@@ -55,9 +57,32 @@ export function FloatingVideo(props: FloatingVideoProps) {
   const floatingContainerRef = useRef<HTMLDivElement>(null);
 
   const [width, setWidth] = useState(DEFAULT_WIDTH);
-  const [minimize, setMinimize] = useState(false);
+  const [minimize, setMinimize, setExpand] = useBooleanState(false);
   const floatingVideoHeight = minimize ? 'unset' : '100%';
   const floatingVideoRootHeight = minimize ? 40 : 'auto';
+
+  const player = useMemo(() => {
+    return (
+      <ReactPlayer
+        width="100%"
+        ref={addPlayer}
+        height={floatingVideoHeight}
+        controls={controls}
+        playing={playing}
+        onPlay={() => onPlayingChange(true)}
+        onPause={() => onPlayingChange(false)}
+        playsinline={true}
+        {...restProps}
+      />
+    );
+  }, [
+    addPlayer,
+    controls,
+    floatingVideoHeight,
+    onPlayingChange,
+    playing,
+    restProps,
+  ]);
 
   return (
     <VideoController
@@ -75,46 +100,31 @@ export function FloatingVideo(props: FloatingVideoProps) {
       style={{ width: `min(${width}px, 80vw)` }}
       ref={floatingContainerRef}
     >
-      <motion.div
-        style={{ position: 'fixed', bottom: 0, left: 0 }}
-        drag={canDrag}
-        dragMomentum={false}
-        // FIXME: 오른쪽도 window size맞춰서 잡아주기
-        dragConstraints={{ left: 0, bottom: 0 }}
-        onDragEnd={() => {
-          setCanDrag(true);
-        }}
-      >
-        <ReactPlayer
-          width="100%"
-          ref={addPlayer}
-          height={floatingVideoHeight}
-          controls={controls}
+      {minimize ? (
+        <MinimalVideo
           playing={playing}
-          onPlay={() => onPlayingChange(true)}
-          onPause={() => onPlayingChange(false)}
-          playsinline={true}
-          {...restProps}
-        />
-        {minimize ? (
-          <FloatingIconRoot css={{ size: 30 }} asChild>
-            <VideoController.PlayControl
-              playing={playing}
-              onPlayingChange={onPlayingChange}
-              style={{ opacity: 1, transition: 'none' }}
-              reduceMotion={true}
-              size={20}
-            />
-          </FloatingIconRoot>
-        ) : (
+          onPlayingChange={onPlayingChange}
+          onExpand={setExpand}
+        >
+          {player}
+        </MinimalVideo>
+      ) : (
+        <motion.div
+          style={{ position: 'fixed', bottom: 0, left: 0 }}
+          drag={canDrag}
+          dragMomentum={false}
+          // FIXME: 오른쪽도 window size맞춰서 잡아주기
+          dragConstraints={{ left: 0, bottom: 0 }}
+          onDragEnd={() => {
+            setCanDrag(true);
+          }}
+        >
+          {player}
           <VideoController.PlayControl
             playing={playing}
             onPlayingChange={onPlayingChange}
             size={80}
           />
-        )}
-
-        {minimize ? null : (
           <VideoController.BottomControlContainer>
             <Slider
               width="100%"
@@ -132,53 +142,34 @@ export function FloatingVideo(props: FloatingVideoProps) {
               }}
             />
           </VideoController.BottomControlContainer>
-        )}
-        {minimize ? (
-          <FloatingIconContainer gap={0} css={{ top: 6 }}>
+          <FloatingIconContainer gap={8}>
             <FloatingIconRoot asChild>
-              <button
-                className={css({ resetButton: 'inline-flex', size: 30 })()}
-              >
-                <External
-                  size={20}
-                  onClick={() => setMinimize(false)}
-                  color="white"
-                />
+              <button className={css({ resetButton: 'inline-flex' })()}>
+                <Underline onClick={setMinimize} color="white" />
               </button>
             </FloatingIconRoot>
+            <FloatingIconRoot asChild>
+              <ResizeDiv
+                drag={true}
+                onDrag={(event, info) => {
+                  const offset = getBiggerOffset(info.delta.x, info.delta.y);
+
+                  const originWidth = floatingContainerRef.current?.offsetWidth;
+
+                  if (originWidth != null) {
+                    setWidth(Math.max(offset + originWidth, MIN_SIZE));
+                  }
+                }}
+                dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                dragElastic={0}
+                dragMomentum={false}
+              >
+                <ArrowUpLeft color="white" />
+              </ResizeDiv>
+            </FloatingIconRoot>
           </FloatingIconContainer>
-        ) : (
-          <>
-            <FloatingIconContainer gap={8}>
-              <FloatingIconRoot asChild>
-                <button className={css({ resetButton: 'inline-flex' })()}>
-                  <Underline onClick={() => setMinimize(true)} color="white" />
-                </button>
-              </FloatingIconRoot>
-              <FloatingIconRoot asChild>
-                <ResizeDiv
-                  drag={true}
-                  onDrag={(event, info) => {
-                    const offset = getBiggerOffset(info.delta.x, info.delta.y);
-
-                    const originWidth =
-                      floatingContainerRef.current?.offsetWidth;
-
-                    if (originWidth != null) {
-                      setWidth(Math.max(offset + originWidth, MIN_SIZE));
-                    }
-                  }}
-                  dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-                  dragElastic={0}
-                  dragMomentum={false}
-                >
-                  <ArrowUpLeft color="white" />
-                </ResizeDiv>
-              </FloatingIconRoot>
-            </FloatingIconContainer>
-          </>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </VideoController>
   );
 }
@@ -190,19 +181,6 @@ const FloatingIconContainer = styled(HStack, {
   top: 10,
   right: 10,
   zIndex: 1,
-});
-const FloatingIconRoot = styled(Primitive.div, {
-  width: 40,
-  height: 40,
-  borderRadius: 8,
-  // backgroundColor: '$white024',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  '&:hover': {
-    backgroundColor: '$white024',
-  },
 });
 
 const ResizeDiv = styled(motion.div, {
