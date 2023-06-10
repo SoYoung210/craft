@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 import { css } from '../../../../stitches.config';
-import { External } from '../../material/icon/External';
+import { MaximizeIcon } from '../../material/icon/MaximizeIcon';
 
 import { FloatingIconRoot } from './shared/FloatingIcon';
 import { VideoController } from './shared/VideoController';
@@ -87,7 +87,7 @@ export function MinimalVideo(props: MinimalVideoProps) {
               zIndex: 1,
             })()}
           >
-            <External size={20} onClick={onExpand} color="white" />
+            <MaximizeIcon size={20} onClick={onExpand} color="white" />
           </button>
         </FloatingIconRoot>
       </motion.div>
