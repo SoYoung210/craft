@@ -16,7 +16,7 @@ interface MinimalVideoProps {
   onExpand: () => void;
 }
 const VIDEO_HEIGHT = 40;
-// TODO: react player는 children으로 공유할 수 있나?
+
 export function MinimalVideo(props: MinimalVideoProps) {
   const {
     width = '50vw',
@@ -41,24 +41,32 @@ export function MinimalVideo(props: MinimalVideoProps) {
       })()}
     >
       <motion.div
-        style={{ position: 'fixed', bottom: 0, left: 0 }}
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          originX: 0.5,
+          originY: 1,
+        }}
         drag={true}
         dragMomentum={false}
         // FIXME: 오른쪽도 window size맞춰서 잡아주기
         dragConstraints={{ left: 0, bottom: 0 }}
+        initial={{
+          scale: 0.8,
+          opacity: 0,
+        }}
+        animate={{
+          scale: 1,
+          opacity: 1,
+        }}
+        transition={{
+          type: 'ease',
+          duration: 0.24,
+          delay: 0.1,
+        }}
       >
         {children}
-        {/* <ReactPlayer
-          width="100%"
-          ref={addPlayer}
-          height={'unset'}
-          controls={controls}
-          playing={playing}
-          onPlay={() => onPlayingChange(true)}
-          onPause={() => onPlayingChange(false)}
-          playsinline={true}
-          {...restProps}
-        /> */}
         <FloatingIconRoot css={{ size: 30 }} asChild>
           <VideoController.PlayControl
             playing={playing}

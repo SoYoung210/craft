@@ -74,19 +74,19 @@ export function Video(props: ReactPlayerProps) {
           />
         </VideoController.BottomControlContainer>
       </VideoController>
-      {/** TODO: 나타날 때 약간 scale 효과주기 */}
-      <FloatingVideo
-        visible={!originVideoInView}
-        controls={controls}
-        onPlayingChange={onPlayingChange}
-        playing={playing}
-        addPlayer={addPlayer}
-        onSeekingChange={onSeekingChange}
-        onSeekMouseDown={onSeekMouseDown}
-        onSeekMouseUp={onSeekMouseUp}
-        played={played}
-        {...restProps}
-      />
+      {!originVideoInView && (
+        <FloatingVideo
+          controls={controls}
+          onPlayingChange={onPlayingChange}
+          playing={playing}
+          addPlayer={addPlayer}
+          onSeekingChange={onSeekingChange}
+          onSeekMouseDown={onSeekMouseDown}
+          onSeekMouseUp={onSeekMouseUp}
+          played={played}
+          {...restProps}
+        />
+      )}
     </>
   );
 }

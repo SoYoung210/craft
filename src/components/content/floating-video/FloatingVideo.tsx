@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useRef, useState } from 'react';
-import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy';
+import ReactPlayer, { ReactPlayerProps } from 'react-player';
 
 import { css, styled } from '../../../../stitches.config';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
@@ -17,10 +17,9 @@ import { FloatingIconRoot } from './shared/FloatingIcon';
 // TODO: prop으로 받으면 좋음..
 const DEFAULT_WIDTH = 384;
 const MIN_SIZE = 342;
-const ASPECT_RATIO = 632 / 355.5;
+const ASPECT_RATIO = (632 / 355.5).toString();
 
 interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
-  visible: boolean;
   onPlayingChange: (playing: boolean) => void;
   addPlayer: (player: ReactPlayer) => void;
   played: number;
@@ -32,7 +31,6 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
 /**
  * TODO: 0605주에 할일
  * - minimize되었을 때의 control추가하기
- * - 각각 등장/exit? 애니메이션 넣기
  * - 코드 인터페이스 정리하기
  * - minimize 에서 expand누를 때 화살표 살짝 증가하게
  * - 최소화 누르는 액션
@@ -43,7 +41,6 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
 export function FloatingVideo(props: FloatingVideoProps) {
   const {
     controls = false,
-    visible,
     playing = false,
     onPlayingChange,
     addPlayer,
@@ -58,7 +55,8 @@ export function FloatingVideo(props: FloatingVideoProps) {
 
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [minimize, setMinimize, setExpand] = useBooleanState(false);
-  const floatingVideoHeight = minimize ? 'unset' : '100%';
+  // const floatingVideoHeight = minimize ? 'unset' : '100%';
+  const floatingVideoHeight = 'unset';
   const floatingVideoRootHeight = minimize ? 40 : 'auto';
 
   const player = useMemo(() => {
@@ -85,23 +83,10 @@ export function FloatingVideo(props: FloatingVideoProps) {
   ]);
 
   return (
-    <VideoController
-      asChild
-      className={css({
-        height: floatingVideoRootHeight,
-        aspectRatio: ASPECT_RATIO,
-        willChange: 'transform',
-        borderRadius: 12,
-        boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
-        overflow: 'hidden',
-        // TODO: move to motion.div
-        display: visible ? 'block' : 'none',
-      })()}
-      style={{ width: `min(${width}px, 80vw)` }}
-      ref={floatingContainerRef}
-    >
+    <AnimatePresence>
       {minimize ? (
         <MinimalVideo
+          key="minimal"
           playing={playing}
           onPlayingChange={onPlayingChange}
           onExpand={setExpand}
@@ -109,68 +94,111 @@ export function FloatingVideo(props: FloatingVideoProps) {
           {player}
         </MinimalVideo>
       ) : (
-        <motion.div
-          style={{ position: 'fixed', bottom: 0, left: 0 }}
-          drag={canDrag}
-          dragMomentum={false}
-          // FIXME: 오른쪽도 window size맞춰서 잡아주기
-          dragConstraints={{ left: 0, bottom: 0 }}
-          onDragEnd={() => {
-            setCanDrag(true);
-          }}
+        <VideoController
+          key="floating01"
+          asChild
+          data-todo-role="floating-video-root"
+          className={css({
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            height: floatingVideoRootHeight,
+            width: `min(${width}px, 80vw)`,
+            aspectRatio: ASPECT_RATIO,
+            willChange: 'transform',
+            borderRadius: 12,
+            boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
+            overflow: 'hidden',
+          })()}
+          style={{ width: `min(${width}px, 80vw)` }}
         >
-          {player}
-          <VideoController.PlayControl
-            playing={playing}
-            onPlayingChange={onPlayingChange}
-            size={80}
-          />
-          <VideoController.BottomControlContainer>
-            <Slider
-              width="100%"
-              value={played}
-              onValueChange={onSeekingChange}
-              max={0.999999}
-              draggable={false}
-              onPointerDown={() => {
-                setCanDrag(false);
-                onSeekMouseDown();
-              }}
-              onPointerUp={() => {
-                setCanDrag(true);
-                onSeekMouseUp();
-              }}
+          <motion.div
+            key="floating"
+            style={{
+              originX: 0.5,
+              originY: 1,
+            }}
+            ref={floatingContainerRef}
+            drag={canDrag}
+            dragMomentum={false}
+            // FIXME: 오른쪽도 window size맞춰서 잡아주기
+            dragConstraints={{ left: 0, bottom: 0 }}
+            initial={{
+              filter: 'blur(6px)',
+              scale: 0.4,
+            }}
+            animate={{
+              filter: 'blur(0px)',
+              scale: 1,
+            }}
+            exit={{
+              filter: 'blur(6px)',
+              scale: 0.4,
+              opacity: 0,
+              y: 60,
+            }}
+            transition={{
+              duration: 0.3,
+            }}
+            onDragEnd={() => {
+              setCanDrag(true);
+            }}
+          >
+            {player}
+            <VideoController.PlayControl
+              playing={playing}
+              onPlayingChange={onPlayingChange}
+              size={80}
             />
-          </VideoController.BottomControlContainer>
-          <FloatingIconContainer gap={8}>
-            <FloatingIconRoot asChild>
-              <button className={css({ resetButton: 'inline-flex' })()}>
-                <Underline onClick={setMinimize} color="white" />
-              </button>
-            </FloatingIconRoot>
-            <FloatingIconRoot asChild>
-              <ResizeDiv
-                drag={true}
-                onDrag={(event, info) => {
-                  const offset = getBiggerOffset(info.delta.x, info.delta.y);
-
-                  const originWidth = floatingContainerRef.current?.offsetWidth;
-
-                  if (originWidth != null) {
-                    setWidth(Math.max(offset + originWidth, MIN_SIZE));
-                  }
+            <VideoController.BottomControlContainer>
+              <Slider
+                data-todo-role="floating-video-slider"
+                width="100%"
+                value={played}
+                onValueChange={onSeekingChange}
+                max={0.999999}
+                draggable={false}
+                onPointerDown={() => {
+                  setCanDrag(false);
+                  onSeekMouseDown();
                 }}
-                dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-                dragElastic={0}
-                dragMomentum={false}
-              >
-                <ArrowUpLeft color="white" />
-              </ResizeDiv>
-            </FloatingIconRoot>
-          </FloatingIconContainer>
-        </motion.div>
+                onPointerUp={() => {
+                  setCanDrag(true);
+                  onSeekMouseUp();
+                }}
+              />
+            </VideoController.BottomControlContainer>
+            <FloatingIconContainer gap={8}>
+              <FloatingIconRoot asChild>
+                <button className={css({ resetButton: 'inline-flex' })()}>
+                  <Underline onClick={setMinimize} color="white" />
+                </button>
+              </FloatingIconRoot>
+              <FloatingIconRoot asChild>
+                <ResizeDiv
+                  drag={true}
+                  onDrag={(event, info) => {
+                    const offset = getBiggerOffset(info.delta.x, info.delta.y);
+
+                    const originWidth =
+                      floatingContainerRef.current?.offsetWidth;
+
+                    if (originWidth != null) {
+                      setWidth(Math.max(offset + originWidth, MIN_SIZE));
+                    }
+                  }}
+                  dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                  dragElastic={0}
+                  dragMomentum={false}
+                >
+                  <ArrowUpLeft color="white" />
+                </ResizeDiv>
+              </FloatingIconRoot>
+            </FloatingIconContainer>
+          </motion.div>
+        </VideoController>
       )}
-    </VideoController>
+    </AnimatePresence>
   );
 }
 
