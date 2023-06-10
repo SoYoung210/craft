@@ -33,9 +33,7 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
  * - minimize되었을 때의 control추가하기
  * - 코드 인터페이스 정리하기
  * - minimize 에서 expand누를 때 화살표 살짝 증가하게
- * - 최소화 누르는 액션
  * - minimize추가기능 (like arc)
- * - 결국 MinimalVideo는 분리하는게 나을듯.
  */
 
 export function FloatingVideo(props: FloatingVideoProps) {
@@ -170,12 +168,12 @@ export function FloatingVideo(props: FloatingVideoProps) {
             </VideoController.BottomControlContainer>
             <FloatingIconContainer gap={8}>
               <FloatingIconRoot asChild>
-                <button className={css({ resetButton: 'inline-flex' })()}>
+                <MinimizeButton>
                   <Underline onClick={setMinimize} color="white" />
-                </button>
+                </MinimizeButton>
               </FloatingIconRoot>
               <FloatingIconRoot asChild>
-                <ResizeDiv
+                <ResizeButton
                   drag={true}
                   onDrag={(event, info) => {
                     const offset = getBiggerOffset(info.delta.x, info.delta.y);
@@ -192,7 +190,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
                   dragMomentum={false}
                 >
                   <ArrowUpLeft color="white" />
-                </ResizeDiv>
+                </ResizeButton>
               </FloatingIconRoot>
             </FloatingIconContainer>
           </motion.div>
@@ -211,9 +209,23 @@ const FloatingIconContainer = styled(HStack, {
   zIndex: 1,
 });
 
-const ResizeDiv = styled(motion.div, {
-  cursor: 'ne-resize',
+const MinimizeButton = styled(motion.button, {
+  resetButton: 'flex',
 
+  'svg path': {
+    transition: 'transform 0.2s ease-in-out',
+  },
+
+  '&:active': {
+    'svg path': {
+      transform: 'translateY(4px)',
+    },
+  },
+});
+
+const ResizeButton = styled(motion.button, {
+  resetButton: 'flex',
+  cursor: 'ne-resize',
   svg: {
     transform: 'rotate(45deg)',
   },
@@ -226,7 +238,7 @@ const ResizeDiv = styled(motion.div, {
     transformOrigin: 'center',
   },
 
-  '&:hover': {
+  '&:active': {
     'svg path:first-of-type': {
       transform: 'translateY(-4px)',
     },
