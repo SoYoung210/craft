@@ -19,7 +19,7 @@ const VIDEO_HEIGHT = 40;
 
 export function MinimalVideo(props: MinimalVideoProps) {
   const {
-    width = '50vw',
+    width = '500px',
     height = VIDEO_HEIGHT,
     playing,
     onPlayingChange,
@@ -53,15 +53,23 @@ export function MinimalVideo(props: MinimalVideoProps) {
         // FIXME: 오른쪽도 window size맞춰서 잡아주기
         dragConstraints={{ left: 0, bottom: 0 }}
         initial={{
-          scale: 0.8,
+          scale: 0.94,
           opacity: 0,
         }}
         animate={{
           scale: 1,
           opacity: 1,
         }}
+        exit={{
+          scale: 0.94,
+          opacity: 0,
+          originX: 0.5,
+          originY: 0.5,
+          transition: {
+            delay: 0,
+          },
+        }}
         transition={{
-          type: 'ease',
           duration: 0.24,
           delay: 0.1,
         }}
@@ -71,7 +79,7 @@ export function MinimalVideo(props: MinimalVideoProps) {
           <VideoController.PlayControl
             playing={playing}
             onPlayingChange={onPlayingChange}
-            style={{ opacity: 1, transition: 'none' }}
+            style={{ opacity: 'inherit', transition: 'none' }}
             reduceMotion={true}
             size={20}
           />
@@ -86,8 +94,9 @@ export function MinimalVideo(props: MinimalVideoProps) {
               right: 10,
               zIndex: 1,
             })()}
+            onClick={onExpand}
           >
-            <MaximizeIcon size={20} onClick={onExpand} color="white" />
+            <MaximizeIcon size={20} color="white" />
           </button>
         </FloatingIconRoot>
       </motion.div>

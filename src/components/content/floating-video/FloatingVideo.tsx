@@ -53,7 +53,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
 
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [minimize, setMinimize, setExpand] = useBooleanState(false);
-  // const floatingVideoHeight = minimize ? 'unset' : '100%';
+
   const floatingVideoHeight = 'unset';
   const floatingVideoRootHeight = minimize ? 40 : 'auto';
 
@@ -88,6 +88,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
           playing={playing}
           onPlayingChange={onPlayingChange}
           onExpand={setExpand}
+          width={width}
         >
           {player}
         </MinimalVideo>
@@ -111,7 +112,6 @@ export function FloatingVideo(props: FloatingVideoProps) {
           style={{ width: `min(${width}px, 80vw)` }}
         >
           <motion.div
-            key="floating"
             style={{
               originX: 0.5,
               originY: 1,
@@ -131,12 +131,13 @@ export function FloatingVideo(props: FloatingVideoProps) {
             }}
             exit={{
               filter: 'blur(6px)',
-              scale: 0.4,
-              opacity: 0,
-              y: 60,
+              opacity: 0.5,
+              scale: 0.92,
+              height: 40,
+              y: 100,
             }}
             transition={{
-              duration: 0.3,
+              duration: 0.2,
             }}
             onDragEnd={() => {
               setCanDrag(true);
@@ -168,8 +169,8 @@ export function FloatingVideo(props: FloatingVideoProps) {
             </VideoController.BottomControlContainer>
             <FloatingIconContainer gap={8}>
               <FloatingIconRoot asChild>
-                <MinimizeButton>
-                  <Underline onClick={setMinimize} color="white" />
+                <MinimizeButton onClick={setMinimize}>
+                  <Underline color="white" />
                 </MinimizeButton>
               </FloatingIconRoot>
               <FloatingIconRoot asChild>
