@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 import { css, styled } from '../../../../stitches.config';
-import { withUnit } from '../../../utils/css';
 import { MaximizeIcon } from '../../material/icon/MaximizeIcon';
 
+import { useViewportDragLimit } from './hooks/useViewportDragLimit';
 import { FloatingIconRoot } from './shared/FloatingIcon';
 import { VideoController } from './shared/VideoController';
 
@@ -28,6 +28,8 @@ export function MinimalVideo(props: MinimalVideoProps) {
     onExpand,
   } = props;
 
+  const [dragRef, dragConstraints] = useViewportDragLimit();
+
   return (
     <VideoController
       asChild
@@ -38,10 +40,10 @@ export function MinimalVideo(props: MinimalVideoProps) {
         borderRadius: 12,
         boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
         overflow: 'hidden',
-        // TODO: move to motion.div
       })()}
     >
       <motion.div
+        ref={dragRef}
         style={{
           position: 'fixed',
           bottom: 0,
@@ -51,8 +53,7 @@ export function MinimalVideo(props: MinimalVideoProps) {
         }}
         drag={true}
         dragMomentum={false}
-        // FIXME: 오른쪽도 window size맞춰서 잡아주기
-        dragConstraints={{ left: 0, bottom: 0 }}
+        dragConstraints={dragConstraints}
         initial={{
           scale: 0.94,
           opacity: 0,

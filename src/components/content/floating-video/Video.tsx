@@ -5,7 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import { Slider } from './Slider';
 import { FloatingVideo } from './FloatingVideo';
 import { VideoController } from './shared/VideoController';
-import { useMultiVideoControl } from './useVideoControl';
+import { useMultiVideoControl } from './hooks/useVideoControl';
 
 const VideoPlayer = lazy(() => import('react-player/lazy'));
 

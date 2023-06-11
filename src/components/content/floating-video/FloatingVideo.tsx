@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 import { css, styled } from '../../../../stitches.config';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
@@ -13,11 +14,12 @@ import { VideoController } from './shared/VideoController';
 import { Slider } from './Slider';
 import { MinimalVideo } from './MinimalVideo';
 import { FloatingIconRoot } from './shared/FloatingIcon';
+import { useViewportDragLimit } from './hooks/useViewportDragLimit';
 
-// TODO: prop으로 받으면 좋음..
 const DEFAULT_WIDTH = 384;
 const MIN_SIZE = 342;
 const ASPECT_RATIO = (632 / 355.5).toString();
+const MINIMAL_VIDEO_HEIGHT = 40;
 
 interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   onPlayingChange: (playing: boolean) => void;
@@ -41,13 +43,15 @@ export function FloatingVideo(props: FloatingVideoProps) {
     ...restProps
   } = props;
   const [canDrag, setCanDrag] = useState(true);
+  const [dragRef, dragConstraints] = useViewportDragLimit();
   const floatingContainerRef = useRef<HTMLDivElement>(null);
+  const combinedRefs = useComposedRefs(dragRef, floatingContainerRef);
 
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [minimize, setMinimize, setExpand] = useBooleanState(false);
 
   const floatingVideoHeight = 'unset';
-  const floatingVideoRootHeight = minimize ? 40 : 'auto';
+  const floatingVideoRootHeight = minimize ? MINIMAL_VIDEO_HEIGHT : 'auto';
 
   const player = useMemo(() => {
     return (
@@ -81,12 +85,13 @@ export function FloatingVideo(props: FloatingVideoProps) {
           onPlayingChange={onPlayingChange}
           onExpand={setExpand}
           width={width}
+          height={MINIMAL_VIDEO_HEIGHT}
         >
           {player}
         </MinimalVideo>
       ) : (
         <VideoController
-          key="floating01"
+          key="floating"
           asChild
           data-todo-role="floating-video-root"
           className={css({
@@ -108,11 +113,10 @@ export function FloatingVideo(props: FloatingVideoProps) {
               originX: 0.5,
               originY: 1,
             }}
-            ref={floatingContainerRef}
+            ref={combinedRefs}
             drag={canDrag}
             dragMomentum={false}
-            // FIXME: 오른쪽도 window size맞춰서 잡아주기
-            dragConstraints={{ left: 0, bottom: 0 }}
+            dragConstraints={dragConstraints}
             initial={{
               filter: 'blur(6px)',
               scale: 0.4,
@@ -125,7 +129,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
               filter: 'blur(6px)',
               opacity: 0.5,
               scale: 0.92,
-              height: 40,
+              height: MINIMAL_VIDEO_HEIGHT,
               y: 100,
             }}
             transition={{
@@ -193,8 +197,6 @@ export function FloatingVideo(props: FloatingVideoProps) {
   );
 }
 
-// TODO: size를 별도로 관리해야..
-// 아이콘 래퍼같은게..
 const FloatingIconContainer = styled(HStack, {
   position: 'absolute',
   top: 10,
