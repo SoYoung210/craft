@@ -28,14 +28,6 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   onSeekMouseUp: () => void;
 }
 
-/**
- * TODO: 0605주에 할일
- * - minimize되었을 때의 control추가하기
- * - 코드 인터페이스 정리하기
- * - minimize 에서 expand누를 때 화살표 살짝 증가하게
- * - minimize추가기능 (like arc)
- */
-
 export function FloatingVideo(props: FloatingVideoProps) {
   const {
     controls = false,

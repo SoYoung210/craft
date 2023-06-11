@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
-import { css } from '../../../../stitches.config';
+import { css, styled } from '../../../../stitches.config';
+import { withUnit } from '../../../utils/css';
 import { MaximizeIcon } from '../../material/icon/MaximizeIcon';
 
 import { FloatingIconRoot } from './shared/FloatingIcon';
@@ -85,21 +86,28 @@ export function MinimalVideo(props: MinimalVideoProps) {
           />
         </FloatingIconRoot>
         <FloatingIconRoot asChild>
-          <button
-            className={css({
-              resetButton: 'inline-flex',
-              size: 30,
-              position: 'absolute',
-              top: 6,
-              right: 10,
-              zIndex: 1,
-            })()}
-            onClick={onExpand}
-          >
+          <MaximizeButton onClick={onExpand}>
             <MaximizeIcon size={20} color="white" />
-          </button>
+          </MaximizeButton>
         </FloatingIconRoot>
       </motion.div>
     </VideoController>
   );
 }
+
+const MaximizeButton = styled('button', {
+  resetButton: 'inline-flex',
+  size: 30,
+  position: 'absolute',
+  top: 6,
+  right: 10,
+  zIndex: 1,
+  svg: {
+    transition: 'transform 0.2s ease-in-out',
+  },
+  '&:active': {
+    svg: {
+      transform: 'scale(1.1)',
+    },
+  },
+});
