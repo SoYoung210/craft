@@ -60,14 +60,3 @@ const SliderRange = styled(RadixSlider.Range, {
   borderRadius: '3px',
   height: '100%',
 });
-
-// const SliderThumb = styled(RadixSlider.Thumb, {
-//   display: 'block',
-//   width: 20,
-//   height: 20,
-//   backgroundColor: 'white',
-//   boxShadow: `0 2px 10px ${blackA.blackA7}`,
-//   borderRadius: 10,
-//   '&:hover': { backgroundColor: violet.violet3 },
-//   '&:focus': { outline: 'none', boxShadow: `0 0 0 5px ${blackA.blackA8}` },
-// });

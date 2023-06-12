@@ -9,8 +9,6 @@ import { useMultiVideoControl } from './hooks/useVideoControl';
 
 const VideoPlayer = lazy(() => import('react-player/lazy'));
 
-// TODO: prop으로 받으면 좋음..
-const DEFAULT_WIDTH = 384;
 const ASPECT_RATIO = 632 / 355.5;
 
 interface ProgressData {

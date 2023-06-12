@@ -25,6 +25,7 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   onPlayingChange: (playing: boolean) => void;
   addPlayer: (player: ReactPlayer) => void;
   played: number;
+  defaultWidth?: number;
   onSeekingChange: (v: number) => void;
   onSeekMouseDown: () => void;
   onSeekMouseUp: () => void;
@@ -40,6 +41,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
     onSeekingChange,
     onSeekMouseDown,
     onSeekMouseUp,
+    defaultWidth = DEFAULT_WIDTH,
     ...restProps
   } = props;
   const [canDrag, setCanDrag] = useState(true);
@@ -47,7 +49,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
   const floatingContainerRef = useRef<HTMLDivElement>(null);
   const combinedRefs = useComposedRefs(dragRef, floatingContainerRef);
 
-  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [width, setWidth] = useState(defaultWidth);
   const [minimize, setMinimize, setExpand] = useBooleanState(false);
 
   const floatingVideoHeight = 'unset';
