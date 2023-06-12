@@ -12,11 +12,11 @@ const IndexPage = () => {
       <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
-          <Link to="/link-preview">
-            <ContentBox title="link preview">
+          <Link to="/floating-video">
+            <ContentBox title="floating video">
               <StaticImage
-                src="../images/thumbnails/link_preview.jpg"
-                alt="link Preview content preview"
+                src="../images/thumbnails/floating-video.jpg"
+                alt="Video Player Arc Browser style"
                 placeholder="blurred"
                 objectFit="contain"
                 style={{
@@ -35,6 +35,24 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/random-text.png"
                 alt="Random Text content preview"
+                placeholder="blurred"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+                quality={100}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+        <ContentList.Item>
+          <Link to="/link-preview">
+            <ContentBox title="link preview">
+              <StaticImage
+                src="../images/thumbnails/link_preview.jpg"
+                alt="link Preview content preview"
                 placeholder="blurred"
                 objectFit="contain"
                 style={{

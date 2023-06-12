@@ -1,5 +1,6 @@
 import { createStitches } from '@stitches/react';
 import type * as Stitches from '@stitches/react';
+import { CSSProperties } from '@vanilla-extract/css';
 
 export const colors = {
   gray0: '#f8f9fa',
@@ -75,6 +76,10 @@ export const {
     colors,
   },
   utils: {
+    size: (value: string | number) => ({
+      width: value,
+      height: value,
+    }),
     bc: (value: Stitches.PropertyValue<'backgroundColor'>) => ({
       backgroundColor: value,
     }),
@@ -116,8 +121,40 @@ export const {
         },
       },
     }),
+
+    resetButton: (display: CSSProperties['display']) => ({
+      display,
+      whiteSpace: 'nowrap',
+      userSelect: 'none',
+      '-webkit-tap-highlight-color': 'rgba(0, 0, 0, 0)',
+      overflow: 'hidden',
+
+      margin: '0',
+      padding: '0',
+
+      outline: '0',
+      border: '0 solid transparent',
+      background: 'transparent',
+      cursor: 'pointer',
+
+      fontFamily: 'inherit',
+      fontWeight: '600',
+      '-webkit-font-smoothing': 'antialiased',
+
+      '&:hover,&:focus': {
+        textDecoration: 'none',
+      },
+
+      '&:focus': {
+        outline: 'none',
+      },
+    }),
   },
 });
+
+export const ease = {
+  easeOutCubic: 'cubic-bezier(0.33, 1, 0.68, 1)',
+};
 
 export type PresetColorType = keyof typeof colors;
 export type StitchesCssType = Stitches.CSS<typeof config>;
