@@ -31,10 +31,8 @@ const BottomControlContainer = styled('div', {
   transition: `opacity 0.24s ${ease.easeOutCubic}`,
 });
 
-// TODO: reduce motion을 만들까?
 const PlayControl = styled(PlayControlRaw, {
-  // opacity: 0,
-  opacity: 1,
+  opacity: 0,
   position: 'absolute',
   top: '50%',
   left: '50%',
