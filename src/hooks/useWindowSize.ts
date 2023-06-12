@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import useWindowEvent from './useWindowEvent';
+import { useWindowEvent } from './useWindowEvent';
 
 const eventListerOptions = {
   passive: true,
