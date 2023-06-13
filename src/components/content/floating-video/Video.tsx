@@ -1,13 +1,10 @@
-import { lazy } from 'react';
-import { ReactPlayerProps } from 'react-player/lazy';
+import VideoPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
 
 import { Slider } from './Slider';
 import { FloatingVideo } from './FloatingVideo';
 import { VideoController } from './shared/VideoController';
 import { useMultiVideoControl } from './hooks/useVideoControl';
-
-const VideoPlayer = lazy(() => import('react-player/lazy'));
 
 const ASPECT_RATIO = 632 / 355.5;
 
@@ -49,6 +46,7 @@ export function Video(props: ReactPlayerProps) {
           onPlay={() => onPlayingChange(true)}
           onPause={() => onPlayingChange(false)}
           style={{ aspectRatio: ASPECT_RATIO }}
+          type="video/mp4"
           onProgress={(state: ProgressData) => {
             if (!seeking) {
               onPlayedChange(state.played);
