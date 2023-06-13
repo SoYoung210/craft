@@ -6,7 +6,7 @@ import { FloatingVideo } from './FloatingVideo';
 import { VideoController } from './shared/VideoController';
 import { useMultiVideoControl } from './hooks/useVideoControl';
 
-const ASPECT_RATIO = 632 / 355.5;
+const ASPECT_RATIO = (632 / 355.5).toString();
 
 interface ProgressData {
   loaded: number;
