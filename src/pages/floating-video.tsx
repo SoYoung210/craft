@@ -3,7 +3,7 @@ import { graphql, PageProps } from 'gatsby';
 import { Video } from '../components/content/floating-video/Video';
 import PageLayout from '../components/layout/PageLayout';
 import SEO from '../components/layout/SEO';
-import MockVideo from '../images/video/ocean.mp4';
+import MockVideo from '../images/video/ocean_960.mp4';
 
 export default function FloatingVideo() {
   return (
