@@ -6,16 +6,18 @@ import { FloatingVideo } from './FloatingVideo';
 import { VideoController } from './shared/VideoController';
 import { useMultiVideoControl } from './hooks/useVideoControl';
 
-const ASPECT_RATIO = (632 / 355.5).toString();
-
 interface ProgressData {
   loaded: number;
   loadedSeconds: number;
   played: number;
   playedSeconds: number;
 }
-export function Video(props: ReactPlayerProps) {
-  const { controls = false, ...restProps } = props;
+
+interface VideoProps extends ReactPlayerProps {
+  aspectRatio: string;
+}
+export function Video(props: VideoProps) {
+  const { controls = false, aspectRatio, ...restProps } = props;
   const { ref, inView: originVideoInView } = useInView({
     threshold: 0,
   });
@@ -45,7 +47,7 @@ export function Video(props: ReactPlayerProps) {
           playsinline={true}
           onPlay={() => onPlayingChange(true)}
           onPause={() => onPlayingChange(false)}
-          style={{ aspectRatio: ASPECT_RATIO }}
+          style={{ aspectRatio }}
           type="video/mp4"
           onProgress={(state: ProgressData) => {
             if (!seeking) {
@@ -80,6 +82,7 @@ export function Video(props: ReactPlayerProps) {
           onSeekMouseDown={onSeekMouseDown}
           onSeekMouseUp={onSeekMouseUp}
           played={played}
+          aspectRatio={aspectRatio}
           {...restProps}
         />
       )}

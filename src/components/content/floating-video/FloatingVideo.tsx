@@ -18,7 +18,6 @@ import { useViewportDragLimit } from './hooks/useViewportDragLimit';
 
 const DEFAULT_WIDTH = 384;
 const MIN_SIZE = 342;
-const ASPECT_RATIO = (632 / 355.5).toString();
 const MINIMAL_VIDEO_HEIGHT = 40;
 
 interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
@@ -29,6 +28,7 @@ interface FloatingVideoProps extends RequiredKeys<ReactPlayerProps, 'playing'> {
   onSeekingChange: (v: number) => void;
   onSeekMouseDown: () => void;
   onSeekMouseUp: () => void;
+  aspectRatio: string;
 }
 
 export function FloatingVideo(props: FloatingVideoProps) {
@@ -42,6 +42,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
     onSeekMouseDown,
     onSeekMouseUp,
     defaultWidth = DEFAULT_WIDTH,
+    aspectRatio,
     ...restProps
   } = props;
   const [canDrag, setCanDrag] = useState(true);
@@ -102,7 +103,7 @@ export function FloatingVideo(props: FloatingVideoProps) {
             left: 0,
             height: floatingVideoRootHeight,
             width: `min(${width}px, 80vw)`,
-            aspectRatio: ASPECT_RATIO,
+            aspectRatio,
             willChange: 'transform',
             borderRadius: 12,
             boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
