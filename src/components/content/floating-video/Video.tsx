@@ -17,7 +17,7 @@ interface VideoProps extends ReactPlayerProps {
   aspectRatio: string;
 }
 export function Video(props: VideoProps) {
-  const { controls = false, aspectRatio, ...restProps } = props;
+  const { controls = false, aspectRatio, poster, ...restProps } = props;
   const { ref, inView: originVideoInView } = useInView({
     threshold: 0,
   });
@@ -36,7 +36,21 @@ export function Video(props: VideoProps) {
   ] = useMultiVideoControl();
 
   return (
-    <>
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <img
+        alt=""
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          height: 'auto',
+          aspectRatio,
+          width: '100%',
+          filter: 'blur(32px)',
+          transform: 'translateZ(0px)',
+        }}
+        src={poster}
+      />
       <VideoController ref={ref}>
         <VideoPlayer
           width="100%"
@@ -48,7 +62,6 @@ export function Video(props: VideoProps) {
           onPlay={() => onPlayingChange(true)}
           onPause={() => onPlayingChange(false)}
           style={{ aspectRatio }}
-          type="video/mp4"
           onProgress={(state: ProgressData) => {
             if (!seeking) {
               onPlayedChange(state.played);
@@ -86,6 +99,6 @@ export function Video(props: VideoProps) {
           {...restProps}
         />
       )}
-    </>
+    </div>
   );
 }

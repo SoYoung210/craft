@@ -4,6 +4,7 @@ import { Video } from '../components/content/floating-video/Video';
 import PageLayout from '../components/layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import MockVideo from '../images/video/ocean_960.mp4';
+import MockVideoPoster from '../images/video/ocean-poster.png';
 
 const mockVideoAspectRatio = (960 / 540).toString();
 export default function FloatingVideo() {
@@ -18,7 +19,11 @@ export default function FloatingVideo() {
           </a>
         </PageLayout.Summary>
       </PageLayout.Details>
-      <Video url={MockVideo} aspectRatio={mockVideoAspectRatio} />
+      <Video
+        url={MockVideo}
+        aspectRatio={mockVideoAspectRatio}
+        poster={MockVideoPoster}
+      />
       <div style={{ height: '114vh' }}>scrollable content</div>
     </PageLayout>
   );
