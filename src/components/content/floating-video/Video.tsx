@@ -1,6 +1,7 @@
 import VideoPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import { useState } from 'react';
 
 import { Slider } from './Slider';
 import { FloatingVideo } from './FloatingVideo';
@@ -36,6 +37,8 @@ export function Video(props: VideoProps) {
     },
   ] = useMultiVideoControl();
 
+  const [ready, setReady] = useState(false);
+
   return (
     <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12 }}>
       <GatsbyImage
@@ -52,7 +55,10 @@ export function Video(props: VideoProps) {
         }}
         image={poster}
       />
-      <VideoController ref={ref}>
+      <VideoController
+        ref={ref}
+        style={{ pointerEvents: ready ? 'auto' : 'none' }}
+      >
         <VideoPlayer
           width="100%"
           height="auto"
@@ -63,6 +69,9 @@ export function Video(props: VideoProps) {
           onPlay={() => onPlayingChange(true)}
           onPause={() => onPlayingChange(false)}
           style={{ aspectRatio }}
+          onReady={player => {
+            setReady(true);
+          }}
           onProgress={(state: ProgressData) => {
             if (!seeking) {
               onPlayedChange(state.played);
