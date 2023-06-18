@@ -37,7 +37,7 @@ export function Video(props: VideoProps) {
   ] = useMultiVideoControl();
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12 }}>
       <GatsbyImage
         alt=""
         style={{
