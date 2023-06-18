@@ -17,14 +17,14 @@ const IndexPage = () => {
               <StaticImage
                 src="../images/thumbnails/floating-video.jpg"
                 alt="Video Player Arc Browser style"
-                placeholder="blurred"
+                placeholder="none"
                 objectFit="contain"
                 style={{
                   display: 'flex',
                   height: 250,
                   justifyContent: 'center',
                 }}
-                quality={100}
+                quality={70}
               />
             </ContentBox>
           </Link>
