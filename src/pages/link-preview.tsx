@@ -142,7 +142,7 @@ export const query = graphql`
       absolutePath: { glob: "**/src/images/thumbnails/link_preview.jpg" }
     ) {
       childImageSharp {
-        gatsbyImageData(layout: FIXED, width: 1200)
+        gatsbyImageData(layout: FIXED, width: 1100)
       }
     }
   }
