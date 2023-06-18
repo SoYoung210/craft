@@ -1,5 +1,6 @@
 import VideoPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
+import { GatsbyImage } from 'gatsby-plugin-image';
 
 import { Slider } from './Slider';
 import { FloatingVideo } from './FloatingVideo';
@@ -37,7 +38,7 @@ export function Video(props: VideoProps) {
 
   return (
     <div style={{ position: 'relative', overflow: 'hidden' }}>
-      <img
+      <GatsbyImage
         alt=""
         style={{
           position: 'absolute',
@@ -49,7 +50,7 @@ export function Video(props: VideoProps) {
           filter: 'blur(32px)',
           transform: 'translateZ(0px)',
         }}
-        src={poster}
+        image={poster}
       />
       <VideoController ref={ref}>
         <VideoPlayer

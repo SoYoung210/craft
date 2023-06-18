@@ -4,10 +4,9 @@ import { Video } from '../components/content/floating-video/Video';
 import PageLayout from '../components/layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import MockVideo from '../images/video/ocean_960.mp4';
-import MockVideoPoster from '../images/video/ocean-poster.png';
 
 const mockVideoAspectRatio = (960 / 540).toString();
-export default function FloatingVideo() {
+export default function FloatingVideo(props: PageProps<Queries.PageDataQuery>) {
   return (
     <PageLayout>
       <PageLayout.Title>Floating Video</PageLayout.Title>
@@ -22,7 +21,7 @@ export default function FloatingVideo() {
       <Video
         url={MockVideo}
         aspectRatio={mockVideoAspectRatio}
-        poster={MockVideoPoster}
+        poster={props.data.poster?.childImageSharp?.gatsbyImageData}
       />
       <div style={{ height: '114vh' }}>scrollable content</div>
     </PageLayout>
@@ -49,6 +48,13 @@ export const query = graphql`
     ) {
       childImageSharp {
         gatsbyImageData(layout: FIXED, width: 1200)
+      }
+    }
+    poster: file(
+      absolutePath: { glob: "**/src/images/video/ocean-poster.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, placeholder: BLURRED)
       }
     }
   }
