@@ -24,7 +24,7 @@ type ValidColorType = HEXColor | RGBColor;
 
 export interface ListItemProps extends HTMLAttributes<HTMLLIElement> {
   borderWidth?: number;
-  gradientColor?: ValidColorType | [ValidColorType, ValidColorType];
+  gradientColor?: ValidColorType | ValidColorType[];
 }
 
 export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
@@ -35,11 +35,17 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
       gradientColor = 'rgb(255,255,255)',
       ...restProps
     } = props;
-    const [glowColor1, glowColor2] = getGlowColor(
-      Array.isArray(gradientColor)
-        ? gradientColor
-        : [gradientColor, gradientColor]
-    );
+
+    const gradientColorSets = Array.isArray(gradientColor)
+      ? gradientColor
+      : [gradientColor];
+
+    const beforeColor = gradientColorSets.map(color => {
+      return toAlphaColor(color, 0.3);
+    });
+    const alphaColor = gradientColorSets.map(color => {
+      return toAlphaColor(color, 0.1);
+    });
 
     return (
       <ListItemProvider borderWidth={borderWidth}>
@@ -48,10 +54,10 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           {...listGlowItemAttribute}
           css={{
             '&::before': {
-              background: glowBackground(glowColor1),
+              background: glowBackground(beforeColor),
             },
             '&::after': {
-              background: glowBackground(glowColor2),
+              background: glowBackground(alphaColor),
             },
           }}
           {...restProps}
@@ -63,24 +69,16 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
   }
 );
 
-function getGlowColor(color: [ValidColorType, ValidColorType]) {
-  const [color1, color2] = color;
-
-  const alphaColor1 = isHexColor(color1)
-    ? hexToRGBA(color1, 0.3)
-    : rgbToRGBA(color1, 0.3);
-
-  const alphaColor2 = isHexColor(color2)
-    ? hexToRGBA(color2, 0.1)
-    : rgbToRGBA(color2, 0.1);
-
-  return [alphaColor1, alphaColor2];
+function toAlphaColor(color: ValidColorType, opacity: number) {
+  return isHexColor(color)
+    ? hexToRGBA(color, opacity)
+    : rgbToRGBA(color, opacity);
 }
 
-function glowBackground(color: string) {
+function glowBackground(colors: string[]) {
   return `radial-gradient(
     400px circle at ${getVar(listGlowX)} ${getVar(listGlowY)},
-    ${color}, transparent 40%)`;
+    ${colors.join(',')}, transparent 40%)`;
 }
 
 const Li = styled('li', {
