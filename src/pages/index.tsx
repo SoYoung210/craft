@@ -12,6 +12,24 @@ const IndexPage = () => {
       <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/glow-cursor-list">
+            <ContentBox title="Glow Cursor List">
+              <StaticImage
+                src="../images/thumbnails/glow-cursor.jpg"
+                alt="Glow Cursor List content preview"
+                placeholder="none"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+                quality={70}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+        <ContentList.Item active>
           <Link to="/floating-video">
             <ContentBox title="floating video">
               <StaticImage

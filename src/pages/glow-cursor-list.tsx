@@ -1,3 +1,5 @@
+import { graphql, PageProps } from 'gatsby';
+
 import { styled } from '../../stitches.config';
 import { GlowCursorList } from '../components/content/glow-cursor-list/List';
 import Figure from '../components/layout/Figure';
@@ -11,11 +13,12 @@ import InputIcon from '../images/icons/input.svg';
 import ClosedEyeIcon from '../images/icons/closed-eye.svg';
 import ChipIcon from '../images/icons/chip.svg';
 import CheckCircleIcon from '../images/icons/check-circle.svg';
+import SEO from '../components/layout/SEO';
 
 export default function GlowCursorListPage() {
   return (
     <PageLayout style={{ maxWidth: 1024, minWidth: 1024 }}>
-      <PageLayout.Title>Cursor Glow</PageLayout.Title>
+      <PageLayout.Title>Glow Cursor</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
           Inspired: linear features,
@@ -74,77 +77,86 @@ export default function GlowCursorListPage() {
           </GlowCursorList.Item>
         </GlowCursorList>
       </Figure>
-      <Figure theme="dark">
+      <Figure theme="light">
         <GlowCursorList>
-          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
-            <GlowCursorList.ItemContent>
+          <GlowItem theme="light" gradientColor={'rgb(27,100,218)'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
               <IconRoot theme="blue">
                 <KeyboardIcon />
               </IconRoot>
               <TextContentRoot>
-                <ItemTitle theme="dark">Keyboard navigation</ItemTitle>
-                <ItemDescription theme="dark">
+                <ItemTitle theme="light">Keyboard navigation</ItemTitle>
+                <ItemDescription theme="light">
                   Primitives provide full keyboard support for components where
                   users expect to use a keyboard or other input devices.
                 </ItemDescription>
               </TextContentRoot>
             </GlowCursorList.ItemContent>
-          </GlowCursorList.Item>
-          <GlowCursorList.Item gradientColor={'rgb(103,63,215)'}>
-            <GlowCursorList.ItemContent>
+          </GlowItem>
+          <GlowItem theme="light" gradientColor={'rgb(103,63,215)'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
               <IconRoot theme="violet">
                 <InputIcon />
               </IconRoot>
               <TextContentRoot>
-                <ItemTitle theme="dark">Focus management</ItemTitle>
-                <ItemDescription theme="dark">
+                <ItemTitle theme="light">Focus management</ItemTitle>
+                <ItemDescription theme="light">
                   Out of the box, Primitives provide sensible focus management
                   defaults, which can be further customized in your code.
                 </ItemDescription>
               </TextContentRoot>
             </GlowCursorList.ItemContent>
-          </GlowCursorList.Item>
-          <GlowCursorList.Item gradientColor={'#00d6ed'}>
-            <GlowCursorList.ItemContent>
+          </GlowItem>
+          <GlowItem theme="light" gradientColor={'#00d6ed'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
               <IconRoot theme="cyan">
                 <ClosedEyeIcon />
               </IconRoot>
               <TextContentRoot>
-                <ItemTitle theme="dark">Screen reader tested</ItemTitle>
-                <ItemDescription theme="dark">
+                <ItemTitle theme="light">Screen reader tested</ItemTitle>
+                <ItemDescription theme="light">
                   We test Primitives with common assistive technologies, looking
                   out for practical issues that people may experience.
                 </ItemDescription>
               </TextContentRoot>
             </GlowCursorList.ItemContent>
-          </GlowCursorList.Item>
+          </GlowItem>
         </GlowCursorList>
       </Figure>
       <Figure theme="light">
         <GlowCursorList>
-          <LogoItem gradientColor={['#FF6378', '#FF9396']}>
+          <GlowItem theme="light" gradientColor={['#FF6378', '#FF9396']}>
             <LogoItemContent>
               <ArcLogo />
             </LogoItemContent>
-          </LogoItem>
-          <LogoItem gradientColor={['#FF3F42', '#FFE948']}>
+          </GlowItem>
+          <GlowItem theme="light" gradientColor={['#FF3F42', '#FFE948']}>
             <LogoItemContent>
               <FirefoxLogo />
             </LogoItemContent>
-          </LogoItem>
-          <LogoItem gradientColor={['#006CFF', '#00D3F9']}>
+          </GlowItem>
+          <GlowItem theme="light" gradientColor={['#006CFF', '#00D3F9']}>
             <LogoItemContent>
               <SafariLogo />
             </LogoItemContent>
-          </LogoItem>
+          </GlowItem>
         </GlowCursorList>
       </Figure>
     </PageLayout>
   );
 }
 
-const LogoItem = styled(GlowCursorList.Item, {
-  background: 'rgba(36, 42, 48, 0.08)',
+const GlowItem = styled(GlowCursorList.Item, {
+  variants: {
+    theme: {
+      dark: {
+        background: 'rgba(255, 255, 255, 0.12)',
+      },
+      light: {
+        background: 'rgba(36, 42, 48, 0.08)',
+      },
+    },
+  },
 });
 
 const LogoItemContent = styled(GlowCursorList.ItemContent, {
@@ -169,16 +181,16 @@ const IconRoot = styled('div', {
   variants: {
     theme: {
       violet: {
-        color: 'hsl(251 63.2% 63.2%)',
-        backgroundColor: 'hsl(252 42.2% 26.2%)',
+        color: 'hsl(251 48.1% 53.5%)',
+        backgroundColor: 'hsl(252 85.1% 93.0%)',
       },
       blue: {
-        color: 'hsl(209 100% 60.6%)',
-        backgroundColor: 'hsl(213 71.2% 20.2%)',
+        color: 'hsl(208 100% 47.3%)',
+        backgroundColor: 'hsl(209 95.0% 90.1%)',
       },
       cyan: {
-        color: 'hsl(188 100% 40.0%)',
-        backgroundColor: 'hsl(192 82.5% 14.6%)',
+        color: 'hsl(191 91.2% 36.8%)',
+        backgroundColor: 'hsl(187 58.3% 85.4%)',
       },
       mauve: {
         color: 'hsl(247 3.4% 50.7%)',
@@ -226,3 +238,28 @@ const ItemDescription = styled('p', {
     },
   },
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Glow Cursor"
+      description="linear-features style glow cursor list"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/glow-cursor.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
