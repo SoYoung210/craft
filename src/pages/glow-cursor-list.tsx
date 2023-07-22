@@ -3,7 +3,7 @@ import { GlowCursorList } from '../components/content/glow-cursor-list/List';
 import Figure from '../components/layout/Figure';
 import ArcLogo from '../images/blurred-logo-asset/arc.svg';
 import FirefoxLogo from '../images/blurred-logo-asset/firefox.svg';
-import GoogleCalendarLogo from '../images/blurred-logo-asset/google_calendar.svg';
+import SafariLogo from '../images/blurred-logo-asset/safari.svg';
 import PageLayout from '../components/layout/PageLayout';
 import KeyboardIcon from '../images/icons/keyboard.svg';
 import BoltIcon from '../images/icons/bolt.svg';
@@ -14,8 +14,8 @@ import CheckCircleIcon from '../images/icons/check-circle.svg';
 
 export default function GlowCursorListPage() {
   return (
-    <PageLayout style={{ maxWidth: 1024 }}>
-      <PageLayout.Title>Background Spotlight</PageLayout.Title>
+    <PageLayout style={{ maxWidth: 1024, minWidth: 1024 }}>
+      <PageLayout.Title>Cursor Glow</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
           Inspired: linear features,
@@ -122,26 +122,30 @@ export default function GlowCursorListPage() {
       </Figure>
       <Figure theme="light">
         <GlowCursorList>
-          <GlowCursorList.Item gradientColor={['#0229C0', '#FF6378']}>
+          <LogoItem gradientColor={['#FF6378', '#FF9396']}>
             <LogoItemContent>
               <ArcLogo />
             </LogoItemContent>
-          </GlowCursorList.Item>
-          <GlowCursorList.Item gradientColor={['#FF3F42', '#FFE948']}>
+          </LogoItem>
+          <LogoItem gradientColor={['#FF3F42', '#FFE948']}>
             <LogoItemContent>
               <FirefoxLogo />
             </LogoItemContent>
-          </GlowCursorList.Item>
-          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
+          </LogoItem>
+          <LogoItem gradientColor={['#006CFF', '#00D3F9']}>
             <LogoItemContent>
-              <GoogleCalendarLogo />
+              <SafariLogo />
             </LogoItemContent>
-          </GlowCursorList.Item>
+          </LogoItem>
         </GlowCursorList>
       </Figure>
     </PageLayout>
   );
 }
+
+const LogoItem = styled(GlowCursorList.Item, {
+  background: 'rgba(36, 42, 48, 0.08)',
+});
 
 const LogoItemContent = styled(GlowCursorList.ItemContent, {
   backgroundColor: 'white',

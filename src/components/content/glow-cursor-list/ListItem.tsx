@@ -101,6 +101,7 @@ const Li = styled('li', {
     top: '0px',
     transition: 'opacity 500ms',
     width: '100%',
+    pointerEvents: 'none',
   },
 
   '&::after': {
