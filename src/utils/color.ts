@@ -25,8 +25,8 @@ export function hexToRGBA(hexColor: string, alpha = 1.0): string {
   // hexColor 문자열에서 '#' 기호를 제거하고, 각각의 색상 값을 추출합니다.
   const hexColorWithoutHash = hexColor.replace('#', '');
   const r = parseInt(hexColorWithoutHash.slice(0, 2), 16);
-  const g = parseInt(hexColorWithoutHash.slice(2, 2), 16);
-  const b = parseInt(hexColorWithoutHash.slice(4, 2), 16);
+  const g = parseInt(hexColorWithoutHash.slice(2, 4), 16);
+  const b = parseInt(hexColorWithoutHash.slice(4, 6), 16);
 
   // 알파 값은 0부터 1까지의 범위를 가지도록 정규화합니다.
   const a = Math.min(1.0, Math.max(0.0, alpha));
