@@ -54,10 +54,10 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           {...listGlowItemAttribute}
           css={{
             '&::before': {
-              background: glowBackground(beforeColor),
+              background: glowBackground(beforeColor, 900),
             },
             '&::after': {
-              background: glowBackground(alphaColor),
+              background: glowBackground(alphaColor, 500),
             },
           }}
           {...restProps}
@@ -75,9 +75,9 @@ function toAlphaColor(color: ValidColorType, opacity: number) {
     : rgbToRGBA(color, opacity);
 }
 
-function glowBackground(colors: string[]) {
+function glowBackground(colors: string[], size: number) {
   return `radial-gradient(
-    400px circle at ${getVar(listGlowX)} ${getVar(listGlowY)},
+    ${size}px circle at ${getVar(listGlowX)} ${getVar(listGlowY)},
     ${colors.join(',')}, transparent 40%)`;
 }
 
