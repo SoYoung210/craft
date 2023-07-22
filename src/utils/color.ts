@@ -50,8 +50,7 @@ export function rgbToRGBA(rgbColor: string, alpha = 1.0): string {
 }
 
 export function isHexColor(color: string): boolean {
-  // HEX 색상 형식은 #으로 시작하며, 길이가 7이어야 합니다 (예: "#fff").
-  return /^#([A-Fa-f0-9])$/.test(color);
+  return /^#(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/.test(color);
 }
 
 export function isRGBColor(color: string): boolean {
