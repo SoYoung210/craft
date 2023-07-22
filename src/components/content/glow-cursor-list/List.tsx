@@ -48,10 +48,11 @@ const Ul = styled('ul', {
   padding: 0,
   margin: 0,
   listStyle: 'none',
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '1rem',
   width: '100%',
+
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gap: 8,
 
   '&:hover': {
     [`${listGlowItemSelector}`]: {

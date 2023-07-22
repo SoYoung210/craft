@@ -85,9 +85,7 @@ function glowBackground(color: string) {
 
 const Li = styled('li', {
   background: 'rgba(255, 255, 255, 0.12)',
-  width: '200px',
   height: 280,
-  aspectRatio: '4 / 3',
   position: 'relative',
   transition: 'background 0.1s',
   isolation: 'isolate',
@@ -146,4 +144,9 @@ const PrimitiveDiv = styled(Primitive.div, {
   position: 'absolute',
   borderRadius: 'inherit',
   backgroundColor: 'rgb(19, 19, 21)',
+
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: 24,
 });
