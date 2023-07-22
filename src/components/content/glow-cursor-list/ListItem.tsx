@@ -95,12 +95,6 @@ const Li = styled('li', {
   // safari >= 15.4 🥹
   contain: 'strict',
 
-  '&:hover': {
-    '&::after, &::before': {
-      opacity: 1,
-    },
-  },
-
   '&::after, &::before': {
     borderRadius: 'inherit',
     content: '""',

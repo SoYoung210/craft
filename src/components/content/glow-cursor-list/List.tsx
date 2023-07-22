@@ -11,7 +11,6 @@ import { styled } from '../../../../stitches.config';
 import { listGlowItemSelector, listGlowX, listGlowY } from './constants';
 import { ListItem, ListItemContent } from './ListItem';
 
-// 컨텐츠를 유의미하게,, 인터페이스를 유려하게.. 잡아보면 좋을듯?
 export function GlowCursorList(props: HTMLAttributes<HTMLUListElement>) {
   const { children, onPointerMove, ...restProps } = props;
   const listRef = useRef<HTMLUListElement>(null);
@@ -53,6 +52,14 @@ const Ul = styled('ul', {
   flexWrap: 'wrap',
   gap: '1rem',
   width: '100%',
+
+  '&:hover': {
+    [`${listGlowItemSelector}`]: {
+      '&::after, &::before': {
+        opacity: 1,
+      },
+    },
+  },
 });
 
 GlowCursorList.Item = ListItem;

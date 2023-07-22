@@ -4,7 +4,7 @@ import PageLayout from '../components/layout/PageLayout';
 
 export default function GlowCursorListPage() {
   return (
-    <PageLayout>
+    <PageLayout style={{ maxWidth: 1024 }}>
       <PageLayout.Title>Background Spotlight</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
@@ -51,6 +51,25 @@ export default function GlowCursorListPage() {
           </GlowCursorList.Item>
           <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
             <GlowCursorList.ItemContent>
+              <span>3</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+        </GlowCursorList>
+      </Figure>
+      <Figure theme="light">
+        <GlowCursorList>
+          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
+              <span>1</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+          <GlowCursorList.Item gradientColor={'rgb(103,63,215)'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
+              <span>2</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
+            <GlowCursorList.ItemContent style={{ backgroundColor: 'white' }}>
               <span>3</span>
             </GlowCursorList.ItemContent>
           </GlowCursorList.Item>
