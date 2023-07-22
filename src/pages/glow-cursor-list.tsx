@@ -37,6 +37,25 @@ export default function GlowCursorListPage() {
           </GlowCursorList.Item>
         </GlowCursorList>
       </Figure>
+      <Figure theme="dark">
+        <GlowCursorList>
+          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
+            <GlowCursorList.ItemContent>
+              <span>1</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+          <GlowCursorList.Item gradientColor={'rgb(103,63,215)'}>
+            <GlowCursorList.ItemContent>
+              <span>2</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+          <GlowCursorList.Item gradientColor={'rgb(27,100,218)'}>
+            <GlowCursorList.ItemContent>
+              <span>3</span>
+            </GlowCursorList.ItemContent>
+          </GlowCursorList.Item>
+        </GlowCursorList>
+      </Figure>
     </PageLayout>
   );
 }
