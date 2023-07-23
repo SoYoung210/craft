@@ -46,9 +46,21 @@ const config: GatsbyConfig = {
         icon: `src/images/icon.png`,
       },
     },
+    {
+      resolve: `gatsby-plugin-gtag`,
+      options: {
+        trackingId: `G-FB1K3CJYRD`,
+        // Puts tracking script in the head instead of the body
+        head: false,
+        // enable ip anonymization
+        anonymize: true,
+      },
+    },
     'gatsby-plugin-netlify',
     'gatsby-plugin-vanilla-extract',
   ],
 };
 
 export default config;
+
+// G-FB1K3CJYRD
