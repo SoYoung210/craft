@@ -20,3 +20,43 @@ export function isPresetColor(color: ColorType): color is PresetColorType {
 export function getColor(color: ColorType) {
   return isPresetColor(color) ? colors[color as keyof typeof colors] : color;
 }
+
+export function hexToRGBA(hexColor: string, alpha = 1.0): string {
+  // hexColor 문자열에서 '#' 기호를 제거하고, 각각의 색상 값을 추출합니다.
+  const hexColorWithoutHash = hexColor.replace('#', '');
+  const r = parseInt(hexColorWithoutHash.slice(0, 2), 16);
+  const g = parseInt(hexColorWithoutHash.slice(2, 4), 16);
+  const b = parseInt(hexColorWithoutHash.slice(4, 6), 16);
+
+  // 알파 값은 0부터 1까지의 범위를 가지도록 정규화합니다.
+  const a = Math.min(1.0, Math.max(0.0, alpha));
+
+  // RGBA 형식으로 변환한 값을 반환합니다.
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+export function rgbToRGBA(rgbColor: string, alpha = 1.0): string {
+  // rgbColor 문자열에서 'rgb('와 ')'를 제거하고, 각각의 색상 값을 추출합니다.
+  const colorValues = rgbColor.replace('rgb(', '').replace(')', '').split(',');
+  const r = parseInt(colorValues[0].trim(), 10);
+  const g = parseInt(colorValues[1].trim(), 10);
+  const b = parseInt(colorValues[2].trim(), 10);
+
+  // 알파 값은 0부터 1까지의 범위를 가지도록 정규화합니다.
+  const a = Math.min(1.0, Math.max(0.0, alpha));
+
+  // RGBA 형식으로 변환한 값을 반환합니다.
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+export function isHexColor(color: string): boolean {
+  return /^#(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/.test(color);
+}
+
+export function isRGBColor(color: string): boolean {
+  // RGB 색상 형식은 "rgb(숫자, 숫자, 숫자)" 형식이어야 합니다 (예: "rgb(255, 255, 255)").
+  return /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/.test(color);
+}
+
+export type HEXColor = `#${string}`;
+export type RGBColor = `rgb(${number},${number},${number})`;
