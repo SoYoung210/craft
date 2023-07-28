@@ -15,7 +15,7 @@ export default function RandomTextPage() {
     <PageLayout>
       <PageLayout.Title>Random Text Effect</PageLayout.Title>
       <PageLayout.Details>
-        <PageLayout.Summary>scrabmle</PageLayout.Summary>
+        <PageLayout.Summary>scramble</PageLayout.Summary>
         <PageLayout.DetailsContent>
           use defined characters to scramble text
         </PageLayout.DetailsContent>
