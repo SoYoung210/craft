@@ -29,7 +29,7 @@ const IndexPage = () => {
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item active>
+        <ContentList.Item>
           <Link to="/floating-video">
             <ContentBox title="floating video">
               <StaticImage
