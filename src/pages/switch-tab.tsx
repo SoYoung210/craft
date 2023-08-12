@@ -6,20 +6,25 @@ import { useBooleanState } from '../hooks/useBooleanState';
 import useHotKey from '../hooks/useHotKey';
 import useWindowEvent from '../hooks/useWindowEvent';
 
+/**
+ * TODO:
+ * - [x] 어떤 아이템에서 Tab키 릴리즈 했을 때, 해당 아이템에 해당하는 액션 하기(링크 이동이건, 실행이건..)
+ * - esc로는 취소하기 (닫기)
+ * - 선택된 아이템 밀리는 애니메이션 (슬라이딩 윈도우)
+ */
+// https://support.google.com/accessibility/answer/10483214?hl=en
 export default function SwitchTabPage() {
   const [open, setOpen, setClose] = useBooleanState(false);
 
   useHotKey({
-    keycode: [Key.Shift, Key.Tab],
-    callback: () => {
-      console.log('work');
-      setOpen();
-    },
+    keycode: [Key.Space, Key.Tab],
+    callback: setOpen,
   });
 
   useWindowEvent('keyup', e => {
-    if (e.key === Key.Shift) {
-      console.log('close');
+    if (e.key === Key.Space) {
+      const target = e.target as HTMLElement;
+      target.click();
       setClose();
     }
   });
@@ -29,12 +34,18 @@ export default function SwitchTabPage() {
       <PageLayout.Title>Switch Tab</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
-          Mac, Arc Style Switch Tab (use Shift + Tab)
+          Mac, Arc Style Switch Tab (use Space + Tab)
         </PageLayout.Summary>
         background: radix-ui.com
       </PageLayout.Details>
-      <SwitchTab open={true}>
-        <SwitchTab.Item>debug1</SwitchTab.Item>
+      <SwitchTab open={open}>
+        <SwitchTab.Item
+          onClick={() => {
+            console.log('debug1');
+          }}
+        >
+          debug1
+        </SwitchTab.Item>
         <SwitchTab.Item>2</SwitchTab.Item>
         <SwitchTab.Item>3</SwitchTab.Item>
         <SwitchTab.Item>4</SwitchTab.Item>
