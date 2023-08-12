@@ -20,7 +20,7 @@ jobs:
         run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
       - name: Set Node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '${{ steps.node_version.outputs.NVMRC }}'
 
