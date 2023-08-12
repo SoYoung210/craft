@@ -74,7 +74,7 @@ export const query = graphql`
       absolutePath: { glob: "**/src/images/thumbnails/random-text.png" }
     ) {
       childImageSharp {
-        gatsbyImageData(layout: FIXED, width: 1200)
+        gatsbyImageData(layout: FIXED, width: 840)
       }
     }
   }

@@ -68,7 +68,7 @@ export const query = graphql`
       absolutePath: { glob: "**/src/images/thumbnails/dynamic-card.png" }
     ) {
       childImageSharp {
-        gatsbyImageData(layout: FIXED, width: 1200)
+        gatsbyImageData(layout: FIXED, width: 960)
       }
     }
   }
