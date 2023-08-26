@@ -1,6 +1,9 @@
+import { StaticImage } from 'gatsby-plugin-image';
 import { Key } from 'w3c-keys';
 
+import { styled } from '../../stitches.config';
 import { SwitchTab } from '../components/content/switch-tab/SwitchTab';
+import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import { useBooleanState } from '../hooks/useBooleanState';
 import useHotKey from '../hooks/useHotKey';
@@ -38,17 +41,77 @@ export default function SwitchTabPage() {
         </PageLayout.Summary>
         background: radix-ui.com
       </PageLayout.Details>
-      <SwitchTab open={open}>
+      <SwitchTab open={true} defaultValue="1">
         <SwitchTab.Item
+          value="1"
           onClick={() => {
             console.log('debug1');
           }}
         >
-          debug1
+          <SwitchTabContentBox title="dynamic-card">
+            <StaticImage
+              src="../images/thumbnails/dynamic-card.png"
+              alt="stacked toast content preview"
+              placeholder="blurred"
+              quality={100}
+              style={{
+                display: 'flex',
+
+                justifyContent: 'center',
+              }}
+              objectPosition="center"
+              // objectFit="cover"
+            />
+          </SwitchTabContentBox>
         </SwitchTab.Item>
-        <SwitchTab.Item>2</SwitchTab.Item>
-        <SwitchTab.Item>3</SwitchTab.Item>
-        <SwitchTab.Item>4</SwitchTab.Item>
+        <SwitchTab.Item value="2">
+          <SwitchTabContentBox title="glow-cursor">
+            <StaticImage
+              src="../images/thumbnails/glow-cursor.jpg"
+              alt="stacked toast content preview"
+              placeholder="blurred"
+              quality={100}
+              style={{
+                display: 'flex',
+
+                justifyContent: 'center',
+              }}
+              // objectFit="cover"
+            />
+          </SwitchTabContentBox>
+        </SwitchTab.Item>
+        <SwitchTab.Item value="3">
+          <SwitchTabContentBox title="floating-video">
+            <StaticImage
+              src="../images/thumbnails/floating-video.jpg"
+              alt="stacked toast content preview"
+              placeholder="blurred"
+              quality={100}
+              style={{
+                display: 'flex',
+
+                justifyContent: 'center',
+              }}
+              // objectFit="cover"
+            />
+          </SwitchTabContentBox>
+        </SwitchTab.Item>
+        <SwitchTab.Item value="4">
+          <SwitchTabContentBox title="random-text">
+            <StaticImage
+              src="../images/thumbnails/random-text.png"
+              alt="stacked toast content preview"
+              placeholder="blurred"
+              quality={100}
+              style={{
+                display: 'flex',
+
+                justifyContent: 'center',
+              }}
+              // objectFit="cover"
+            />
+          </SwitchTabContentBox>
+        </SwitchTab.Item>
       </SwitchTab>
       <div
         style={{
@@ -63,7 +126,12 @@ export default function SwitchTabPage() {
   );
 }
 
+const SwitchTabContentBox = styled(ContentBox, {
+  height: '100%',
+});
+
 const indigoBackgroundImageStyle = {
+  width: '100%',
   '--color-background-image-base': '#fff',
   '--color-background-image-accent-1': 'rgba(0,56,224,0.318)',
   '--color-background-image-accent-2': '#d7cff9',
