@@ -94,6 +94,7 @@ const IndexPage = () => {
                   display: 'flex',
                   height: 250,
                   justifyContent: 'center',
+                  width: '100%',
                 }}
                 quality={100}
               />
@@ -130,6 +131,7 @@ const IndexPage = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   height: 250,
+                  width: '100%',
                 }}
               />
             </ContentBox>
@@ -216,6 +218,7 @@ const IndexPage = () => {
                   display: 'flex',
                   height: 250,
                   justifyContent: 'center',
+                  width: '100%',
                 }}
                 quality={100}
               />

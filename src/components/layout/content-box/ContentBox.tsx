@@ -1,22 +1,22 @@
-import { ReactNode } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
 
-interface Props {
+interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   children: ReactNode;
 }
 
-export function ContentBox({ title, children }: Props) {
+export function ContentBox({ title, children, ...restProps }: Props) {
   return (
-    <Root>
+    <Root {...restProps}>
       <Header>
         <Dot />
         <Dot />
         <Dot />
         <TitleBar>{title}</TitleBar>
       </Header>
-      {children}
+      <ContentRoot>{children}</ContentRoot>
     </Root>
   );
 }
@@ -32,7 +32,17 @@ const Dot = styled('div', {
   transition: 'background-color 0.15s ease',
 });
 
+const ContentRoot = styled('div', {
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
 const Root = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+
   backgroundColor: '$white',
   boxShadow: '$medium',
   overflow: 'hidden',
