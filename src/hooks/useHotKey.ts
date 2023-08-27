@@ -8,6 +8,7 @@ type KeyboardModifiers = {
   ctrl: boolean;
   meta: boolean;
   shift: boolean;
+  space: boolean;
 };
 export type ShortcutKey = KeyboardModifiers & {
   key?: string;
@@ -22,7 +23,7 @@ type EventItem = {
 function toLowerCase(str: string) {
   return str.toLowerCase();
 }
-const reservedKeys = [Key.Alt, Key.Control, Key.Meta, Key.Shift];
+const reservedKeys = [Key.Alt, Key.Control, Key.Meta, Key.Shift, Key.Space];
 
 export default function useHotKey<T extends HTMLElement>({
   keycode,
@@ -32,6 +33,7 @@ export default function useHotKey<T extends HTMLElement>({
 
   const handleKeyDown = useEventCallback((event: KeyboardEvent) => {
     if (isMatchedKey(parseShortcutKey(keycode), event)) {
+      console.log('keydown');
       callback(event);
     }
   });
@@ -54,6 +56,7 @@ function parseShortcutKey(shortcutKeys: string[]): ShortcutKey {
     ctrl: keys.includes(toLowerCase(Key.Control)),
     meta: keys.includes(toLowerCase(Key.Meta)),
     shift: keys.includes(toLowerCase(Key.Shift)),
+    space: keys.includes(' '),
   };
 
   return {
@@ -74,8 +77,20 @@ function isMatchedKey(shortcutKey: ShortcutKey, event: KeyboardEvent) {
   ].every(same => same);
 
   return (
-    isEventValueEquals &&
-    (pressedKey.toLowerCase() === key?.toLowerCase() ||
-      event.code.replace('Key', '').toLowerCase() === key?.toLowerCase())
+    (isEventValueEquals &&
+      (pressedKey.toLowerCase() === key?.toLowerCase() ||
+        event.code.replace('Key', '').toLowerCase() === key?.toLowerCase())) ||
+    isEscKeySame(pressedKey, key ?? '')
+  );
+}
+
+function isEscKeySame(pressedKey: string, key: string) {
+  return isEscKey(pressedKey) && isEscKey(key);
+}
+
+function isEscKey(key: string) {
+  return (
+    toLowerCase(key) === toLowerCase(Key.Esc) ||
+    toLowerCase(key) === toLowerCase(Key.Escape)
   );
 }

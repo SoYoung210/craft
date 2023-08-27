@@ -53,4 +53,11 @@ describe('useHotKey', () => {
 
     expect(callback).toHaveBeenCalled();
   });
+
+  test('Esc, Escape는 동일한 키코드로 처리된다.', () => {
+    const callback = jest.fn();
+    renderHook(() => useHotKey({ keycode: [Key.Escape], callback }));
+    dispatchEvent({ key: Key.Esc, metaKey: true });
+    expect(callback).toHaveBeenCalled();
+  });
 });
