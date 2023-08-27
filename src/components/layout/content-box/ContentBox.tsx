@@ -1,19 +1,28 @@
 import { HTMLAttributes, ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
+import { If } from '../../utility/If';
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   children: ReactNode;
+  dots?: boolean;
 }
 
-export function ContentBox({ title, children, ...restProps }: Props) {
+export function ContentBox({
+  title,
+  children,
+  dots = true,
+  ...restProps
+}: Props) {
   return (
     <Root {...restProps}>
       <Header>
-        <Dot />
-        <Dot />
-        <Dot />
+        <If condition={dots}>
+          <Dot />
+          <Dot />
+          <Dot />
+        </If>
         <TitleBar>{title}</TitleBar>
       </Header>
       <ContentRoot>{children}</ContentRoot>
@@ -33,7 +42,7 @@ const Dot = styled('div', {
 });
 
 const ContentRoot = styled('div', {
-  height: '100%',
+  height: 'calc(100% - 50px)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

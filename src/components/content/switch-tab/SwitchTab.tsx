@@ -9,6 +9,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { If } from '../../utility/If';
 
 import { SwitchTabProvider, useSwitchTabContext } from './context';
+import { NOISE } from './constants';
 export interface SwitchTabProps extends DialogProps {
   open: boolean;
   value?: string;
@@ -46,30 +47,33 @@ export function SwitchTab(props: SwitchTabProps) {
 
 export interface ItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
+  asChild?: boolean;
 }
 const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
-  const { children, value, onFocus, ...restProps } = props;
+  const { children, value, onFocus, asChild = false, ...restProps } = props;
   const { onValueChange, value: valueFromContext } =
     useSwitchTabContext('Item');
   const selected = value === valueFromContext;
-  console.log('selected', selected, value);
 
   return (
-    <StyledItem
-      ref={ref}
-      onClick={() => {
-        console.log('clicked');
-      }}
-      onFocus={composeEventHandlers(onFocus, () => {
-        onValueChange(value);
-      })}
-      {...restProps}
-    >
-      {children}
+    <ItemRoot>
+      <StyledItem
+        ref={ref}
+        onClick={() => {
+          console.log('clicked');
+        }}
+        onFocus={composeEventHandlers(onFocus, () => {
+          onValueChange(value);
+        })}
+        asChild={asChild}
+        {...restProps}
+      >
+        {children}
+      </StyledItem>
       <If condition={selected}>
         <Indicator />
       </If>
-    </StyledItem>
+    </ItemRoot>
   );
 });
 
@@ -77,45 +81,65 @@ const Indicator = () => {
   return (
     <StyledIndicator
       layoutId="switch-tab-indicator"
-      transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+      transition={{
+        type: 'spring',
+        stiffness: 480,
+        damping: 38,
+        mass: 1,
+      }}
     />
   );
 };
 
 SwitchTab.Item = Item;
 
-const OUT_OFFSET = 20;
+const OUT_OFFSET = 24;
 const RADIUS = 28;
 
 const StyledIndicator = styled(motion.div, {
   position: 'absolute',
-  top: 0,
-  left: 0,
-  borderRadius: 18,
+  top: OUT_OFFSET * -1,
+  left: OUT_OFFSET * -1,
+  borderRadius: 16,
   backgroundColor: 'rgba(0, 0, 0, 0.055)',
-  width: '100%',
-  height: '100%',
+  width: `calc(100% + ${OUT_OFFSET * 2}px)`,
+  height: `calc(100% + ${OUT_OFFSET * 2}px)`,
+  '&::before': {
+    content: '""',
+    backgroundImage: NOISE,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: 'inherit',
+  },
 
   zIndex: -1,
 });
 
-const StyledItem = styled(Primitive.button, {
+const ItemRoot = styled('div', {
   position: 'relative',
+  borderRadius: RADIUS,
+});
 
+const StyledItem = styled(Primitive.button, {
   '&:focus': {
     outline: 'none',
   },
 
-  borderRadius: RADIUS,
+  borderRadius: 'inherit',
   backgroundColor: 'transparent',
   resetButton: 'flex',
 
-  width: 'min(18vw, 400px)',
+  width: 'clamp(288px, 14vw, 360px)',
   aspectRatio: '4 / 3',
 });
 
 const StyledContent = styled(Content, {
-  padding: 20,
+  padding: 48,
+  paddingBottom: 52,
+  paddingTop: 52,
   backgroundColor: 'hsla(0,0%,100%,0.6)',
   borderRadius: RADIUS,
   backdropFilter: 'blur(12px)',
@@ -130,9 +154,10 @@ const StyledContent = styled(Content, {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   minWidth: 878,
-  maxWidth: `calc(100vw - ${OUT_OFFSET * 2}px)`,
+  maxWidth: `calc(100vw - 40px)`,
   overflow: 'hidden',
 
-  display: 'flex',
-  gap: '20px',
+  display: 'grid',
+  gridAutoFlow: 'column',
+  gap: '64px',
 });

@@ -1,5 +1,6 @@
 import { StaticImage } from 'gatsby-plugin-image';
 import { Key } from 'w3c-keys';
+import { Link } from 'gatsby';
 
 import { styled } from '../../stitches.config';
 import { SwitchTab } from '../components/content/switch-tab/SwitchTab';
@@ -12,8 +13,10 @@ import useWindowEvent from '../hooks/useWindowEvent';
 /**
  * TODO:
  * - [x] 어떤 아이템에서 Tab키 릴리즈 했을 때, 해당 아이템에 해당하는 액션 하기(링크 이동이건, 실행이건..)
- * - esc로는 취소하기 (닫기)
- * - 선택된 아이템 밀리는 애니메이션 (슬라이딩 윈도우)
+ * - [x] esc로는 취소하기 (닫기)
+ * - [x] 선택된 아이템 밀리는 애니메이션 (슬라이딩 윈도우)
+ * - [] 전역으로 등록하기 (main)
+ * - [] 포커스 되었을 때 효과 주기 (비디오를 따고, 재생할까..)
  */
 // https://support.google.com/accessibility/answer/10483214?hl=en
 export default function SwitchTabPage() {
@@ -22,6 +25,11 @@ export default function SwitchTabPage() {
   useHotKey({
     keycode: [Key.Space, Key.Tab],
     callback: setOpen,
+  });
+
+  useHotKey({
+    keycode: [Key.Esc],
+    callback: setClose,
   });
 
   useWindowEvent('keyup', e => {
@@ -41,76 +49,93 @@ export default function SwitchTabPage() {
         </PageLayout.Summary>
         background: radix-ui.com
       </PageLayout.Details>
-      <SwitchTab open={true} defaultValue="1">
-        <SwitchTab.Item
-          value="1"
-          onClick={() => {
-            console.log('debug1');
-          }}
-        >
-          <SwitchTabContentBox title="dynamic-card">
-            <StaticImage
-              src="../images/thumbnails/dynamic-card.png"
-              alt="stacked toast content preview"
-              placeholder="blurred"
-              quality={100}
-              style={{
-                display: 'flex',
-
-                justifyContent: 'center',
-              }}
-              objectPosition="center"
-              // objectFit="cover"
-            />
-          </SwitchTabContentBox>
+      <SwitchTab open={open} defaultValue="0">
+        <SwitchTab.Item value="0" asChild={true}>
+          <BlockLink to="/switch-tab">
+            <SwitchTabContentBox title="switch-tab" dots={false}>
+              <StaticImage
+                src="../images/thumbnails/dynamic-card.png"
+                alt="stacked toast content preview"
+                placeholder="blurred"
+                quality={100}
+                style={{
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'center',
+                }}
+                objectFit="contain"
+              />
+            </SwitchTabContentBox>
+          </BlockLink>
         </SwitchTab.Item>
-        <SwitchTab.Item value="2">
-          <SwitchTabContentBox title="glow-cursor">
-            <StaticImage
-              src="../images/thumbnails/glow-cursor.jpg"
-              alt="stacked toast content preview"
-              placeholder="blurred"
-              quality={100}
-              style={{
-                display: 'flex',
-
-                justifyContent: 'center',
-              }}
-              // objectFit="cover"
-            />
-          </SwitchTabContentBox>
+        <SwitchTab.Item value="1" asChild={true}>
+          <BlockLink to="/dynamic-card">
+            <SwitchTabContentBox title="dynamic-card" dots={false}>
+              <StaticImage
+                src="../images/thumbnails/dynamic-card.png"
+                alt="stacked toast content preview"
+                placeholder="blurred"
+                quality={100}
+                style={{
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'center',
+                }}
+                objectFit="contain"
+              />
+            </SwitchTabContentBox>
+          </BlockLink>
         </SwitchTab.Item>
-        <SwitchTab.Item value="3">
-          <SwitchTabContentBox title="floating-video">
-            <StaticImage
-              src="../images/thumbnails/floating-video.jpg"
-              alt="stacked toast content preview"
-              placeholder="blurred"
-              quality={100}
-              style={{
-                display: 'flex',
-
-                justifyContent: 'center',
-              }}
-              // objectFit="cover"
-            />
-          </SwitchTabContentBox>
+        <SwitchTab.Item value="2" asChild={true}>
+          <BlockLink to="/dynamic-card">
+            <SwitchTabContentBox title="glow-cursor" dots={false}>
+              <StaticImage
+                src="../images/thumbnails/glow-cursor.jpg"
+                alt="stacked toast content preview"
+                placeholder="blurred"
+                quality={100}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              />
+            </SwitchTabContentBox>
+          </BlockLink>
         </SwitchTab.Item>
-        <SwitchTab.Item value="4">
-          <SwitchTabContentBox title="random-text">
-            <StaticImage
-              src="../images/thumbnails/random-text.png"
-              alt="stacked toast content preview"
-              placeholder="blurred"
-              quality={100}
-              style={{
-                display: 'flex',
-
-                justifyContent: 'center',
-              }}
-              // objectFit="cover"
-            />
-          </SwitchTabContentBox>
+        <SwitchTab.Item value="3" asChild>
+          <BlockLink to="/dynamic-card">
+            <SwitchTabContentBox title="floating-video" dots={false}>
+              <StaticImage
+                src="../images/thumbnails/floating-video.jpg"
+                alt="stacked toast content preview"
+                placeholder="blurred"
+                quality={100}
+                style={{
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'center',
+                }}
+                objectFit="contain"
+              />
+            </SwitchTabContentBox>
+          </BlockLink>
+        </SwitchTab.Item>
+        <SwitchTab.Item value="4" asChild>
+          <BlockLink to="/dynamic-card">
+            <SwitchTabContentBox title="random-text" dots={false}>
+              <StaticImage
+                src="../images/thumbnails/random-text.png"
+                alt="stacked toast content preview"
+                placeholder="blurred"
+                quality={100}
+                style={{
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'center',
+                }}
+              />
+            </SwitchTabContentBox>
+          </BlockLink>
         </SwitchTab.Item>
       </SwitchTab>
       <div
@@ -128,6 +153,10 @@ export default function SwitchTabPage() {
 
 const SwitchTabContentBox = styled(ContentBox, {
   height: '100%',
+});
+
+const BlockLink = styled(Link, {
+  display: 'block',
 });
 
 const indigoBackgroundImageStyle = {
