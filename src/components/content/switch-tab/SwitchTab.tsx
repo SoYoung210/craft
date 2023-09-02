@@ -59,9 +59,6 @@ const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
     <ItemRoot>
       <StyledItem
         ref={ref}
-        onClick={() => {
-          console.log('clicked');
-        }}
         onFocus={composeEventHandlers(onFocus, () => {
           onValueChange(value);
         })}

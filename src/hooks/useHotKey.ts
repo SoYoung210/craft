@@ -33,7 +33,6 @@ export default function useHotKey<T extends HTMLElement>({
 
   const handleKeyDown = useEventCallback((event: KeyboardEvent) => {
     if (isMatchedKey(parseShortcutKey(keycode), event)) {
-      console.log('keydown');
       callback(event);
     }
   });
