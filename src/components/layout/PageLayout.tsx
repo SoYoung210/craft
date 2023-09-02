@@ -23,7 +23,6 @@ import useHotKey from '../../hooks/useHotKey';
 import useWindowEvent from '../../hooks/useWindowEvent';
 import { If } from '../utility/If';
 import { Squircle } from '../material/Squircle';
-import { InfoIcon } from '../material/icon/Info';
 import { HomeIcon } from '../material/icon/Home';
 
 import { backgroundColorMap } from './PageLayout.css';
@@ -205,39 +204,37 @@ const HomeSquircleIcon = () => {
   const rotate = '4deg';
 
   return (
-    <>
-      <div
-        style={{ position: 'relative', height: '96px', width: '96px', rotate }}
+    <div
+      style={{ position: 'relative', height: '96px', width: '96px', rotate }}
+    >
+      <Squircle
+        size={78}
+        borderType="gradient"
+        style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '10%',
+          rotate: rotate,
+        }}
+        className={css({
+          '& > div': {
+            backgroundColor: 'transparent',
+          },
+        })()}
+      />
+      <Squircle
+        size={60}
+        style={{
+          position: 'absolute',
+          rotate: rotate,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-54%, -48%)',
+        }}
       >
-        <Squircle
-          size={78}
-          borderType="gradient"
-          style={{
-            position: 'absolute',
-            bottom: '10%',
-            left: '10%',
-            rotate: rotate,
-          }}
-          className={css({
-            '& > div': {
-              backgroundColor: 'transparent',
-            },
-          })()}
-        />
-        <Squircle
-          size={60}
-          style={{
-            position: 'absolute',
-            rotate: rotate,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-54%, -48%)',
-          }}
-        >
-          <HomeIcon color="white" size={28} style={{ rotate: rotate }} />
-        </Squircle>
-      </div>
-    </>
+        <HomeIcon color="#979797" size={28} style={{ rotate: rotate }} />
+      </Squircle>
+    </div>
   );
 };
 
@@ -275,11 +272,9 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
           <img
             src={imgSrc}
             style={{
-              // ...content.imgStyle,
               display: 'flex',
               height: '100%',
               justifyContent: 'center',
-              // transform: 'scale(1) translateZ(0)',
             }}
           />
           <If condition={videoSrc != null}>
