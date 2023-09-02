@@ -6,8 +6,9 @@ import {
 } from 'react';
 import { Key } from 'w3c-keys';
 import { Link } from 'gatsby';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import { keyframes, styled } from '../../../stitches.config';
+import { css, keyframes, styled } from '../../../stitches.config';
 import { globalStyles } from '../../styles/global';
 import { entries } from '../../utils/object';
 import { radialGradient } from '../../utils/style/gradient';
@@ -23,6 +24,7 @@ import useWindowEvent from '../../hooks/useWindowEvent';
 import { If } from '../utility/If';
 import { Squircle } from '../material/Squircle';
 import { InfoIcon } from '../material/icon/Info';
+import { HomeIcon } from '../material/icon/Home';
 
 import { backgroundColorMap } from './PageLayout.css';
 import { ContentBox } from './content-box/ContentBox';
@@ -111,6 +113,8 @@ export default function PageLayout({
 }: Props) {
   globalStyles();
   const [open, setOpen, setClose] = useBooleanState(false);
+  const [showHomeIcon, setShowHomeIcon, setHideHomeIcon] =
+    useBooleanState(false);
 
   useHotKey({
     keycode: [Key.Space, Key.Tab],
@@ -139,19 +143,72 @@ export default function PageLayout({
   return (
     <Main {...props} theme={theme}>
       {children}
-      <SwitchTab open={true} defaultValue={CONTENTS[2].title}>
+      <SwitchTab open={open} defaultValue={CONTENTS[2].title}>
         {CONTENTS.map(content => {
+          const isHomeContent = content.title === 'main';
+          const needHomeIcon = isHomeContent && showHomeIcon;
+
           return (
-            <SwitchTabItem
-              key={content.title}
-              value={content.title}
-              to={content.linkTo}
-              title={content.title}
-              videoSrc={content.videoSrc}
-              imgSrc={content.imgSrc}
-            />
+            <div key={content.title} style={{ position: 'relative' }}>
+              <SwitchTabItem
+                value={content.title}
+                to={content.linkTo}
+                title={content.title}
+                videoSrc={content.videoSrc}
+                imgSrc={content.imgSrc}
+                onFocus={() => {
+                  if (isHomeContent) {
+                    setShowHomeIcon();
+                  }
+                }}
+                onBlur={() => {
+                  if (isHomeContent) {
+                    setHideHomeIcon();
+                  }
+                }}
+              />
+              <AnimatePresence>
+                {needHomeIcon && (
+                  <motion.div
+                    style={{
+                      position: 'absolute',
+                      right: '-12%',
+                      bottom: '-18%',
+                    }}
+                    initial={{
+                      y: 40,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      y: 0,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      y: 40,
+                      opacity: 0,
+                    }}
+                    transition={{ type: 'spring' }}
+                  >
+                    <HomeSquircleIcon />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           );
         })}
+      </SwitchTab>
+    </Main>
+  );
+}
+
+const HomeSquircleIcon = () => {
+  const rotate = '4deg';
+
+  return (
+    <>
+      <div
+        style={{ position: 'relative', height: '96px', width: '96px', rotate }}
+      >
         <Squircle
           size={78}
           borderType="gradient"
@@ -159,25 +216,30 @@ export default function PageLayout({
             position: 'absolute',
             bottom: '10%',
             left: '10%',
-            rotate: '8deg',
+            rotate: rotate,
           }}
+          className={css({
+            '& > div': {
+              backgroundColor: 'transparent',
+            },
+          })()}
         />
-
         <Squircle
           size={60}
           style={{
             position: 'absolute',
-            bottom: '10%',
-            left: '10%',
-            rotate: '8deg',
+            rotate: rotate,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-54%, -48%)',
           }}
         >
-          <InfoIcon color="white" size={22} />
+          <HomeIcon color="white" size={28} style={{ rotate: rotate }} />
         </Squircle>
-      </SwitchTab>
-    </Main>
+      </div>
+    </>
   );
-}
+};
 
 interface SwitchTabItemProps {
   videoSrc?: MediaHTMLAttributes<HTMLVideoElement>['src'];
@@ -185,10 +247,12 @@ interface SwitchTabItemProps {
   title: string;
   value: string;
   imgSrc: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 const SwitchTabItem = (props: SwitchTabItemProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { to, title, videoSrc, imgSrc, value } = props;
+  const { to, title, videoSrc, imgSrc, value, onFocus, onBlur } = props;
   const [active, setActive, setDeActive] = useBooleanState(false);
 
   return (
@@ -196,10 +260,12 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
       value={value}
       onFocus={() => {
         videoRef.current?.play();
+        onFocus?.();
         setActive();
       }}
       onBlur={() => {
         videoRef.current?.pause();
+        onBlur?.();
         setDeActive();
       }}
       asChild
