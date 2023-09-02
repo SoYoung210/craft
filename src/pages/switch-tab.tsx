@@ -1,6 +1,6 @@
-import { StaticImage } from 'gatsby-plugin-image';
 import { Key } from 'w3c-keys';
 import { Link } from 'gatsby';
+import { MediaHTMLAttributes, useRef } from 'react';
 
 import { styled } from '../../stitches.config';
 import { SwitchTab } from '../components/content/switch-tab/SwitchTab';
@@ -8,7 +8,12 @@ import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
 import { useBooleanState } from '../hooks/useBooleanState';
 import useHotKey from '../hooks/useHotKey';
+import MockVideo from '../images/video/card-demo_2.mp4';
+import GlowCursorVideo from '../images/video/glow-cursor.mp4';
+import PipVideo from '../images/video/floating-video.mp4';
+import ToastVideo from '../images/video/toast.mp4';
 import useWindowEvent from '../hooks/useWindowEvent';
+import { THUMBNAILS } from '../components/content/switch-tab/constants';
 
 /**
  * TODO:
@@ -16,9 +21,64 @@ import useWindowEvent from '../hooks/useWindowEvent';
  * - [x] esc로는 취소하기 (닫기)
  * - [x] 선택된 아이템 밀리는 애니메이션 (슬라이딩 윈도우)
  * - [] 전역으로 등록하기 (main)
- * - [] 포커스 되었을 때 효과 주기 (비디오를 따고, 재생할까..)
+ * - [] 포커스 되었을 때 효과 주기 (gray filter였다가 ->컬러 되면서 비디오 재생)
  */
 // https://support.google.com/accessibility/answer/10483214?hl=en
+
+interface Content {
+  linkTo: string;
+  title: string;
+  imgSrc: string;
+  videoSrc: MediaHTMLAttributes<HTMLVideoElement>['src'];
+  imgStyle?: React.CSSProperties;
+}
+
+const CONTENTS: Content[] = [
+  {
+    linkTo: '/dynamic-card',
+    title: 'dynamic-card',
+    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.CARD}`,
+    videoSrc: MockVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/glow-cursor',
+    title: 'glow-cursor',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.GLOW_CURSOR}`,
+    videoSrc: GlowCursorVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/floating-video',
+    title: 'floating-video',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.VIDEO}`,
+    videoSrc: PipVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/stacked-toast',
+    title: 'toast',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.TOAST}`,
+    videoSrc: ToastVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+];
 export default function SwitchTabPage() {
   const [open, setOpen, setClose] = useBooleanState(false);
 
@@ -49,94 +109,19 @@ export default function SwitchTabPage() {
         </PageLayout.Summary>
         background: radix-ui.com
       </PageLayout.Details>
-      <SwitchTab open={open} defaultValue="0">
-        <SwitchTab.Item value="0" asChild={true}>
-          <BlockLink to="/switch-tab">
-            <SwitchTabContentBox title="switch-tab" dots={false}>
-              <StaticImage
-                src="../images/thumbnails/dynamic-card.png"
-                alt="stacked toast content preview"
-                placeholder="blurred"
-                quality={100}
-                style={{
-                  display: 'flex',
-                  height: '100%',
-                  justifyContent: 'center',
-                }}
-                objectFit="contain"
-              />
-            </SwitchTabContentBox>
-          </BlockLink>
-        </SwitchTab.Item>
-        <SwitchTab.Item value="1" asChild={true}>
-          <BlockLink to="/dynamic-card">
-            <SwitchTabContentBox title="dynamic-card" dots={false}>
-              <StaticImage
-                src="../images/thumbnails/dynamic-card.png"
-                alt="stacked toast content preview"
-                placeholder="blurred"
-                quality={100}
-                style={{
-                  display: 'flex',
-                  height: '100%',
-                  justifyContent: 'center',
-                }}
-                objectFit="contain"
-              />
-            </SwitchTabContentBox>
-          </BlockLink>
-        </SwitchTab.Item>
-        <SwitchTab.Item value="2" asChild={true}>
-          <BlockLink to="/dynamic-card">
-            <SwitchTabContentBox title="glow-cursor" dots={false}>
-              <StaticImage
-                src="../images/thumbnails/glow-cursor.jpg"
-                alt="stacked toast content preview"
-                placeholder="blurred"
-                quality={100}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              />
-            </SwitchTabContentBox>
-          </BlockLink>
-        </SwitchTab.Item>
-        <SwitchTab.Item value="3" asChild>
-          <BlockLink to="/dynamic-card">
-            <SwitchTabContentBox title="floating-video" dots={false}>
-              <StaticImage
-                src="../images/thumbnails/floating-video.jpg"
-                alt="stacked toast content preview"
-                placeholder="blurred"
-                quality={100}
-                style={{
-                  display: 'flex',
-                  height: '100%',
-                  justifyContent: 'center',
-                }}
-                objectFit="contain"
-              />
-            </SwitchTabContentBox>
-          </BlockLink>
-        </SwitchTab.Item>
-        <SwitchTab.Item value="4" asChild>
-          <BlockLink to="/dynamic-card">
-            <SwitchTabContentBox title="random-text" dots={false}>
-              <StaticImage
-                src="../images/thumbnails/random-text.png"
-                alt="stacked toast content preview"
-                placeholder="blurred"
-                quality={100}
-                style={{
-                  display: 'flex',
-                  height: '100%',
-                  justifyContent: 'center',
-                }}
-              />
-            </SwitchTabContentBox>
-          </BlockLink>
-        </SwitchTab.Item>
+      <SwitchTab open={open} defaultValue={CONTENTS[1].title}>
+        {CONTENTS.map(content => {
+          return (
+            <SwitchTabItem
+              key={content.title}
+              value={content.title}
+              to={content.linkTo}
+              title={content.title}
+              videoSrc={content.videoSrc}
+              imgSrc={content.imgSrc}
+            />
+          );
+        })}
       </SwitchTab>
       <div
         style={{
@@ -151,8 +136,77 @@ export default function SwitchTabPage() {
   );
 }
 
+interface SwitchTabItemProps {
+  videoSrc: MediaHTMLAttributes<HTMLVideoElement>['src'];
+  to: string;
+  title: string;
+  value: string;
+  imgSrc: string;
+}
+const SwitchTabItem = (props: SwitchTabItemProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { to, title, videoSrc, imgSrc, value } = props;
+  const [active, setActive, setDeActive] = useBooleanState(false);
+
+  return (
+    <SwitchTab.Item
+      value={value}
+      onFocus={() => {
+        videoRef.current?.play();
+        setActive();
+      }}
+      onBlur={() => {
+        videoRef.current?.pause();
+        setDeActive();
+      }}
+      asChild
+    >
+      <BlockLink to={to}>
+        <SwitchTabContentBox title={title} dots={false} active={active}>
+          <img
+            src={imgSrc}
+            style={{
+              // ...content.imgStyle,
+              display: 'flex',
+              height: '100%',
+              justifyContent: 'center',
+              transform: 'scale(1) translateZ(0)',
+            }}
+          />
+          <video
+            ref={videoRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+            }}
+            loop
+            src={videoSrc}
+          />
+        </SwitchTabContentBox>
+      </BlockLink>
+    </SwitchTab.Item>
+  );
+};
+
 const SwitchTabContentBox = styled(ContentBox, {
   height: '100%',
+
+  $$grayScale: 1,
+  filter: 'grayscale($$grayScale)',
+
+  '& div:nth-child(2)': {
+    position: 'relative',
+  },
+
+  variants: {
+    active: {
+      true: {
+        $$grayScale: 0,
+      },
+    },
+  },
 });
 
 const BlockLink = styled(Link, {
