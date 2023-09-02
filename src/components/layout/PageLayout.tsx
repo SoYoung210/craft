@@ -1,11 +1,31 @@
-import { ComponentPropsWithoutRef, ReactNode } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  MediaHTMLAttributes,
+  ReactNode,
+  useRef,
+} from 'react';
+import { Key } from 'w3c-keys';
+import { Link } from 'gatsby';
 
 import { keyframes, styled } from '../../../stitches.config';
 import { globalStyles } from '../../styles/global';
 import { entries } from '../../utils/object';
 import { radialGradient } from '../../utils/style/gradient';
+import { THUMBNAILS } from '../content/switch-tab/constants';
+import CardVideo from '../../images/video/card-demo_2.mp4';
+import GlowCursorVideo from '../../images/video/glow-cursor.mp4';
+import PipVideo from '../../images/video/floating-video.mp4';
+import ToastVideo from '../../images/video/toast.mp4';
+import { SwitchTab } from '../content/switch-tab/SwitchTab';
+import { useBooleanState } from '../../hooks/useBooleanState';
+import useHotKey from '../../hooks/useHotKey';
+import useWindowEvent from '../../hooks/useWindowEvent';
+import { If } from '../utility/If';
+import { Squircle } from '../material/Squircle';
+import { InfoIcon } from '../material/icon/Info';
 
 import { backgroundColorMap } from './PageLayout.css';
+import { ContentBox } from './content-box/ContentBox';
 
 interface Props extends ComponentPropsWithoutRef<typeof Main> {
   children: ReactNode;
@@ -20,19 +40,223 @@ const backgroundAnimation = keyframes({
   '100%': { transform: 'translateX(-50%) rotate(0deg)' },
 });
 
+interface Content {
+  linkTo: string;
+  title: string;
+  imgSrc: string;
+  videoSrc?: MediaHTMLAttributes<HTMLVideoElement>['src'];
+  imgStyle?: React.CSSProperties;
+}
+
+const CONTENTS: Content[] = [
+  {
+    linkTo: '/',
+    title: 'main',
+    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.MAIN}`,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/dynamic-card',
+    title: 'dynamic-card',
+    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.CARD}`,
+    videoSrc: CardVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/glow-cursor-list',
+    title: 'glow-cursor',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.GLOW_CURSOR}`,
+    videoSrc: GlowCursorVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/floating-video',
+    title: 'floating-video',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.VIDEO}`,
+    videoSrc: PipVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/stacked-toast',
+    title: 'toast',
+    imgSrc: `data:image/png;base64,${THUMBNAILS.TOAST}`,
+    videoSrc: ToastVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+];
 export default function PageLayout({
   children,
   theme = 'normal',
   ...props
 }: Props) {
   globalStyles();
+  const [open, setOpen, setClose] = useBooleanState(false);
+
+  useHotKey({
+    keycode: [Key.Space, Key.Tab],
+    callback: setOpen,
+  });
+
+  useHotKey({
+    keycode: [Key.Esc],
+    callback: setClose,
+  });
+
+  useWindowEvent('keydown', e => {
+    if (e.key === Key.Space) {
+      e.preventDefault();
+    }
+  });
+
+  useWindowEvent('keyup', e => {
+    if (e.key === Key.Space) {
+      const target = e.target as HTMLElement;
+      target.click();
+      setClose();
+    }
+  });
 
   return (
     <Main {...props} theme={theme}>
       {children}
+      <SwitchTab open={true} defaultValue={CONTENTS[2].title}>
+        {CONTENTS.map(content => {
+          return (
+            <SwitchTabItem
+              key={content.title}
+              value={content.title}
+              to={content.linkTo}
+              title={content.title}
+              videoSrc={content.videoSrc}
+              imgSrc={content.imgSrc}
+            />
+          );
+        })}
+        <Squircle
+          size={78}
+          borderType="gradient"
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '10%',
+            rotate: '8deg',
+          }}
+        />
+
+        <Squircle
+          size={60}
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '10%',
+            rotate: '8deg',
+          }}
+        >
+          <InfoIcon color="white" size={22} />
+        </Squircle>
+      </SwitchTab>
     </Main>
   );
 }
+
+interface SwitchTabItemProps {
+  videoSrc?: MediaHTMLAttributes<HTMLVideoElement>['src'];
+  to: string;
+  title: string;
+  value: string;
+  imgSrc: string;
+}
+const SwitchTabItem = (props: SwitchTabItemProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { to, title, videoSrc, imgSrc, value } = props;
+  const [active, setActive, setDeActive] = useBooleanState(false);
+
+  return (
+    <SwitchTab.Item
+      value={value}
+      onFocus={() => {
+        videoRef.current?.play();
+        setActive();
+      }}
+      onBlur={() => {
+        videoRef.current?.pause();
+        setDeActive();
+      }}
+      asChild
+    >
+      <BlockLink to={to}>
+        <SwitchTabContentBox title={title} dots={false} active={active}>
+          <img
+            src={imgSrc}
+            style={{
+              // ...content.imgStyle,
+              display: 'flex',
+              height: '100%',
+              justifyContent: 'center',
+              // transform: 'scale(1) translateZ(0)',
+            }}
+          />
+          <If condition={videoSrc != null}>
+            <video
+              ref={videoRef}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+              }}
+              loop
+              src={videoSrc}
+            />
+          </If>
+        </SwitchTabContentBox>
+      </BlockLink>
+    </SwitchTab.Item>
+  );
+};
+
+const SwitchTabContentBox = styled(ContentBox, {
+  height: '100%',
+
+  $$grayScale: 1,
+  filter: 'grayscale($$grayScale)',
+
+  '& div:nth-child(2)': {
+    position: 'relative',
+  },
+
+  variants: {
+    active: {
+      true: {
+        $$grayScale: 0,
+      },
+    },
+  },
+});
+
+const BlockLink = styled(Link, {
+  display: 'block',
+});
 
 const Main = styled('main', {
   maxWidth: 760,

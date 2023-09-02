@@ -1,105 +1,7 @@
-import { Key } from 'w3c-keys';
-import { Link } from 'gatsby';
-import { MediaHTMLAttributes, useRef } from 'react';
-
-import { styled } from '../../stitches.config';
-import { SwitchTab } from '../components/content/switch-tab/SwitchTab';
-import { ContentBox } from '../components/layout/content-box/ContentBox';
 import PageLayout from '../components/layout/PageLayout';
-import { useBooleanState } from '../hooks/useBooleanState';
-import useHotKey from '../hooks/useHotKey';
-import MockVideo from '../images/video/card-demo_2.mp4';
-import GlowCursorVideo from '../images/video/glow-cursor.mp4';
-import PipVideo from '../images/video/floating-video.mp4';
-import ToastVideo from '../images/video/toast.mp4';
-import useWindowEvent from '../hooks/useWindowEvent';
-import { THUMBNAILS } from '../components/content/switch-tab/constants';
-
-/**
- * TODO:
- * - [x] 어떤 아이템에서 Tab키 릴리즈 했을 때, 해당 아이템에 해당하는 액션 하기(링크 이동이건, 실행이건..)
- * - [x] esc로는 취소하기 (닫기)
- * - [x] 선택된 아이템 밀리는 애니메이션 (슬라이딩 윈도우)
- * - [] 전역으로 등록하기 (main)
- * - [] 포커스 되었을 때 효과 주기 (gray filter였다가 ->컬러 되면서 비디오 재생)
- */
 // https://support.google.com/accessibility/answer/10483214?hl=en
 
-interface Content {
-  linkTo: string;
-  title: string;
-  imgSrc: string;
-  videoSrc: MediaHTMLAttributes<HTMLVideoElement>['src'];
-  imgStyle?: React.CSSProperties;
-}
-
-const CONTENTS: Content[] = [
-  {
-    linkTo: '/dynamic-card',
-    title: 'dynamic-card',
-    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.CARD}`,
-    videoSrc: MockVideo,
-    imgStyle: {
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-    },
-  },
-  {
-    linkTo: '/glow-cursor',
-    title: 'glow-cursor',
-    imgSrc: `data:image/png;base64,${THUMBNAILS.GLOW_CURSOR}`,
-    videoSrc: GlowCursorVideo,
-    imgStyle: {
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-    },
-  },
-  {
-    linkTo: '/floating-video',
-    title: 'floating-video',
-    imgSrc: `data:image/png;base64,${THUMBNAILS.VIDEO}`,
-    videoSrc: PipVideo,
-    imgStyle: {
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-    },
-  },
-  {
-    linkTo: '/stacked-toast',
-    title: 'toast',
-    imgSrc: `data:image/png;base64,${THUMBNAILS.TOAST}`,
-    videoSrc: ToastVideo,
-    imgStyle: {
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-    },
-  },
-];
 export default function SwitchTabPage() {
-  const [open, setOpen, setClose] = useBooleanState(false);
-
-  useHotKey({
-    keycode: [Key.Space, Key.Tab],
-    callback: setOpen,
-  });
-
-  useHotKey({
-    keycode: [Key.Esc],
-    callback: setClose,
-  });
-
-  useWindowEvent('keyup', e => {
-    if (e.key === Key.Space) {
-      const target = e.target as HTMLElement;
-      target.click();
-      setClose();
-    }
-  });
-
   return (
     <PageLayout style={{ position: 'relative' }}>
       <PageLayout.Title>Switch Tab</PageLayout.Title>
@@ -109,20 +11,6 @@ export default function SwitchTabPage() {
         </PageLayout.Summary>
         background: radix-ui.com
       </PageLayout.Details>
-      <SwitchTab open={open} defaultValue={CONTENTS[1].title}>
-        {CONTENTS.map(content => {
-          return (
-            <SwitchTabItem
-              key={content.title}
-              value={content.title}
-              to={content.linkTo}
-              title={content.title}
-              videoSrc={content.videoSrc}
-              imgSrc={content.imgSrc}
-            />
-          );
-        })}
-      </SwitchTab>
       <div
         style={{
           position: 'fixed',
@@ -135,83 +23,6 @@ export default function SwitchTabPage() {
     </PageLayout>
   );
 }
-
-interface SwitchTabItemProps {
-  videoSrc: MediaHTMLAttributes<HTMLVideoElement>['src'];
-  to: string;
-  title: string;
-  value: string;
-  imgSrc: string;
-}
-const SwitchTabItem = (props: SwitchTabItemProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { to, title, videoSrc, imgSrc, value } = props;
-  const [active, setActive, setDeActive] = useBooleanState(false);
-
-  return (
-    <SwitchTab.Item
-      value={value}
-      onFocus={() => {
-        videoRef.current?.play();
-        setActive();
-      }}
-      onBlur={() => {
-        videoRef.current?.pause();
-        setDeActive();
-      }}
-      asChild
-    >
-      <BlockLink to={to}>
-        <SwitchTabContentBox title={title} dots={false} active={active}>
-          <img
-            src={imgSrc}
-            style={{
-              // ...content.imgStyle,
-              display: 'flex',
-              height: '100%',
-              justifyContent: 'center',
-              transform: 'scale(1) translateZ(0)',
-            }}
-          />
-          <video
-            ref={videoRef}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-            }}
-            loop
-            src={videoSrc}
-          />
-        </SwitchTabContentBox>
-      </BlockLink>
-    </SwitchTab.Item>
-  );
-};
-
-const SwitchTabContentBox = styled(ContentBox, {
-  height: '100%',
-
-  $$grayScale: 1,
-  filter: 'grayscale($$grayScale)',
-
-  '& div:nth-child(2)': {
-    position: 'relative',
-  },
-
-  variants: {
-    active: {
-      true: {
-        $$grayScale: 0,
-      },
-    },
-  },
-});
-
-const BlockLink = styled(Link, {
-  display: 'block',
-});
 
 const indigoBackgroundImageStyle = {
   width: '100%',
