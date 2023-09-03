@@ -8,8 +8,8 @@ type KeyboardModifiers = {
   ctrl: boolean;
   meta: boolean;
   shift: boolean;
-  space: boolean;
 };
+// FIXME: prevent default shift tab focus backwards
 export type ShortcutKey = KeyboardModifiers & {
   key?: string;
 };
@@ -23,7 +23,7 @@ type EventItem = {
 function toLowerCase(str: string) {
   return str.toLowerCase();
 }
-const reservedKeys = [Key.Alt, Key.Control, Key.Meta, Key.Shift, Key.Space];
+const reservedKeys = [Key.Alt, Key.Control, Key.Meta, Key.Shift];
 
 export default function useHotKey<T extends HTMLElement>({
   keycode,
@@ -55,7 +55,6 @@ function parseShortcutKey(shortcutKeys: string[]): ShortcutKey {
     ctrl: keys.includes(toLowerCase(Key.Control)),
     meta: keys.includes(toLowerCase(Key.Meta)),
     shift: keys.includes(toLowerCase(Key.Shift)),
-    space: keys.includes(' '),
   };
 
   return {
