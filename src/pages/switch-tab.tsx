@@ -1,4 +1,7 @@
+import { graphql, PageProps } from 'gatsby';
+
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import SEO from '../components/layout/SEO';
 // https://support.google.com/accessibility/answer/10483214?hl=en
 
 export default function SwitchTabPage() {
@@ -324,3 +327,28 @@ const BackgroundImage = ({
     </defs>
   </svg>
 );
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Switch Tab"
+      description="linear-features style glow cursor list"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/switch-tab.jpg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;

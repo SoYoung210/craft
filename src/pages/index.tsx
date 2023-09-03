@@ -12,6 +12,25 @@ const IndexPage = () => {
       <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/switch-tab">
+            <ContentBox title="Switch Tab">
+              <StaticImage
+                src="../images/thumbnails/switch-tab-1.jpg"
+                alt="Mac, Arc Style Switch Tab (use Space + Tab)"
+                placeholder="none"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+                quality={70}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/glow-cursor-list">
             <ContentBox title="Glow Cursor List">
               <StaticImage
