@@ -175,7 +175,7 @@ export default function PageLayout({
                       bottom: '-18%',
                     }}
                     initial={{
-                      y: 40,
+                      y: 20,
                       opacity: 0,
                     }}
                     animate={{
@@ -183,12 +183,32 @@ export default function PageLayout({
                       opacity: 1,
                     }}
                     exit={{
-                      y: 40,
+                      y: 20,
                       opacity: 0,
                     }}
-                    transition={{ type: 'spring' }}
+                    transition={{
+                      ease: 'easeOut',
+                      duration: 0.6,
+                    }}
                   >
-                    <HomeSquircleIcon />
+                    <motion.div
+                      initial={{ y: 0 }}
+                      animate={{
+                        y: [0, 2.5, 0],
+                        opacity: 1,
+                      }}
+                      transition={{
+                        ease: 'easeOut',
+                        delay: 0.6,
+                        y: {
+                          repeat: Infinity,
+                          repeatType: 'loop',
+                          duration: 1.8,
+                        },
+                      }}
+                    >
+                      <HomeSquircleIcon />
+                    </motion.div>
                   </motion.div>
                 )}
               </AnimatePresence>
