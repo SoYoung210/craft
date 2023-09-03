@@ -89,7 +89,7 @@ export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
     useBooleanState(false);
 
   return (
-    <SwitchTab open={true} defaultValue={defaultValue}>
+    <SwitchTab defaultValue={defaultValue}>
       {CONTENTS.map(content => {
         const isHomeContent = content.title === MAIN;
         const needHomeIcon = isHomeContent && showHomeIcon;
