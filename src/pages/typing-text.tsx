@@ -3,7 +3,7 @@ import { graphql, PageProps } from 'gatsby';
 import { css } from '../../stitches.config';
 import TypingText from '../components/content/type-text/TypingText';
 import Figure from '../components/layout/Figure';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 
 export default function TypingTextPage() {

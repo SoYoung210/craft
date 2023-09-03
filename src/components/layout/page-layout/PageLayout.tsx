@@ -8,25 +8,25 @@ import { Key } from 'w3c-keys';
 import { Link } from 'gatsby';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { css, keyframes, styled } from '../../../stitches.config';
-import { globalStyles } from '../../styles/global';
-import { entries } from '../../utils/object';
-import { radialGradient } from '../../utils/style/gradient';
-import { THUMBNAILS } from '../content/switch-tab/constants';
-import CardVideo from '../../images/video/card-demo_2.mp4';
-import GlowCursorVideo from '../../images/video/glow-cursor.mp4';
-import PipVideo from '../../images/video/floating-video.mp4';
-import ToastVideo from '../../images/video/toast.mp4';
-import { SwitchTab } from '../content/switch-tab/SwitchTab';
-import { useBooleanState } from '../../hooks/useBooleanState';
-import useHotKey from '../../hooks/useHotKey';
-import useWindowEvent from '../../hooks/useWindowEvent';
-import { If } from '../utility/If';
-import { Squircle } from '../material/Squircle';
-import { HomeIcon } from '../material/icon/Home';
+import { css, keyframes, styled } from '../../../../stitches.config';
+import { globalStyles } from '../../../styles/global';
+import { entries } from '../../../utils/object';
+import { radialGradient } from '../../../utils/style/gradient';
+import { THUMBNAILS } from '../../content/switch-tab/constants';
+import CardVideo from '../../../images/video/card-demo_2.mp4';
+import GlowCursorVideo from '../../../images/video/glow-cursor.mp4';
+import PipVideo from '../../../images/video/floating-video.mp4';
+import ToastVideo from '../../../images/video/toast.mp4';
+import { SwitchTab } from '../../content/switch-tab/SwitchTab';
+import { useBooleanState } from '../../../hooks/useBooleanState';
+import useHotKey from '../../../hooks/useHotKey';
+import useWindowEvent from '../../../hooks/useWindowEvent';
+import { If } from '../../utility/If';
+import { Squircle } from '../../material/Squircle';
+import { HomeIcon } from '../../material/icon/Home';
+import { ContentBox } from '../content-box/ContentBox';
 
 import { backgroundColorMap } from './PageLayout.css';
-import { ContentBox } from './content-box/ContentBox';
 
 interface Props extends ComponentPropsWithoutRef<typeof Main> {
   children: ReactNode;

@@ -2,7 +2,7 @@ import { graphql, PageProps, Link } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 
 import { ContentBox } from '../components/layout/content-box/ContentBox';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import ContentList from '../components/layout/ContentList';
 import SEO from '../components/layout/SEO';
 

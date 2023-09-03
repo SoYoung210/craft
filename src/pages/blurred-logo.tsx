@@ -9,7 +9,7 @@ import GoogleCalendarLogo from '../images/blurred-logo-asset/google_calendar.svg
 import FirefoxLogo from '../images/blurred-logo-asset/firefox.svg';
 import SafariLogo from '../images/blurred-logo-asset/safari.svg';
 import { styled } from '../../stitches.config';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 
 export default function BlurredLogoPage() {

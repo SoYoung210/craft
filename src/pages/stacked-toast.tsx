@@ -5,7 +5,7 @@ import { styled } from '../../stitches.config';
 import Toast, {
   useToast,
 } from '../components/content/stacked-toast/ToastContext';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import Button from '../components/material/Button';
 

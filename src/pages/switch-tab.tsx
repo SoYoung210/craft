@@ -1,4 +1,4 @@
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 // https://support.google.com/accessibility/answer/10483214?hl=en
 
 export default function SwitchTabPage() {

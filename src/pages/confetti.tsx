@@ -1,6 +1,6 @@
 import { styled } from '../../stitches.config';
 import { Command } from '../components/cmdk/CmdK';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import Portal from '../components/utility/Portal';
 import useConfetti from '../hooks/confetti/useConfetti';
 

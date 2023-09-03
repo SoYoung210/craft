@@ -1,5 +1,5 @@
 import Tree from '../components/content/tree-view/TreeView';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 
 export default function TreeView() {
   return (
