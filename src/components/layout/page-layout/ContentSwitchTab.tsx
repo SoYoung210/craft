@@ -83,13 +83,17 @@ const CONTENTS: Content[] = [
 
 interface Props {
   defaultValue?: string;
+  defaultOpen?: boolean;
 }
-export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
+export function ContentSwitchTab({
+  defaultOpen,
+  defaultValue = CONTENTS[2].title,
+}: Props) {
   const [showHomeIcon, setShowHomeIcon, setHideHomeIcon] =
     useBooleanState(false);
 
   return (
-    <SwitchTab defaultValue={defaultValue}>
+    <SwitchTab defaultOpen={defaultOpen} defaultValue={defaultValue}>
       {CONTENTS.map(content => {
         const isHomeContent = content.title === MAIN;
         const needHomeIcon = isHomeContent && showHomeIcon;

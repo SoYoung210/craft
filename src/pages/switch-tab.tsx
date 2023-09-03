@@ -6,7 +6,7 @@ import SEO from '../components/layout/SEO';
 
 export default function SwitchTabPage() {
   return (
-    <PageLayout style={{ position: 'relative' }}>
+    <PageLayout style={{ position: 'relative' }} switchTabDefaultOpen={true}>
       <PageLayout.Title>Switch Tab</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>

@@ -11,6 +11,7 @@ import { ContentSwitchTab } from './ContentSwitchTab';
 interface Props extends ComponentPropsWithoutRef<typeof Main> {
   children: ReactNode;
   theme?: 'gradient' | 'normal';
+  switchTabDefaultOpen?: boolean;
 }
 
 //https://web.dev/rendering-performance/
@@ -24,6 +25,7 @@ const backgroundAnimation = keyframes({
 export default function PageLayout({
   children,
   theme = 'normal',
+  switchTabDefaultOpen,
   ...props
 }: Props) {
   globalStyles();
@@ -31,7 +33,7 @@ export default function PageLayout({
   return (
     <Main {...props} theme={theme}>
       {children}
-      <ContentSwitchTab />
+      <ContentSwitchTab defaultOpen={switchTabDefaultOpen} />
     </Main>
   );
 }
