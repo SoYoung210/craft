@@ -114,6 +114,10 @@ const Details = styled('details', {
 
   color: '$gray6',
 
+  '&:focus-visible, &:focus': {
+    outline: 'none',
+  },
+
   '&[open]': {
     [`& ${DetailContent}`]: {
       opacity: 1,
@@ -122,7 +126,11 @@ const Details = styled('details', {
   },
 });
 
-const Summary = styled('summary');
+const Summary = styled('summary', {
+  '&:focus-visible, &:focus': {
+    outline: 'none',
+  },
+});
 
 PageLayout.Title = Title;
 PageLayout.SubTitle = SubTitle;
