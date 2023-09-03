@@ -251,12 +251,16 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
     <SwitchTab.Item
       value={value}
       onFocus={() => {
-        videoRef.current?.play();
+        setTimeout(() => {
+          videoRef.current?.play();
+        });
         onFocus?.();
         setActive();
       }}
       onBlur={() => {
-        videoRef.current?.pause();
+        setTimeout(() => {
+          videoRef.current?.pause();
+        });
         onBlur?.();
         setDeActive();
       }}
