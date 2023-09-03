@@ -1,7 +1,6 @@
 import { MediaHTMLAttributes, useRef } from 'react';
 import { Link } from 'gatsby';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Key } from 'w3c-keys';
 
 import CardVideo from '../../../images/video/card-demo_2.mp4';
 import GlowCursorVideo from '../../../images/video/glow-cursor.mp4';
@@ -15,8 +14,6 @@ import { If } from '../../utility/If';
 import { Squircle } from '../../material/Squircle';
 import { HomeIcon } from '../../material/icon/Home';
 import { useBooleanState } from '../../../hooks/useBooleanState';
-import useHotKey from '../../../hooks/useHotKey';
-import useWindowEvent from '../../../hooks/useWindowEvent';
 
 interface Content {
   linkTo: string;
@@ -88,44 +85,11 @@ interface Props {
   defaultValue?: string;
 }
 export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
-  const [open, setOpen, setClose] = useBooleanState(false);
   const [showHomeIcon, setShowHomeIcon, setHideHomeIcon] =
     useBooleanState(false);
 
-  const spaceKeyDownRef = useRef(false);
-
-  useHotKey({
-    keycode: [Key.Tab],
-    callback: () => {
-      if (spaceKeyDownRef.current) {
-        setOpen();
-      }
-    },
-  });
-
-  useHotKey({
-    keycode: [Key.Esc],
-    callback: setClose,
-  });
-
-  useWindowEvent('keydown', e => {
-    if (e.key === Key.Space) {
-      e.preventDefault();
-      spaceKeyDownRef.current = true;
-    }
-  });
-
-  useWindowEvent('keyup', e => {
-    if (e.key === Key.Space) {
-      spaceKeyDownRef.current = false;
-      const target = e.target as HTMLElement;
-      target.click();
-      setClose();
-    }
-  });
-
   return (
-    <SwitchTab open={open} defaultValue={defaultValue}>
+    <SwitchTab open={true} defaultValue={defaultValue}>
       {CONTENTS.map(content => {
         const isHomeContent = content.title === MAIN;
         const needHomeIcon = isHomeContent && showHomeIcon;

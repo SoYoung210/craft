@@ -2,21 +2,30 @@ import { Root, Portal, Content, DialogProps } from '@radix-ui/react-dialog';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion } from 'framer-motion';
 import { styled } from '@stitches/react';
-import { ButtonHTMLAttributes, forwardRef, useEffect, useRef } from 'react';
+import {
+  ButtonHTMLAttributes,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { Key } from 'w3c-keys';
 
 import { If } from '../../utility/If';
 import useTimeout from '../../../hooks/useTimeout';
+import useHotKey from '../../../hooks/useHotKey';
+import useWindowEvent from '../../../hooks/useWindowEvent';
 
 import { SwitchTabProvider, useSwitchTabContext } from './context';
 import { NOISE } from './constants';
 export interface SwitchTabProps extends DialogProps {
-  open: boolean;
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  actionKey?: Key;
 }
 
 export function SwitchTab(props: SwitchTabProps) {
@@ -25,6 +34,10 @@ export function SwitchTab(props: SwitchTabProps) {
     value: valueFromProps,
     defaultValue,
     onValueChange,
+    actionKey = Key.Space,
+    open: openFromProps,
+    onOpenChange,
+    defaultOpen,
     ...restProps
   } = props;
 
@@ -34,8 +47,54 @@ export function SwitchTab(props: SwitchTabProps) {
     defaultProp: defaultValue,
   });
 
+  const [open, setOpenRaw] = useControllableState({
+    prop: openFromProps,
+    onChange: onOpenChange,
+    defaultProp: defaultOpen,
+  });
+
+  const setOpen = useCallback(() => {
+    setOpenRaw(true);
+  }, [setOpenRaw]);
+
+  const setClose = useCallback(() => {
+    setOpenRaw(false);
+  }, [setOpenRaw]);
+
+  const actionKeyDownRef = useRef(false);
+
+  useHotKey({
+    keycode: [Key.Tab],
+    callback: () => {
+      if (actionKeyDownRef.current) {
+        setOpen();
+      }
+    },
+  });
+
+  useHotKey({
+    keycode: [Key.Esc],
+    callback: setClose,
+  });
+
+  useWindowEvent('keydown', e => {
+    if (e.key === actionKey) {
+      e.preventDefault();
+      actionKeyDownRef.current = true;
+    }
+  });
+
+  useWindowEvent('keyup', e => {
+    if (e.key === actionKey) {
+      actionKeyDownRef.current = false;
+      const target = e.target as HTMLElement;
+      target.click();
+      setClose();
+    }
+  });
+
   return (
-    <Root {...restProps}>
+    <Root open={open} onOpenChange={setOpenRaw} {...restProps}>
       <Portal>
         <StyledContent onOpenAutoFocus={e => e.preventDefault()}>
           <SwitchTabProvider value={value} onValueChange={setValue}>
