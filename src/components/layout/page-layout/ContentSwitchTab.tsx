@@ -92,9 +92,15 @@ export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
   const [showHomeIcon, setShowHomeIcon, setHideHomeIcon] =
     useBooleanState(false);
 
+  const spaceKeyDownRef = useRef(false);
+
   useHotKey({
-    keycode: [Key.Space, Key.Tab],
-    callback: setOpen,
+    keycode: [Key.Tab],
+    callback: () => {
+      if (spaceKeyDownRef.current) {
+        setOpen();
+      }
+    },
   });
 
   useHotKey({
@@ -105,11 +111,13 @@ export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
   useWindowEvent('keydown', e => {
     if (e.key === Key.Space) {
       e.preventDefault();
+      spaceKeyDownRef.current = true;
     }
   });
 
   useWindowEvent('keyup', e => {
     if (e.key === Key.Space) {
+      spaceKeyDownRef.current = false;
       const target = e.target as HTMLElement;
       target.click();
       setClose();
@@ -125,6 +133,7 @@ export function ContentSwitchTab({ defaultValue = CONTENTS[2].title }: Props) {
         return (
           <div key={content.title} style={{ position: 'relative' }}>
             <SwitchTabItem
+              // ref={item}
               value={content.title}
               to={content.linkTo}
               title={content.title}
@@ -247,22 +256,34 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
   const { to, title, videoSrc, imgSrc, value, onFocus, onBlur } = props;
   const [active, setActive, setDeActive] = useBooleanState(false);
 
+  const playRef = useRef<Promise<void> | undefined>(undefined);
+  const isLoaded = useRef(false);
+
   return (
     <SwitchTab.Item
       value={value}
       onFocus={() => {
-        setTimeout(() => {
-          videoRef.current?.play();
-        });
+        if (isLoaded.current === true) {
+          playRef.current = videoRef.current?.play();
+        }
+
         onFocus?.();
         setActive();
       }}
       onBlur={() => {
-        setTimeout(() => {
-          videoRef.current?.pause();
-        });
         onBlur?.();
         setDeActive();
+
+        if (playRef.current == null) {
+          videoRef.current?.pause();
+          return;
+        }
+
+        playRef.current?.then(() => {
+          if (videoRef.current?.paused === false) {
+            videoRef.current?.pause();
+          }
+        });
       }}
       asChild
     >
@@ -286,6 +307,9 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
                 height: '100%',
               }}
               loop
+              onLoadedData={() => {
+                isLoaded.current = true;
+              }}
               src={videoSrc}
             />
           </If>

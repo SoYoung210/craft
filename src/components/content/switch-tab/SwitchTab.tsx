@@ -61,7 +61,7 @@ const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
 
   const selected = value === valueFromContext;
 
-  const { start: focusItem } = useTimeout(() => {
+  const { start: focusItem, clear } = useTimeout(() => {
     const element = itemRef.current;
     element?.focus();
     element?.scrollIntoView({
@@ -73,12 +73,15 @@ const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
 
   useEffect(() => {
     if (selected) {
-      focusItem(0);
+      focusItem(100);
+      return;
     }
-  }, [focusItem, selected]);
+
+    clear();
+  }, [clear, focusItem, selected]);
 
   return (
-    <ItemRoot>
+    <ItemRoot key={valueFromContext}>
       <StyledItem
         ref={composedRefs}
         onFocus={composeEventHandlers(onFocus, () => {
