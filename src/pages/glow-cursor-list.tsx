@@ -6,7 +6,7 @@ import Figure from '../components/layout/Figure';
 import ArcLogo from '../images/blurred-logo-asset/arc.svg';
 import FirefoxLogo from '../images/blurred-logo-asset/firefox.svg';
 import SafariLogo from '../images/blurred-logo-asset/safari.svg';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import KeyboardIcon from '../images/icons/keyboard.svg';
 import BoltIcon from '../images/icons/bolt.svg';
 import InputIcon from '../images/icons/input.svg';

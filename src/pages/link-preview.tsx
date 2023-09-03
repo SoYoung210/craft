@@ -7,7 +7,7 @@ import { getUrlLabel } from '../components/content/link-preview/utils';
 import Toast, {
   useToast,
 } from '../components/content/stacked-toast/ToastContext';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import TextField from '../components/material/TextField';
 import Text from '../components/material/Text';
 import example1 from '../images/link-preview/soso.png';

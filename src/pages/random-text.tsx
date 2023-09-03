@@ -3,7 +3,7 @@ import { useReducer } from 'react';
 
 import RandomText from '../components/content/random-text/RandomText';
 import Figure from '../components/layout/Figure';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import Button from '../components/material/Button';
 import { RotateLeftIcon } from '../components/material/icon/RotateLeft';

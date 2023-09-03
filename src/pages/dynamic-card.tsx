@@ -2,7 +2,7 @@ import { PageProps, graphql } from 'gatsby';
 
 import { styled } from '../../stitches.config';
 import DynamicCard from '../components/content/dynamic-card/DynamicCard';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import Text from '../components/material/Text';
 

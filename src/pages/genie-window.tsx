@@ -3,7 +3,7 @@ import anime from 'animejs';
 
 import Text from '../components/material/Text';
 import { styled } from '../../stitches.config';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import { HStack, VStack } from '../components/material/Stack';
 import Button from '../components/material/Button';
 

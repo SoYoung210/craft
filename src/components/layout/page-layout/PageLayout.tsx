@@ -1,11 +1,12 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-import { keyframes, styled } from '../../../stitches.config';
-import { globalStyles } from '../../styles/global';
-import { entries } from '../../utils/object';
-import { radialGradient } from '../../utils/style/gradient';
+import { keyframes, styled } from '../../../../stitches.config';
+import { globalStyles } from '../../../styles/global';
+import { entries } from '../../../utils/object';
+import { radialGradient } from '../../../utils/style/gradient';
 
 import { backgroundColorMap } from './PageLayout.css';
+import { ContentSwitchTab } from './ContentSwitchTab';
 
 interface Props extends ComponentPropsWithoutRef<typeof Main> {
   children: ReactNode;
@@ -30,6 +31,7 @@ export default function PageLayout({
   return (
     <Main {...props} theme={theme}>
       {children}
+      <ContentSwitchTab />
     </Main>
   );
 }
@@ -112,6 +114,10 @@ const Details = styled('details', {
 
   color: '$gray6',
 
+  '&:focus-visible, &:focus': {
+    outline: 'none',
+  },
+
   '&[open]': {
     [`& ${DetailContent}`]: {
       opacity: 1,
@@ -120,7 +126,11 @@ const Details = styled('details', {
   },
 });
 
-const Summary = styled('summary');
+const Summary = styled('summary', {
+  '&:focus-visible, &:focus': {
+    outline: 'none',
+  },
+});
 
 PageLayout.Title = Title;
 PageLayout.SubTitle = SubTitle;

@@ -3,7 +3,7 @@ import { StaticImage } from 'gatsby-plugin-image';
 
 import BorderAnimationButton from '../components/content/border-animation/Button';
 import FigureTabs from '../components/layout/FigureTab';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 import Flex from '../components/material/Flex';
 

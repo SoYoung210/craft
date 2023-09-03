@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import RandomWindEffect from '../components/content/particle-text/RandomWindEffect';
 import SnowFlake from '../components/content/particle-text/SnowFlake';
 import { EffectControl } from '../components/content/particle-text/useParticleText';
-import PageLayout from '../components/layout/PageLayout';
+import PageLayout from '../components/layout/page-layout/PageLayout';
 import Button from '../components/material/Button';
 import Flex from '../components/material/Flex';
 import { HStack } from '../components/material/Stack';
