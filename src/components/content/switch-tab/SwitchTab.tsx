@@ -8,7 +8,6 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 import { If } from '../../utility/If';
-import { usePrevious } from '../../../hooks/usePrevious';
 import useTimeout from '../../../hooks/useTimeout';
 
 import { SwitchTabProvider, useSwitchTabContext } from './context';
@@ -26,9 +25,6 @@ export function SwitchTab(props: SwitchTabProps) {
     value: valueFromProps,
     defaultValue,
     onValueChange,
-    open: openFromProps,
-    defaultOpen,
-    onOpenChange,
     ...restProps
   } = props;
 
@@ -38,17 +34,11 @@ export function SwitchTab(props: SwitchTabProps) {
     defaultProp: defaultValue,
   });
 
-  const [open = false, setOpen] = useControllableState({
-    prop: openFromProps,
-    onChange: onOpenChange,
-    defaultProp: defaultOpen,
-  });
-
   return (
-    <Root open={open} onOpenChange={setOpen} {...restProps}>
+    <Root {...restProps}>
       <Portal>
         <StyledContent onOpenAutoFocus={e => e.preventDefault()}>
-          <SwitchTabProvider value={value} open={open} onValueChange={setValue}>
+          <SwitchTabProvider value={value} onValueChange={setValue}>
             {children}
           </SwitchTabProvider>
         </StyledContent>
@@ -63,14 +53,8 @@ export interface ItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
   const { children, value, onFocus, asChild = false, ...restProps } = props;
-  const {
-    onValueChange,
-    value: valueFromContext,
-    open,
-  } = useSwitchTabContext('Item');
-
-  const previousOpen = usePrevious(open);
-  const isFirstOpen = open && !previousOpen;
+  const { onValueChange, value: valueFromContext } =
+    useSwitchTabContext('Item');
 
   const itemRef = useRef<HTMLButtonElement>(null);
   const composedRefs = useComposedRefs(ref, itemRef);
@@ -78,22 +62,21 @@ const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
   const selected = value === valueFromContext;
 
   const { start: focusItem } = useTimeout(() => {
-    if (selected) {
-      itemRef.current?.focus();
-    }
+    itemRef.current?.focus();
   });
 
   useEffect(() => {
-    if (isFirstOpen && selected) {
+    if (selected) {
       focusItem(0);
     }
-  }, [focusItem, isFirstOpen, selected]);
+  }, [focusItem, selected]);
 
   return (
     <ItemRoot>
       <StyledItem
         ref={composedRefs}
         onFocus={composeEventHandlers(onFocus, () => {
+          console.log('focus');
           onValueChange(value);
         })}
         asChild={asChild}
