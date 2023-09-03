@@ -2,11 +2,14 @@ import { Root, Portal, Content, DialogProps } from '@radix-ui/react-dialog';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion } from 'framer-motion';
 import { styled } from '@stitches/react';
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { ButtonHTMLAttributes, forwardRef, useEffect, useRef } from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 import { If } from '../../utility/If';
+import { usePrevious } from '../../../hooks/usePrevious';
+import useTimeout from '../../../hooks/useTimeout';
 
 import { SwitchTabProvider, useSwitchTabContext } from './context';
 import { NOISE } from './constants';
@@ -23,6 +26,9 @@ export function SwitchTab(props: SwitchTabProps) {
     value: valueFromProps,
     defaultValue,
     onValueChange,
+    open: openFromProps,
+    defaultOpen,
+    onOpenChange,
     ...restProps
   } = props;
 
@@ -32,11 +38,17 @@ export function SwitchTab(props: SwitchTabProps) {
     defaultProp: defaultValue,
   });
 
+  const [open = false, setOpen] = useControllableState({
+    prop: openFromProps,
+    onChange: onOpenChange,
+    defaultProp: defaultOpen,
+  });
+
   return (
-    <Root {...restProps}>
+    <Root open={open} onOpenChange={setOpen} {...restProps}>
       <Portal>
-        <StyledContent>
-          <SwitchTabProvider value={value} onValueChange={setValue}>
+        <StyledContent onOpenAutoFocus={e => e.preventDefault()}>
+          <SwitchTabProvider value={value} open={open} onValueChange={setValue}>
             {children}
           </SwitchTabProvider>
         </StyledContent>
@@ -51,14 +63,36 @@ export interface ItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
   const { children, value, onFocus, asChild = false, ...restProps } = props;
-  const { onValueChange, value: valueFromContext } =
-    useSwitchTabContext('Item');
+  const {
+    onValueChange,
+    value: valueFromContext,
+    open,
+  } = useSwitchTabContext('Item');
+
+  const previousOpen = usePrevious(open);
+  const isFirstOpen = open && !previousOpen;
+
+  const itemRef = useRef<HTMLButtonElement>(null);
+  const composedRefs = useComposedRefs(ref, itemRef);
+
   const selected = value === valueFromContext;
+
+  const { start: focusItem } = useTimeout(() => {
+    if (selected) {
+      itemRef.current?.focus();
+    }
+  });
+
+  useEffect(() => {
+    if (isFirstOpen && selected) {
+      focusItem(0);
+    }
+  }, [focusItem, isFirstOpen, selected]);
 
   return (
     <ItemRoot>
       <StyledItem
-        ref={ref}
+        ref={composedRefs}
         onFocus={composeEventHandlers(onFocus, () => {
           onValueChange(value);
         })}
