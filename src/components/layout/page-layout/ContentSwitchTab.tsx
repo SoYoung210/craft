@@ -29,16 +29,6 @@ interface Content {
 const MAIN = 'main';
 const CONTENTS: Content[] = [
   {
-    linkTo: '/',
-    title: MAIN,
-    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.MAIN}`,
-    imgStyle: {
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-    },
-  },
-  {
     linkTo: '/dynamic-card',
     title: 'dynamic-card',
     imgSrc: `data:image/jpeg;base64,${THUMBNAILS.CARD}`,
@@ -54,6 +44,16 @@ const CONTENTS: Content[] = [
     title: 'glow-cursor',
     imgSrc: `data:image/png;base64,${THUMBNAILS.GLOW_CURSOR}`,
     videoSrc: GlowCursorVideo,
+    imgStyle: {
+      display: 'flex',
+      height: '100%',
+      justifyContent: 'center',
+    },
+  },
+  {
+    linkTo: '/',
+    title: MAIN,
+    imgSrc: `data:image/jpeg;base64,${THUMBNAILS.MAIN}`,
     imgStyle: {
       display: 'flex',
       height: '100%',
