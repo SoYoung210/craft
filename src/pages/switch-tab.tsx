@@ -332,7 +332,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
     <SEO
       title="Switch Tab"
-      description="linear-features style glow cursor list"
+      description="Mac, Arc Style Switch Tab (use Space + Tab)"
       thumbnailSrc={
         props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
           .fallback?.src
@@ -344,7 +344,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
 export const query = graphql`
   query PageData {
     pageFeatured: file(
-      absolutePath: { glob: "**/src/images/thumbnails/switch-tab.jpg" }
+      absolutePath: { glob: "**/src/images/thumbnails/switch-tab-1.jpg" }
     ) {
       childImageSharp {
         gatsbyImageData(layout: FIXED, width: 900)
