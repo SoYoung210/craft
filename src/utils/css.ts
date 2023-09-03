@@ -12,3 +12,8 @@ export const getVar = (variable: VariableType, defaultValue?: string) => {
 
   return `var(${variable})`;
 };
+
+export function getBase64Url(data: string, type: 'svg' | 'png' | 'jpeg') {
+  const t = type === 'svg' ? 'svg+xml' : type;
+  return `url(data:image/${t};base64,${data})`;
+}

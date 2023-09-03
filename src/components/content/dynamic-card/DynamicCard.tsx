@@ -8,6 +8,7 @@ import { styled, theme } from '../../../../stitches.config';
 import Text from '../../material/Text';
 import Button from '../../material/Button';
 import { BoltIcon } from '../../material/icon/Bolt';
+import { getBase64Url } from '../../../utils/css';
 
 import IconSample from './IconSample';
 import {
@@ -227,7 +228,7 @@ export default function DynamicCard() {
               className="effect"
               data-role="holographic"
               css={{
-                maskImage: getBase64SvgUrl(ILLUST_DATA_URL[illust]),
+                maskImage: getBase64Url(ILLUST_DATA_URL[illust], 'svg'),
                 width: ILLUST_SIZE[illust],
                 height: ILLUST_SIZE[illust],
               }}
@@ -444,10 +445,6 @@ const Card = styled('div', {
   transitionProperty: 'transform, box-shadow, background',
   transitionTimingFunction: 'ease-out',
 });
-
-function getBase64SvgUrl(data: string) {
-  return `url(data:image/svg+xml;base64,${data})`;
-}
 
 const PersonalContent = styled('div', {
   display: 'flex',

@@ -1,6 +1,7 @@
 import { ComponentPropsWithoutRef, CSSProperties } from 'react';
 
 import { styled } from '../../../stitches.config';
+import { getBase64Url } from '../../utils/css';
 
 // ref: https://daisyui.com/components/avatar/
 export const SQUIRCLE_SHAPE_MASK =
@@ -36,11 +37,14 @@ const Root = styled('div', {
   maskSize: 'contain',
   maskRepeat: 'no-repeat',
   maskPosition: 'center',
-  maskImage: getBase64SvgUrl(SQUIRCLE_SHAPE_MASK),
+  maskImage: getBase64Url(SQUIRCLE_SHAPE_MASK, 'svg'),
   boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.04)',
 
   '&::after': {
-    backgroundImage: getBase64SvgUrl(SQUIRCLE_SHAPE_BORDER_GRADIENT_MASK_URL),
+    backgroundImage: getBase64Url(
+      SQUIRCLE_SHAPE_BORDER_GRADIENT_MASK_URL,
+      'svg'
+    ),
     backgroundSize: 'cover',
     content: '',
     position: 'absolute',
@@ -54,13 +58,14 @@ const Root = styled('div', {
     borderType: {
       insetNormal: {
         '&::after': {
-          backgroundImage: getBase64SvgUrl(SQUIRCLE_SHAPE_BORDER_MASK_URL),
+          backgroundImage: getBase64Url(SQUIRCLE_SHAPE_BORDER_MASK_URL, 'svg'),
         },
       },
       gradient: {
         '&::after': {
-          backgroundImage: getBase64SvgUrl(
-            SQUIRCLE_SHAPE_BORDER_GRADIENT_MASK_URL
+          backgroundImage: getBase64Url(
+            SQUIRCLE_SHAPE_BORDER_GRADIENT_MASK_URL,
+            'svg'
           ),
         },
       },
@@ -80,7 +85,3 @@ const Inner = styled('div', {
   justifyContent: 'center',
   backgroundColor: 'rgba(252, 252, 252, 0.7)',
 });
-
-function getBase64SvgUrl(data: string) {
-  return `url(data:image/svg+xml;base64,${data})`;
-}
