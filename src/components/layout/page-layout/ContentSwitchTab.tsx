@@ -222,13 +222,12 @@ interface SwitchTabItemProps {
 const SwitchTabItem = (props: SwitchTabItemProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { to, title, videoSrc, imgSrc, value, onFocus, onBlur } = props;
-  const [active, setActive, setDeActive] = useBooleanState(false);
 
   const playRef = useRef<Promise<void> | undefined>(undefined);
   const isLoaded = useRef(false);
 
   return (
-    <SwitchTab.Item
+    <StyledItem
       value={value}
       onFocus={() => {
         if (isLoaded.current === true) {
@@ -236,11 +235,9 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
         }
 
         onFocus?.();
-        setActive();
       }}
       onBlur={() => {
         onBlur?.();
-        setDeActive();
 
         if (playRef.current == null) {
           videoRef.current?.pause();
@@ -256,7 +253,7 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
       asChild
     >
       <BlockLink to={to}>
-        <SwitchTabContentBox title={title} dots={false} active={active}>
+        <SwitchTabContentBox title={title} dots={false}>
           <img
             src={imgSrc}
             style={{
@@ -283,26 +280,23 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
           </If>
         </SwitchTabContentBox>
       </BlockLink>
-    </SwitchTab.Item>
+    </StyledItem>
   );
 };
+
+const StyledItem = styled(SwitchTab.Item, {
+  filter: 'grayscale(1)',
+
+  '&:focus, &:focus-visible': {
+    filter: 'grayscale(0)',
+  },
+});
 
 const SwitchTabContentBox = styled(ContentBox, {
   height: '100%',
 
-  $$grayScale: 1,
-  filter: 'grayscale($$grayScale)',
-
   '& div:nth-child(2)': {
     position: 'relative',
-  },
-
-  variants: {
-    active: {
-      true: {
-        $$grayScale: 0,
-      },
-    },
   },
 });
 
