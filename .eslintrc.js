@@ -76,5 +76,6 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     'react/jsx-filename-extension': ['error', { extensions: ['tsx'] }],
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
 };
