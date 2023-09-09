@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import { styled } from '../../stitches.config';
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import CheckIcon from '../images/icons/check.svg';
 
 const COLORS = [
-  '#D56767',
-  '#42DEF3',
-  '#D8D364',
-  '#59A46A',
-  '#486191',
-  '#724A9A',
+  '#78716c',
+  '#0ea5e9',
+  '#f59e0b',
+  '#22c55e',
+  '#f43f5e',
+  '#a855f7',
 ];
+
 export default function LinearIconPickerTransition() {
   const [color, setColor] = useState(COLORS[0]);
   return (
@@ -20,7 +22,7 @@ export default function LinearIconPickerTransition() {
         <PageLayout.Summary>LinearIconPickerTransition</PageLayout.Summary>
         <PageLayout.DetailsContent></PageLayout.DetailsContent>
       </PageLayout.Details>
-      {COLORS.map(color => {
+      {/* {COLORS.map(color => {
         return (
           <button
             key={color}
@@ -32,38 +34,59 @@ export default function LinearIconPickerTransition() {
             change color
           </button>
         );
-      })}
-      <IconGrid>
-        {new Array(126).fill(null).map((_, index) => {
-          const rowIndex = Math.floor(index / 14);
-          const colIndex = index % 14;
-
-          const transitionDelay = 20 * rowIndex + colIndex * 5;
-
-          return (
-            <IconRoot
-              key={index}
-              style={{
-                // @ts-ignore
-                '--icon-color': color,
-                '--icon-transition-delay': `${transitionDelay}ms`,
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="#00000070">
-                <path d="M3.9558 14.653C3.89329 14.8106 3.98768 14.9868 4.15572 15.0093C6.37462 15.3065 9.37946 14.0947 12.1025 11.3717C15.545 7.92916 14.9998 0.999944 14.9998 0.999944C14.9998 0.999944 8.07474 0.458867 4.63217 3.90144C1.9578 6.57581 0.741126 9.52205 0.980109 11.7286C1.00031 11.9151 1.22561 11.9811 1.35471 11.8449C3.75627 9.31167 6.67803 7.32865 9.91905 6.03225L9.99982 5.99994C7.371 8.30015 5.32803 11.1936 4.04009 14.4405L3.9558 14.653Z"></path>
-              </svg>
-            </IconRoot>
-          );
-        })}
-      </IconGrid>
+      })} */}
+      <Root>
+        <ColorPaletteRoot>
+          <ColorPaletteInner>
+            {COLORS.map(color => {
+              return (
+                <ColorButton
+                  key={color}
+                  style={{
+                    backgroundColor: color,
+                  }}
+                  onClick={() => {
+                    setColor(color);
+                  }}
+                />
+              );
+            })}
+          </ColorPaletteInner>
+        </ColorPaletteRoot>
+        <IconGrid>
+          {new Array(10).fill(null).map((_, rowIndex) => {
+            return (
+              <Fragment key={rowIndex}>
+                {new Array(10).fill(null).map((_, colIndex) => {
+                  const transitionDelay = 20 * rowIndex + colIndex * 5;
+                  return (
+                    <IconRoot
+                      key={rowIndex * 14 + colIndex}
+                      style={{
+                        // @ts-ignore
+                        '--icon-color': color,
+                        '--icon-transition-delay': `${transitionDelay}ms`,
+                      }}
+                    >
+                      <CheckIcon />
+                    </IconRoot>
+                  );
+                })}
+              </Fragment>
+            );
+          })}
+        </IconGrid>
+      </Root>
     </PageLayout>
   );
 }
 
 const IconGrid = styled('div', {
   display: 'grid',
-  gridTemplateColumns: 'repeat(14, 28px)',
-  gridTemplateRows: 'repeat(9, 28px)',
+  // gridTemplateColumns: 'repeat(14, 28px)',
+  // gridTemplateRows: 'repeat(9, 28px)',
+  gridTemplateColumns: 'repeat(10, 1fr)',
+  gridTemplateRows: 'repeat(10, 1fr)',
 });
 
 const IconRoot = styled('div', {
@@ -76,11 +99,47 @@ const IconRoot = styled('div', {
 
   '& svg': {
     flexShrink: 0,
+    minWidth: 22,
   },
-  '& path': {
-    transitionProperty: 'fill',
+  '& path, & circle': {
+    transitionProperty: 'stroke',
     transitionDuration: '0.4s',
-    fill: 'var(--icon-color)',
+    stroke: 'var(--icon-color)',
     transitionDelay: 'var(--icon-transition-delay)',
   },
+});
+
+const Root = styled('div', {
+  borderRadius: 6,
+  // width: 412,
+  boxShadow:
+    'rgba(0, 0, 0, 0.086) 0 3px 12px, inset 0 0 0 0.5px rgba(216, 216, 216, 0.8)',
+  backdropFilter: 'blur(25px) saturate(190%) contrast(50%) brightness(130%)',
+  backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  padding: '8px 10px',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const ColorPaletteRoot = styled('div', {
+  position: 'relative',
+  height: 32,
+});
+
+const ColorPaletteInner = styled('div', {
+  position: 'absolute',
+  top: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingRight: 48,
+  paddingLeft: 4,
+  width: '100%',
+  height: '100%',
+});
+
+const ColorButton = styled('button', {
+  resetButton: 'flex',
+  borderRadius: '50%',
+  size: 28,
 });
