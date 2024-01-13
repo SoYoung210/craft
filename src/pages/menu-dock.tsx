@@ -11,19 +11,22 @@ export default function MenuDockPage() {
         <PageLayout.Summary>-</PageLayout.Summary>
         <PageLayout.DetailsContent>-</PageLayout.DetailsContent>
       </PageLayout.Details>
-      <MenuDock initialIndex={2}>
-        {GRADIENT_IMAGES.map((src, index) => {
-          return (
-            <DockItem key={index} index={index}>
-              <img
-                src={src}
-                alt=""
-                style={{ width: '50%', height: '50%', borderRadius: 9999 }}
-              />
-            </DockItem>
-          );
-        })}
-      </MenuDock>
+      <div style={{ height: 210, overflow: 'hidden' }}>
+        <MenuDock initialIndex={2}>
+          {GRADIENT_IMAGES.map((src, index) => {
+            return (
+              <DockItem key={index} index={index}>
+                <div>{index}</div>
+                <img
+                  src={src}
+                  alt=""
+                  style={{ width: '50%', height: '50%', borderRadius: 9999 }}
+                />
+              </DockItem>
+            );
+          })}
+        </MenuDock>
+      </div>
     </PageLayout>
   );
 }

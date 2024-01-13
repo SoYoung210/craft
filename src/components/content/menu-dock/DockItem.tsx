@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
-import { usePrevious } from '../../../hooks/usePrevious';
-import { clamp } from '../../../utils/math';
 
 import { useMenuDockContext } from './context';
 /**
@@ -18,23 +16,17 @@ const 중심좌표 = 200;
 // const degrees = [180, 210, 240, 270, 300, 330, 360];
 const degrees = [210, 243, 270, 297, 330];
 // 배열이 5개인 경우 2개까지 여유좌표가 존재해야 함
-const degreesWithHiddenArea = [150, 180, 210, 243, 270, 297, 330, 360, 30];
+const degreesWithHiddenArea = [120, 150, ...degrees, 30, 60];
 const middleIndex = Math.floor(degrees.length / 2);
 export interface DockItemProps {
   children: ReactNode;
-  // TODO: offsetLeft로 계산하면 될듯
   index: number;
 }
 export function DockItem({ children, index }: DockItemProps) {
   const { activeIndex, setActiveIndex } = useMenuDockContext('DockItem');
-  const nextIndex = middleIndex - activeIndex + index;
-  const degreeIndex =
-    nextIndex > degrees.length - 1
-      ? 0
-      : nextIndex < 0
-      ? degrees.length - 1
-      : nextIndex;
-  const { x, y } = generateEllipsePoint(degrees[degreeIndex]);
+  // 마지막 +2: 여유좌표 개수
+  const degreeIndex = middleIndex - activeIndex + index + 2;
+  const { x, y } = generateEllipsePoint(degreesWithHiddenArea[degreeIndex]);
 
   return (
     <Item
