@@ -2,7 +2,8 @@ import { createContext } from '../../utility/createContext';
 
 interface ContextValue {
   activeIndex: number;
-  setActiveIndex: (index: number) => void;
+  onActiveIndexChange: (index: number) => void;
+  degrees: number[];
 }
 
 export const [MenuDockProvider, useMenuDockContext] =

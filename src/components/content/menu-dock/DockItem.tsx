@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
-import useCircularArray from '../../../hooks/useCircularArray';
-import { usePrevious } from '../../../hooks/usePrevious';
 
 import { useMenuDockContext } from './context';
 /**
@@ -11,31 +9,40 @@ import { useMenuDockContext } from './context';
  * 스케일은 0.9, 0.8, 0.7
  */
 
-const x반축길이 = 200;
+const x반축길이 = 220;
 const y반축길이 = 85;
 const 중심좌표 = 200;
-// const degrees = [270, 300, 330, 0, 30, 60, 90];
-// const degrees = [180, 210, 240, 270, 300, 330, 360];
-const degrees = [210, 243, 270, 297, 330];
-// 배열이 5개인 경우 2개까지 여유좌표가 존재해야 함
-// const degreesWithHiddenArea = [150, 170, ...degrees, 10, 30];
-// 원래 위치 보존되는거: [297, 330, ...degrees, 210, 243];
-// 양 끝 두개의 값은 사라지는 좌표...
-const degreesWithHiddenArea = [120, 160, ...degrees, 20, 60];
 export interface DockItemProps {
   children: ReactNode;
   index: number;
-  onClick?: () => void;
-  degree: number;
 }
-export function DockItem({ children, index, onClick, degree }: DockItemProps) {
-  const { x, y } = generateEllipsePoint(degree);
+
+const origin = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+export function DockItem({ children, index }: DockItemProps) {
+  const { onActiveIndexChange, degrees, activeIndex } =
+    useMenuDockContext('DockItem');
+
+  const offset = Math.abs(activeIndex - 4);
+
+  const orderedIndex =
+    offset === 0
+      ? origin
+      : activeIndex > 4
+      ? //next
+        [...origin.slice(offset), ...origin.slice(0, offset)]
+      : //prev
+        [
+          ...origin.slice(origin.length - offset),
+          ...origin.slice(0, origin.length - offset),
+        ];
+  const order = orderedIndex.findIndex(i => i === index);
+  const orderAbs = Math.abs(order - 4);
+  const { x, y } = generateEllipsePoint(degrees[index]);
 
   return (
     <Item
       onClick={e => {
-        // setActiveIndex(index);
-        onClick?.(e);
+        onActiveIndexChange(index);
       }}
       initial={{
         x,
@@ -44,12 +51,8 @@ export function DockItem({ children, index, onClick, degree }: DockItemProps) {
       animate={{
         x,
         y,
-        // scale:
-        //   activeIndex === index
-        //     ? 1.3
-        //     : 1 - Math.abs(activeIndex - index) * 0.03,
-        // opacity:
-        //   activeIndex === index ? 1 : 1 - Math.abs(activeIndex - index) * 0.18,
+        scale: activeIndex === index ? 1.3 : 1 - orderAbs * 0.05,
+        opacity: activeIndex === index ? 1 : 1 - orderAbs * 0.18,
       }}
       transition={{
         ease: [0.45, 0, 0.55, 1],
