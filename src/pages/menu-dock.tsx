@@ -62,7 +62,7 @@ export default function MenuDockPage() {
   const direction = previousIndex > index ? -1 : 1;
 
   return (
-    <PageLayout>
+    <PageLayout style={{ minWidth: 760 }}>
       <PageLayout.Title>Dock</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>-</PageLayout.Summary>
