@@ -5,16 +5,32 @@ import { GRADIENT_IMAGES } from '../components/content/menu-dock/constant';
 import { DockItem } from '../components/content/menu-dock/DockItem';
 import MenuDock from '../components/content/menu-dock/MenuDock';
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import { usePrevious } from '../hooks/usePrevious';
+
+const xAmount = 290;
+const yAmount = 40;
+const yRotate = 18;
+const x = {
+  left: -1 * xAmount,
+  right: xAmount,
+};
+
+const rotateY = {
+  right: yRotate,
+  left: -1 * yRotate,
+};
+interface AnimateParams {
+  direction: number;
+}
 
 const variants: Variants = {
-  enter: (direction: number) => {
+  enter: ({ direction }: AnimateParams) => {
     return {
-      // x: direction > 0 ? 1000 : -1000,
-      rotateY: 18,
-      x: 280,
-      y: 10,
+      x: direction > 0 ? x.left : x.right,
+      rotateY: direction > 0 ? rotateY.left : rotateY.right,
+      y: yAmount,
       opacity: 0,
-      scale: 0.9,
+      scale: 0.85,
       transformPerspective: 400,
     };
   },
@@ -27,22 +43,23 @@ const variants: Variants = {
     scale: 1,
     transformPerspective: 400,
   },
-  exit: (direction: number) => {
+  exit: ({ direction }: AnimateParams) => {
     return {
       zIndex: 0,
-      // x: direction < 0 ? 1000 : -1000,
-      x: -280,
-      y: 10,
-      rotateY: -18,
+      x: direction > 0 ? x.right : x.left,
+      y: yAmount,
+      rotateY: direction < 0 ? rotateY.left : rotateY.right,
       opacity: 0,
-      scale: 0.9,
+      scale: 0.85,
       transformPerspective: 400,
     };
   },
 };
 
 export default function MenuDockPage() {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(4);
+  const previousIndex = usePrevious(index);
+  const direction = previousIndex > index ? -1 : 1;
 
   return (
     <PageLayout>
@@ -51,14 +68,21 @@ export default function MenuDockPage() {
         <PageLayout.Summary>-</PageLayout.Summary>
         <PageLayout.DetailsContent>-</PageLayout.DetailsContent>
       </PageLayout.Details>
-      <div style={{ position: 'relative', height: 400, overflow: 'hidden' }}>
+      <div
+        style={{
+          position: 'relative',
+          height: 400,
+          overflow: 'hidden',
+          paddingTop: 16,
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <AnimatePresence initial={false}>
             <motion.div
               key={index}
-              // src={image[0]}
               variants={variants}
               initial="enter"
+              custom={{ direction }}
               animate="center"
               style={{
                 height: 240,
@@ -74,6 +98,7 @@ export default function MenuDockPage() {
               transition={{
                 ease: [0.45, 0, 0.55, 1],
                 duration: 0.45,
+                opacity: { duration: 0.3 },
               }}
             >
               {index}
@@ -89,7 +114,7 @@ export default function MenuDockPage() {
                   key={index}
                   index={index}
                   onClick={() => {
-                    setIndex(prev => prev + 1);
+                    setIndex(index);
                   }}
                 >
                   <img
