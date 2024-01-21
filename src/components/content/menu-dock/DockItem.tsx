@@ -111,6 +111,7 @@ const Item = styled(motion.button, {
   left: 0,
   offsetPath:
     'path("M80.5 93.0032V68.2395C102.179 50.8165 127.503 33.912 163.6 21.3472C199.805 8.74474 246.872 0.5 312 0.5C442.114 0.5 510.116 28.4174 551.5 68.2127V95.9968L80.5 93.0032Z")',
+  offsetRotate: '0deg',
   background: 'transparent',
   borderRadius: 12,
   border: '1px solid rgba(255, 255, 255, 0.9)',
