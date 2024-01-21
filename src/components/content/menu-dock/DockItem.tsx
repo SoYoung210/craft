@@ -6,10 +6,6 @@ import { styled } from '../../../../stitches.config';
 import { usePrevious } from '../../../hooks/usePrevious';
 
 import { useMenuDockContext } from './context';
-/**
- * translateY activeIndex기준으로 왼 18, 36, 54
- * 스케일은 0.9, 0.8, 0.7
- */
 
 const x반축길이 = 220;
 const y반축길이 = 85;
@@ -24,7 +20,9 @@ export interface DockItemProps
 }
 
 const origin = [0, 1, 2, 3, 4];
-const pathLength = [55, 65, 75, 85, 95];
+// const pathLength = [55, 65, 75, 85, 95];
+// const pathLength = [51, 62, 74, 86, 97];
+const pathLength = [7, 17, 27, 37, 47];
 const midIndex = Math.floor(pathLength.length / 2);
 // 개수는 5개 기준으로 작성
 export function DockItem({
@@ -33,7 +31,8 @@ export function DockItem({
   onClick,
   ...restProps
 }: DockItemProps) {
-  const { onActiveIndexChange, activeIndex } = useMenuDockContext('DockItem');
+  const { onActiveIndexChange, activeIndex, direction, onDirectionChange } =
+    useMenuDockContext('DockItem');
   const offset = Math.abs(activeIndex - midIndex);
 
   const orderedIndex =
@@ -49,49 +48,52 @@ export function DockItem({
         ];
 
   const order = orderedIndex.findIndex(i => i === index);
-  const prevOrder = usePrevious(order);
 
   const nextPathLengthValueCandidate = pathLength[order];
-  const prevPathLengthValue = usePrevious(nextPathLengthValueCandidate);
-
-  const direction = prevOrder < order ? 'next' : 'prev';
+  const prevPathLengthValue = usePrevious(pathLength[order]);
 
   const nextPathLengthValue2 = useMemo(() => {
-    if (direction === 'next') {
+    if (direction === 'counterclockwise') {
       return nextPathLengthValueCandidate > prevPathLengthValue
         ? nextPathLengthValueCandidate - 100
         : nextPathLengthValueCandidate;
     }
 
-    return nextPathLengthValueCandidate;
+    return nextPathLengthValueCandidate < prevPathLengthValue
+      ? 100 + nextPathLengthValueCandidate
+      : nextPathLengthValueCandidate;
   }, [direction, nextPathLengthValueCandidate, prevPathLengthValue]);
 
   return (
     <Item
       onClick={composeEventHandlers(onClick, () => {
+        const direction = order < 2 ? 'clockwise' : 'counterclockwise';
         onActiveIndexChange(index);
+        onDirectionChange(direction);
       })}
+      initial={false}
       animate={{
         offsetDistance: `${nextPathLengthValue2}%`,
-        // scale: activeIndex === index ? 1.3 : 1 - Math.abs(nextOffset) * 0.05,
+        scale: order === 2 ? 1.3 : 1 - Math.abs(order - 2) * 0.05,
         opacity: activeIndex === index ? 1 : 1 - Math.abs(offset) * 0.18,
         transitionEnd: {
-          offsetDistance:
-            nextPathLengthValue2 < 0
-              ? `${nextPathLengthValue2 + 100}%`
-              : `${nextPathLengthValue2}%`,
+          offsetDistance: `${absInRange(nextPathLengthValue2, 0, 100)}%`,
         },
       }}
       transition={{
         ease: [0.45, 0, 0.55, 1],
-        // duration: 0.18
-        duration: 0.5,
+        duration: 5,
+        // duration: 0.5,
       }}
       {...restProps}
     >
       {children}
     </Item>
   );
+}
+
+function absInRange(value: number, min: number, max: number) {
+  return (Math.abs(value) % (max - min)) + min;
 }
 
 function generateOvalPoint(degree: number, origin = 중심좌표) {
@@ -108,7 +110,7 @@ const Item = styled(motion.button, {
   top: 0,
   left: 0,
   offsetPath:
-    'path("M551.5 118.5C551.5 150.933 525.306 180.428 482.653 201.845C440.028 223.248 381.109 236.5 316 236.5C250.891 236.5 191.972 223.248 149.347 201.845C106.693 180.428 80.5 150.933 80.5 118.5C80.5 86.0674 106.693 56.5719 149.347 35.1547C191.972 13.7522 250.891 0.5 316 0.5C381.109 0.5 440.028 13.7522 482.653 35.1547C525.306 56.5719 551.5 86.0674 551.5 118.5Z")',
+    'path("M80.5 93.0032V68.2395C102.179 50.8165 127.503 33.912 163.6 21.3472C199.805 8.74474 246.872 0.5 312 0.5C442.114 0.5 510.116 28.4174 551.5 68.2127V95.9968L80.5 93.0032Z")',
   background: 'transparent',
   borderRadius: 12,
   border: '1px solid rgba(255, 255, 255, 0.9)',

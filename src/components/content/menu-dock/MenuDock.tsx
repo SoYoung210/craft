@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 
 import useCircularArray from '../../../hooks/useCircularArray';
 
-import { MenuDockProvider } from './context';
+import { Direction, MenuDockProvider } from './context';
 export interface MenuDockProps {
   children: React.ReactNode;
   initialIndex: number;
@@ -11,12 +11,14 @@ export interface MenuDockProps {
 
 export default function MenuDock({ children, initialIndex }: MenuDockProps) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [direction, setDirection] = useState<Direction>('clockwise');
 
   return (
     <MenuDockProvider
       activeIndex={activeIndex}
-      // degrees={degree}
       onActiveIndexChange={setActiveIndex}
+      direction={direction}
+      onDirectionChange={setDirection}
     >
       <List>{children}</List>
     </MenuDockProvider>

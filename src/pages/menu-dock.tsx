@@ -72,7 +72,7 @@ export default function MenuDockPage() {
         style={{
           position: 'relative',
           // height: 480,
-          height: 420,
+          height: 390,
           overflow: 'hidden',
           paddingTop: 16,
         }}
@@ -109,20 +109,20 @@ export default function MenuDockPage() {
         {/* 5개 기준한 값으로 변경 */}
         <div style={{ position: 'absolute', top: 320 }}>
           <MenuDock initialIndex={2}>
-            <svg
+            {/* <svg
               width="632"
-              height="119"
-              viewBox="0 0 632 119"
+              height="107"
+              viewBox="0 0 632 107"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <g>
                 <path
-                  d="M80.5021 118C80.7698 85.7644 106.913 56.4618 149.347 35.1547C191.972 13.7522 250.891 0.5 316 0.5C381.109 0.5 440.028 13.7522 482.653 35.1547C525.087 56.4618 551.23 85.7644 551.498 118H80.5021Z"
+                  d="M551.324 63.5H80.7498C84.2242 55.4602 92.0566 47.5628 103.88 40.2182C116.03 32.6706 132.344 25.7388 152.327 19.8516C192.29 8.07769 246.865 0.5 312 0.5C377.141 0.5 434.345 7.10308 476.623 18.3913C497.764 24.0358 515.152 30.8464 527.93 38.5746C540.422 46.1299 548.443 54.5226 551.324 63.5Z"
                   stroke="black"
                 />
               </g>
-            </svg>
+            </svg> */}
 
             {GRADIENT_IMAGES.map((src, index) => {
               return (
@@ -133,7 +133,6 @@ export default function MenuDockPage() {
                     setIndex(index);
                   }}
                 >
-                  <div>{index}</div>
                   <img
                     src={src}
                     alt=""
