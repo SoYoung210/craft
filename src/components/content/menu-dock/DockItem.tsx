@@ -7,9 +7,6 @@ import { usePrevious } from '../../../hooks/usePrevious';
 
 import { useMenuDockContext } from './context';
 
-const x반축길이 = 220;
-const y반축길이 = 85;
-const 중심좌표 = 200;
 export interface DockItemProps
   extends Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
@@ -20,8 +17,6 @@ export interface DockItemProps
 }
 
 const origin = [0, 1, 2, 3, 4];
-// const pathLength = [55, 65, 75, 85, 95];
-// const pathLength = [51, 62, 74, 86, 97];
 const pathLength = [7, 17, 27, 37, 47];
 const midIndex = Math.floor(pathLength.length / 2);
 // 개수는 5개 기준으로 작성
@@ -74,15 +69,15 @@ export function DockItem({
       initial={false}
       animate={{
         offsetDistance: `${nextPathLengthValue2}%`,
-        scale: order === 2 ? 1.3 : 1 - Math.abs(order - 2) * 0.05,
+        scale: order === 2 ? 1.3 : 1 - Math.abs(offset) * 0.05,
         opacity: activeIndex === index ? 1 : 1 - Math.abs(offset) * 0.18,
         transitionEnd: {
-          offsetDistance: `${absInRange(nextPathLengthValue2, 0, 100)}%`,
+          offsetDistance: `${adjustInRange(nextPathLengthValue2, 0, 100)}%`,
         },
       }}
       transition={{
         ease: [0.45, 0, 0.55, 1],
-        duration: 5,
+        duration: 2,
         // duration: 0.5,
       }}
       {...restProps}
@@ -92,17 +87,17 @@ export function DockItem({
   );
 }
 
-function absInRange(value: number, min: number, max: number) {
-  return (Math.abs(value) % (max - min)) + min;
-}
-
-function generateOvalPoint(degree: number, origin = 중심좌표) {
-  const radian = (degree * Math.PI) / 180;
-  // const x = Math.cos(radian) * x반축길이 + origin;
-  const x = Math.cos(radian) * x반축길이 + 290;
-  const y = Math.sin(radian) * y반축길이 + origin;
-
-  return { x, y };
+function adjustInRange(number: number, min: number, max: number): number {
+  if (number < min) {
+    // 주어진 숫자가 최소값보다 작으면 최대값을 더해줌
+    return number + max;
+  } else if (number > max) {
+    // 주어진 숫자가 최대값보다 크면 최대값을 뺌
+    return number - max;
+  } else {
+    // 아무 조정이 필요 없는 경우
+    return number;
+  }
 }
 
 const Item = styled(motion.button, {
