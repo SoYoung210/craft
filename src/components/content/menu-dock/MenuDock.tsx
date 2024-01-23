@@ -18,12 +18,20 @@ export default function MenuDock({ children, initialIndex }: MenuDockProps) {
       direction={direction}
       onDirectionChange={setDirection}
     >
-      <List>{children}</List>
+      {children}
     </MenuDockProvider>
   );
 }
 
-const List = styled('div', {
-  position: 'relative',
+// const List = styled('div', {
+//   position: 'relative',
+//   display: 'flex',
+// });
+
+export const MenuDockList = styled('div', {
+  position: 'absolute',
   display: 'flex',
+  // TODO: DockContent 높이 + 여백값으로 변경
+  top: 340,
+  left: 0,
 });
