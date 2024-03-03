@@ -51,6 +51,7 @@ const variants: Variants = {
     transformPerspective: 400,
   },
   exit: ({ direction }: AnimateParams) => {
+    console.log('@@ exit', direction);
     return {
       zIndex: 0,
       x: direction > 0 ? x.right : x.left,
@@ -67,14 +68,18 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
     const { children, index, ...restProps } = props;
     const { activeIndex, direction } = useMenuDockContext('DockContent');
     const visible = activeIndex === index;
+    const animationDirection = direction === 'clockwise' ? 1 : -1;
 
     return (
-      <AnimatePresence initial={false}>
+      <AnimatePresence
+        initial={false}
+        custom={{ direction: animationDirection }}
+      >
         {visible ? (
           <MotionRoot
             ref={ref}
             key={index}
-            custom={{ direction: direction === 'clockwise' ? 1 : -1 }}
+            custom={{ direction: animationDirection }}
             variants={variants}
             initial="enter"
             animate="center"
@@ -97,7 +102,7 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
 
 const Fog = styled('div', {
   width: '100%',
-  height: '40%',
+  height: '46%',
   zIndex: 1,
 
   position: 'absolute',
@@ -107,11 +112,18 @@ const Fog = styled('div', {
 
   background:
     'linear-gradient(to bottom, transparent, rgba(255,255,255, 0.8) 58%, rgba(255,255,255, 1) 100%)',
-  opacity: 0.48,
-  backdropFilter: 'blur(16px)',
+  opacity: 0.52,
+  // backdropFilter: 'blur(16px)',
 });
 
-// noise
+/*
+TODO:
+- [] 그라디언트 이미지 초기로딩 느림으로 인해 흰색 뜨는것 고쳐보기 (webp convert?)
+- [] 처음에 반대로 움직이는 것 고치기
+- [] 움직이는 애니메이션 튜닝하기
+- [] 이미지 노이즈 텍스쳐 고민좀 해봐야함. 옮기던지 빼던지 (이미지 채도가 좀 높긴해서..)
+- [] 이미지 영역에 inset box-shadow들어가게 해야함 (구분감이 너무 약함) (:after써야 할듯?)
+*/
 const MotionRoot = styled(motion.div, {
   height: 240,
   width: 240,
@@ -119,7 +131,8 @@ const MotionRoot = styled(motion.div, {
   borderRadius: 32,
   display: 'flex',
   alignItems: 'center',
+  // FIXME: 이미지 노이즈 텍스쳐 고민좀 해봐야함;
   backgroundImage: NOISE,
   backgroundColor: 'rgba(253, 253, 253, 0.75)',
-  backdropFilter: 'blur(35px)',
+  // backdropFilter: 'blur(35px)',
 });

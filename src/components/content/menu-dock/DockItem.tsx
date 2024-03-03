@@ -29,7 +29,6 @@ export function DockItem({
   const { onActiveIndexChange, activeIndex, direction, onDirectionChange } =
     useMenuDockContext('DockItem');
   const offset = Math.abs(activeIndex - midIndex);
-
   const orderedIndex =
     offset === 0
       ? origin
@@ -47,7 +46,7 @@ export function DockItem({
   const nextPathLengthValueCandidate = pathLength[order];
   const prevPathLengthValue = usePrevious(pathLength[order]);
 
-  const nextPathLengthValue2 = useMemo(() => {
+  const nextPathLengthValue = useMemo(() => {
     if (direction === 'counterclockwise') {
       return nextPathLengthValueCandidate > prevPathLengthValue
         ? nextPathLengthValueCandidate - 100
@@ -63,16 +62,16 @@ export function DockItem({
     <Item
       onClick={composeEventHandlers(onClick, () => {
         const direction = order < 2 ? 'clockwise' : 'counterclockwise';
-        onActiveIndexChange(index);
         onDirectionChange(direction);
+        onActiveIndexChange(index);
       })}
       initial={false}
       animate={{
-        offsetDistance: `${nextPathLengthValue2}%`,
+        offsetDistance: `${nextPathLengthValue}%`,
         scale: order === 2 ? 1.3 : 1 - Math.abs(offset) * 0.05,
         opacity: activeIndex === index ? 1 : 1 - Math.abs(offset) * 0.18,
         transitionEnd: {
-          offsetDistance: `${adjustInRange(nextPathLengthValue2, 0, 100)}%`,
+          offsetDistance: `${adjustInRange(nextPathLengthValue, 0, 100)}%`,
         },
       }}
       transition={{

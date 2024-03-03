@@ -23,11 +23,6 @@ export default function MenuDock({ children, initialIndex }: MenuDockProps) {
   );
 }
 
-// const List = styled('div', {
-//   position: 'relative',
-//   display: 'flex',
-// });
-
 export const MenuDockList = styled('div', {
   position: 'absolute',
   display: 'flex',
