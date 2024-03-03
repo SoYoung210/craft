@@ -12,6 +12,22 @@ const IndexPage = () => {
       <PageLayout.Title>craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/dock-menu">
+            <ContentBox title="Dock Menu">
+              <StaticImage
+                src="../images/thumbnails/dock-item.jpeg"
+                alt="Oval Dock Menu with Content"
+                placeholder="none"
+                style={{
+                  height: 250,
+                }}
+                quality={70}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/switch-tab">
             <ContentBox title="Switch Tab">
               <StaticImage
