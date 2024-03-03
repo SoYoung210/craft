@@ -23,10 +23,45 @@ export default function MenuDockPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
       <GradientBackground />
-      <PageLayout.Title>Dock</PageLayout.Title>
+      <PageLayout.Title>Dock Item</PageLayout.Title>
       <PageLayout.Details>
-        <PageLayout.Summary>-</PageLayout.Summary>
-        <PageLayout.DetailsContent>-</PageLayout.DetailsContent>
+        <PageLayout.Summary>oval path, exit framer-motion</PageLayout.Summary>
+        <PageLayout.DetailsContent>
+          <PageLayout.SubTitle>Oval Path</PageLayout.SubTitle>
+          <ol>
+            <li>
+              First: Calculate the x, y coordinates based on the elliptic
+              equation to find the position variable{' '}
+              <a href="https://github.com/SoYoung210/craft/pull/30/commits/858397e95f4a6dd9bb729c96750075bbc3f127cb">
+                commit
+              </a>
+              <br />
+              hard to handle circular items
+            </li>
+            <li>
+              Second: create an elliptical svg and use offsetDistance. Determine
+              position based on svg path without calculating x,y coordinates
+              directly{' '}
+              <a href="https://github.com/SoYoung210/craft/pull/30/commits/f77318c9e9c32d36883a7af6863aa42f9303571f">
+                commit
+              </a>
+              <br />
+              Currently applied, but tricky to handle sizes
+            </li>
+          </ol>
+          <PageLayout.SubTitle>
+            framer motion exit custom variable
+          </PageLayout.SubTitle>
+          <p>
+            state that manages whether the rotation is clockwise or
+            counterclockwise(<code>direction</code>), and I was having issues
+            with this value looking at the previous value in the exit animation.
+            <a href="https://codesandbox.io/s/framer-motion-image-gallery-pqvx3?from-embed">
+              this example
+            </a>
+            solves the problem
+          </p>
+        </PageLayout.DetailsContent>
       </PageLayout.Details>
       <PageContentRoot>
         <MenuDock initialIndex={2}>
