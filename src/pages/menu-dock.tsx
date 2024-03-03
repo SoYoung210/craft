@@ -22,25 +22,13 @@ const Image = ({ index }: { index: number }) => {
 export default function MenuDockPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
-      <GradientBackground data-debug="rgradient-backgound" />
+      <GradientBackground />
       <PageLayout.Title>Dock</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>-</PageLayout.Summary>
         <PageLayout.DetailsContent>-</PageLayout.DetailsContent>
       </PageLayout.Details>
-      <div
-        style={{
-          position: 'relative',
-          // height: 480,
-          height: 406,
-          overflow: 'hidden',
-          paddingTop: 16,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        {/* 5개 기준한 값으로 변경 */}
-
+      <PageContentRoot>
         <MenuDock initialIndex={2}>
           <DockContent
             index={2}
@@ -98,11 +86,6 @@ export default function MenuDockPage() {
             <Image index={4} />
           </DockContent>
 
-          {/**
-           * TODO:
-           * 2. top: 320을 DockContent height + 여백으로 변경해야함.
-           * 3. DockContent영역 분리해서 렌더링.. (위에 있다고는 가정하고, 너비는 조절가능하면 좋을듯)
-           */}
           <MenuDockList>
             {GRADIENT_IMAGES.map((src, index) => {
               return (
@@ -122,10 +105,43 @@ export default function MenuDockPage() {
             })}
           </MenuDockList>
         </MenuDock>
-      </div>
+      </PageContentRoot>
     </PageLayout>
   );
 }
+
+const PageContentRoot = styled('div', {
+  position: 'relative',
+  height: 406,
+  overflow: 'hidden',
+  paddingTop: 16,
+  display: 'flex',
+  justifyContent: 'center',
+
+  '&::before, &::after': {
+    content: '""',
+    position: 'absolute',
+    zIndex: 1,
+    backdropFilter: 'blur(0.8px)',
+    width: '180px',
+    height: '120px',
+    pointerEvents: 'none',
+    background:
+      'linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.76))',
+    '-webkit-mask-image':
+      'linear-gradient(to top,  rgba(255, 255, 255, 0.76) 20%, transparent)',
+  },
+
+  '&::before': {
+    left: 0,
+    bottom: 0,
+  },
+
+  '&::after': {
+    right: 0,
+    bottom: 0,
+  },
+});
 
 const GradientBackground = styled('div', {
   width: '72%',
@@ -134,10 +150,10 @@ const GradientBackground = styled('div', {
   pointerEvents: 'none',
   position: 'fixed',
   left: '50%',
+  top: '10%',
   transform: 'translateX(-50%)',
   zIndex: -1,
-  opacity: 0.18,
-  backgroundSize: '180%, 200%',
-  filter: 'blur(100px) saturate(150%)',
+  opacity: 0.22,
+  filter: 'blur(80px) saturate(150%)',
   backgroundImage: `radial-gradient(at 97% 21%, #9772fe 0, transparent 50%), radial-gradient(at 33% 50%, rgb(140, 168, 232) 0px, transparent 50%)`,
 });

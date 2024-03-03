@@ -69,7 +69,7 @@ export function DockItem({
       animate={{
         offsetDistance: `${nextPathLengthValue}%`,
         scale: order === 2 ? 1.3 : 1 - Math.abs(offset) * 0.05,
-        opacity: activeIndex === index ? 1 : 1 - Math.abs(offset) * 0.18,
+        opacity: activeIndex === index ? 1 : 1 - Math.abs(offset) * 0.1,
         transitionEnd: {
           offsetDistance: `${adjustInRange(nextPathLengthValue, 0, 100)}%`,
         },

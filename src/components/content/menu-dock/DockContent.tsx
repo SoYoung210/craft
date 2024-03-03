@@ -4,7 +4,6 @@ import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { forwardRef, ReactElement } from 'react';
 
 import { styled } from '../../../../stitches.config';
-import { NOISE } from '../switch-tab/constants';
 
 import { useMenuDockContext } from './context';
 
@@ -18,7 +17,7 @@ const xAmount = 290;
 const yAmount = 40;
 const yRotate = 18;
 const x = {
-  left: -1 * xAmount,
+  left: -1.08 * xAmount,
   right: xAmount,
 };
 
@@ -54,7 +53,7 @@ const variants: Variants = {
     return {
       zIndex: 0,
       x: direction > 0 ? x.right : x.left,
-      y: yAmount,
+      y: yAmount * 1.1,
       rotateY: direction < 0 ? rotateY.left : rotateY.right,
       opacity: 0,
       scale: 0.85,
@@ -129,18 +128,8 @@ const Fog = styled('div', {
 
   background:
     'linear-gradient(transparent, rgba(255, 255, 255, 0.416) 58%, rgb(255, 255, 255, 0.52) 100%)',
-  // backdropFilter: 'blur(16px)',
 });
 
-/*
-TODO:
-- [] 그라디언트 이미지 초기로딩 느림으로 인해 흰색 뜨는것 고쳐보기 (webp convert?)
-- [x] 처음에 반대로 움직이는 것 고치기
-- [] 움직이는 애니메이션 튜닝하기(사라지는게 좀 느린듯)
-- [] 이미지 노이즈 텍스쳐 고민좀 해봐야함. 옮기던지 빼던지 (이미지 채도가 좀 높긴해서..)
-- [] 이미지 영역에 inset box-shadow들어가게 해야함 (구분감이 너무 약함) (:after써야 할듯?)
-- [] 배경 bg 그라디언트가 좀 약한것 같기도 하다..
-*/
 const MotionRoot = styled(motion.div, {
   height: 240,
   width: 240,
@@ -148,10 +137,18 @@ const MotionRoot = styled(motion.div, {
   borderRadius: 32,
   display: 'flex',
   alignItems: 'center',
-  // FIXME: 이미지 노이즈 텍스쳐 고민좀 해봐야함;
-  backgroundImage: NOISE,
-  backgroundColor: 'rgba(253, 253, 253, 0.75)',
-  // backdropFilter: 'blur(35px)',
+  boxShadow: '0 0 8px rgba(177, 177, 177, 0.25)',
+
+  '&::after': {
+    content: '',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    boxShadow: 'inset 0 0 1px rgba(0,0,0,0.12)',
+    borderRadius: 'inherit',
+  },
 });
 
 export const DockContent = Object.assign(DockContentImpl, {
