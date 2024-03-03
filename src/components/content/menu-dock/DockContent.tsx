@@ -1,11 +1,10 @@
 // like radix-ui Tab.Content
 
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { forwardRef } from 'react';
+import { forwardRef, ReactElement } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { NOISE } from '../switch-tab/constants';
-import { linearGradient } from '../../../utils/color';
 
 import { useMenuDockContext } from './context';
 
@@ -13,6 +12,7 @@ import { useMenuDockContext } from './context';
 export interface DockContentProps {
   children: React.ReactNode;
   index: number;
+  bottomAddon?: ReactElement;
 }
 const xAmount = 290;
 const yAmount = 40;
@@ -51,7 +51,6 @@ const variants: Variants = {
     transformPerspective: 400,
   },
   exit: ({ direction }: AnimateParams) => {
-    console.log('@@ exit', direction);
     return {
       zIndex: 0,
       x: direction > 0 ? x.right : x.left,
@@ -63,9 +62,9 @@ const variants: Variants = {
     };
   },
 };
-export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
+export const DockContentImpl = forwardRef<HTMLDivElement, DockContentProps>(
   (props, ref) => {
-    const { children, index, ...restProps } = props;
+    const { children, index, bottomAddon, ...restProps } = props;
     const { activeIndex, direction } = useMenuDockContext('DockContent');
     const visible = activeIndex === index;
     const animationDirection = direction === 'clockwise' ? 1 : -1;
@@ -92,13 +91,31 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
             {...restProps}
           >
             {children}
-            <Fog />
+            <Fog>{bottomAddon}</Fog>
           </MotionRoot>
         ) : null}
       </AnimatePresence>
     );
   }
 );
+
+const BottomAddonRoot = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-end',
+  height: '100%',
+  padding: '0 0 26px 26px',
+  color: 'rgb(29,29,31)',
+  fontSize: '14px',
+});
+
+const Title = styled('div', {
+  fontWeight: 600,
+});
+
+const Caption = styled('div', {
+  marginTop: 4,
+});
 
 const Fog = styled('div', {
   width: '100%',
@@ -111,18 +128,18 @@ const Fog = styled('div', {
   borderRadius: '0px 0px 32px 32px',
 
   background:
-    'linear-gradient(to bottom, transparent, rgba(255,255,255, 0.8) 58%, rgba(255,255,255, 1) 100%)',
-  opacity: 0.52,
+    'linear-gradient(transparent, rgba(255, 255, 255, 0.416) 58%, rgb(255, 255, 255, 0.52) 100%)',
   // backdropFilter: 'blur(16px)',
 });
 
 /*
 TODO:
 - [] 그라디언트 이미지 초기로딩 느림으로 인해 흰색 뜨는것 고쳐보기 (webp convert?)
-- [] 처음에 반대로 움직이는 것 고치기
-- [] 움직이는 애니메이션 튜닝하기
+- [x] 처음에 반대로 움직이는 것 고치기
+- [] 움직이는 애니메이션 튜닝하기(사라지는게 좀 느린듯)
 - [] 이미지 노이즈 텍스쳐 고민좀 해봐야함. 옮기던지 빼던지 (이미지 채도가 좀 높긴해서..)
 - [] 이미지 영역에 inset box-shadow들어가게 해야함 (구분감이 너무 약함) (:after써야 할듯?)
+- [] 배경 bg 그라디언트가 좀 약한것 같기도 하다..
 */
 const MotionRoot = styled(motion.div, {
   height: 240,
@@ -135,4 +152,10 @@ const MotionRoot = styled(motion.div, {
   backgroundImage: NOISE,
   backgroundColor: 'rgba(253, 253, 253, 0.75)',
   // backdropFilter: 'blur(35px)',
+});
+
+export const DockContent = Object.assign(DockContentImpl, {
+  BottomAddonRoot,
+  Title,
+  Caption,
 });

@@ -7,10 +7,22 @@ import MenuDock, {
 } from '../components/content/menu-dock/MenuDock';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
+const Image = ({ index }: { index: number }) => {
+  return (
+    <img
+      src={GRADIENT_IMAGES[index]}
+      style={{
+        height: '100%',
+        aspectRatio: '1 / 1',
+        borderRadius: 'inherit',
+      }}
+    />
+  );
+};
 export default function MenuDockPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
-      <GradientBackground data-debug="gradient-background" />
+      <GradientBackground data-debug="rgradient-backgound" />
       <PageLayout.Title>Dock</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>-</PageLayout.Summary>
@@ -27,59 +39,63 @@ export default function MenuDockPage() {
           justifyContent: 'center',
         }}
       >
-        <GradientBackground />
         {/* 5개 기준한 값으로 변경 */}
 
         <MenuDock initialIndex={2}>
-          <DockContent index={2}>
-            <img
-              src={GRADIENT_IMAGES[2]}
-              style={{
-                height: '100%',
-                aspectRatio: '1 / 1',
-                borderRadius: 'inherit',
-              }}
-            />
+          <DockContent
+            index={2}
+            bottomAddon={
+              <DockContent.BottomAddonRoot>
+                <DockContent.Title>Royal Heath</DockContent.Title>
+                <DockContent.Caption>product.ls.graphics</DockContent.Caption>
+              </DockContent.BottomAddonRoot>
+            }
+          >
+            <Image index={2} />
           </DockContent>
-          <DockContent index={1}>
-            <img
-              src={GRADIENT_IMAGES[1]}
-              style={{
-                height: '100%',
-                aspectRatio: '1 / 1',
-                borderRadius: 'inherit',
-              }}
-            />
+          <DockContent
+            index={1}
+            bottomAddon={
+              <DockContent.BottomAddonRoot>
+                <DockContent.Title>Beauty Bush</DockContent.Title>
+                <DockContent.Caption>product.ls.graphics</DockContent.Caption>
+              </DockContent.BottomAddonRoot>
+            }
+          >
+            <Image index={1} />
           </DockContent>
-          <DockContent index={0}>
-            <img
-              src={GRADIENT_IMAGES[0]}
-              style={{
-                height: '100%',
-                aspectRatio: '1 / 1',
-                borderRadius: 'inherit',
-              }}
-            />
+          <DockContent
+            index={0}
+            bottomAddon={
+              <DockContent.BottomAddonRoot>
+                <DockContent.Title>Beauty Bush</DockContent.Title>
+                <DockContent.Caption>product.ls.graphics</DockContent.Caption>
+              </DockContent.BottomAddonRoot>
+            }
+          >
+            <Image index={0} />
           </DockContent>
-          <DockContent index={3}>
-            <img
-              src={GRADIENT_IMAGES[3]}
-              style={{
-                height: '100%',
-                aspectRatio: '1 / 1',
-                borderRadius: 'inherit',
-              }}
-            />
+          <DockContent
+            index={3}
+            bottomAddon={
+              <DockContent.BottomAddonRoot>
+                <DockContent.Title>Pale Cornflower Blue</DockContent.Title>
+                <DockContent.Caption>product.ls.graphics</DockContent.Caption>
+              </DockContent.BottomAddonRoot>
+            }
+          >
+            <Image index={3} />
           </DockContent>
-          <DockContent index={4}>
-            <img
-              src={GRADIENT_IMAGES[4]}
-              style={{
-                height: '100%',
-                aspectRatio: '1 / 1',
-                borderRadius: 'inherit',
-              }}
-            />
+          <DockContent
+            index={4}
+            bottomAddon={
+              <DockContent.BottomAddonRoot>
+                <DockContent.Title>Flax</DockContent.Title>
+                <DockContent.Caption>product.ls.graphics</DockContent.Caption>
+              </DockContent.BottomAddonRoot>
+            }
+          >
+            <Image index={4} />
           </DockContent>
 
           {/**
