@@ -1,3 +1,5 @@
+import { PageProps, graphql } from 'gatsby';
+
 import { styled } from '../../stitches.config';
 import { GRADIENT_IMAGES } from '../components/content/menu-dock/constant';
 import { DockContent } from '../components/content/menu-dock/DockContent';
@@ -6,6 +8,7 @@ import MenuDock, {
   MenuDockList,
 } from '../components/content/menu-dock/MenuDock';
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import SEO from '../components/layout/SEO';
 
 const Image = ({ index }: { index: number }) => {
   return (
@@ -192,3 +195,28 @@ const GradientBackground = styled('div', {
   filter: 'blur(80px) saturate(150%)',
   backgroundImage: `radial-gradient(at 97% 21%, #9772fe 0, transparent 50%), radial-gradient(at 33% 50%, rgb(140, 168, 232) 0px, transparent 50%)`,
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Dock Menu"
+      description="Oval Dock Menu with Content"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/dock-item.jpeg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
