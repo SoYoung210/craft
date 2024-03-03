@@ -4,9 +4,7 @@ import { styled } from '../../stitches.config';
 import { GRADIENT_IMAGES } from '../components/content/menu-dock/constant';
 import { DockContent } from '../components/content/menu-dock/DockContent';
 import { DockItem } from '../components/content/menu-dock/DockItem';
-import MenuDock, {
-  MenuDockList,
-} from '../components/content/menu-dock/MenuDock';
+import MenuDock from '../components/content/menu-dock/MenuDock';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import SEO from '../components/layout/SEO';
 
@@ -147,6 +145,14 @@ export default function MenuDockPage() {
     </PageLayout>
   );
 }
+
+export const MenuDockList = styled('div', {
+  position: 'absolute',
+  display: 'flex',
+  // TODO: DockContent 높이 + 여백값으로 변경
+  top: 340,
+  left: 0,
+});
 
 const PageContentRoot = styled('div', {
   position: 'relative',
