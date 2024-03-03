@@ -24,7 +24,7 @@ export default function MenuDockPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
       <GradientBackground />
-      <PageLayout.Title>Dock Item</PageLayout.Title>
+      <PageLayout.Title>Dock Menu</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>oval path, exit framer-motion</PageLayout.Summary>
         <PageLayout.DetailsContent>
