@@ -4,6 +4,8 @@ import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { forwardRef } from 'react';
 
 import { styled } from '../../../../stitches.config';
+import { NOISE } from '../switch-tab/constants';
+import { linearGradient } from '../../../utils/color';
 
 import { useMenuDockContext } from './context';
 
@@ -65,7 +67,7 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
     const { children, index, ...restProps } = props;
     const { activeIndex, direction } = useMenuDockContext('DockContent');
     const visible = activeIndex === index;
-    console.log('DockContent', visible, index, activeIndex);
+
     return (
       <AnimatePresence initial={false}>
         {visible ? (
@@ -79,12 +81,13 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
             exit="exit"
             transition={{
               ease: [0.45, 0, 0.55, 1],
-              duration: 0.45,
+              duration: 0.5,
               opacity: { duration: 0.3 },
             }}
             {...restProps}
           >
             {children}
+            <Fog />
           </MotionRoot>
         ) : null}
       </AnimatePresence>
@@ -92,13 +95,31 @@ export const DockContent = forwardRef<HTMLDivElement, DockContentProps>(
   }
 );
 
+const Fog = styled('div', {
+  width: '100%',
+  height: '40%',
+  zIndex: 1,
+
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  borderRadius: '0px 0px 32px 32px',
+
+  background:
+    'linear-gradient(to bottom, transparent, rgba(255,255,255, 0.8) 58%, rgba(255,255,255, 1) 100%)',
+  opacity: 0.48,
+  backdropFilter: 'blur(16px)',
+});
+
+// noise
 const MotionRoot = styled(motion.div, {
   height: 240,
   width: 240,
-  border: '1px solid',
   position: 'absolute',
-  boxShadow: '0 8px 20px 0 rgba(108, 79, 197, 0.44)',
-  borderRadius: 16,
+  borderRadius: 32,
   display: 'flex',
   alignItems: 'center',
+  backgroundImage: NOISE,
+  backgroundColor: 'rgba(253, 253, 253, 0.75)',
+  backdropFilter: 'blur(35px)',
 });
