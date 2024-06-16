@@ -23,7 +23,11 @@ const ringPercent = 87.4;
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const restSelectionBgAngle = useMotionValue('100%');
-  const springSelectionBgAngle = useSpring(selectionBgAngle);
+  const springSelectionBgAngle = useSpring(selectionBgAngle, {
+    stiffness: 500,
+    damping: 30,
+    mass: 1,
+  });
   const background = useMotionTemplate`conic-gradient(
     from ${springSelectionBgAngle}deg,
     rgb(245 245 245) ${restSelectionBgAngle},
