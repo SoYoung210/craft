@@ -1,4 +1,4 @@
-import { Children, ComponentPropsWithoutRef, ReactNode, useRef } from 'react';
+import { Children, ComponentPropsWithoutRef, ReactNode } from 'react';
 import {
   motion,
   useMotionTemplate,
@@ -18,13 +18,15 @@ import {
 interface RadialMenuProps {
   children: ReactNode;
 }
+
+const ringPercent = 87.4;
 export function RadialMenu(props: RadialMenuProps) {
-  const rootRef = useRef<HTMLDivElement>(null);
   const selectionBgAngle = useMotionValue(-1);
+  const restSelectionBgAngle = useMotionValue('100%');
   const springSelectionBgAngle = useSpring(selectionBgAngle);
   const background = useMotionTemplate`conic-gradient(
     from ${springSelectionBgAngle}deg,
-    rgb(245 245 245) 360deg,
+    rgb(245 245 245) ${restSelectionBgAngle},
     rgb(255 255 255) 0,
     rgb(255 255 255) 100%
   )`;
@@ -34,10 +36,10 @@ export function RadialMenu(props: RadialMenuProps) {
     <Root>
       <Shadow style={{ background }} />
       {/* TODO: 빼내기? 혹은 아이템만 */}
-      <Menu ref={rootRef}>
+      <Menu>
         <RadialMenuProvider
-          rootRef={rootRef}
           selectionAngleMotionValue={springSelectionBgAngle}
+          restSelectionBgAngle={restSelectionBgAngle}
         >
           {Children.map(children, (child, index) => {
             return (
@@ -56,11 +58,11 @@ interface MenuItemProps {
   children: React.ReactNode;
 }
 export function RadialMenuItem(props: MenuItemProps) {
-  const { rootRef, selectionAngleMotionValue } =
+  const { selectionAngleMotionValue, restSelectionBgAngle } =
     useRadialMenuContext('RadialMenuItem');
   const { index } = useRadialMenuItemContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
-  const selectionAngle = 45 * index;
+  const selectionAngle = (45 * index + 270) % 360;
   const { children } = props;
   console.log(children, index, index);
 
@@ -71,10 +73,7 @@ export function RadialMenuItem(props: MenuItemProps) {
         transform: `rotate(${angle}deg) skew(45deg)`,
       }}
       onMouseEnter={e => {
-        // rootRef.current?.style.setProperty(
-        //   selectionAngleCssVar,
-        //   `${selectionAngle}deg`
-        // );
+        restSelectionBgAngle.set(`${ringPercent}%`);
         selectionAngleMotionValue.set(selectionAngle);
       }}
     >
@@ -131,6 +130,7 @@ function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
             width: 288,
             height: 288,
             borderRadius: 999,
+            background: 'rgb(250,250,250)',
           }}
         />
       </motion.div>

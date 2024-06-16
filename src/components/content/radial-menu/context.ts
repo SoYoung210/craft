@@ -12,8 +12,8 @@ export const [RadialMenuItemProvider, useRadialMenuItemContext] =
   });
 
 interface RadialMenuContext {
-  rootRef: React.RefObject<HTMLDivElement>;
   selectionAngleMotionValue: MotionValue<number>;
+  restSelectionBgAngle: MotionValue<string>;
 }
 
 export const [RadialMenuProvider, useRadialMenuContext] =
