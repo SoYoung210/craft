@@ -1,4 +1,4 @@
-import { Children, ComponentPropsWithoutRef, ReactNode } from 'react';
+import { Children, ComponentPropsWithoutRef, ReactNode, useCallback } from 'react';
 import {
   motion,
   useMotionTemplate,
@@ -23,6 +23,7 @@ const ringPercent = 87.4;
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const restSelectionBgAngle = useMotionValue('100%');
+
   const springSelectionBgAngle = useSpring(selectionBgAngle, {
     stiffness: 500,
     damping: 30,
@@ -70,6 +71,20 @@ export function RadialMenuItem(props: MenuItemProps) {
   const { children } = props;
   console.log(children, index, index);
 
+  const getNextSelectionAngle = useCallback(() => {
+    const currentAngle = selectionAngleMotionValue.get();
+    let nextAngle = (45 * index + 270) % 360;
+
+    const delta = nextAngle - currentAngle;
+    if (delta > 180) {
+      nextAngle -= 360;
+    } else if (delta < -180) {
+      nextAngle += 360;
+    }
+
+    return nextAngle;
+  },[])
+
   return (
     <Item
       role="menuitem"
@@ -78,7 +93,7 @@ export function RadialMenuItem(props: MenuItemProps) {
       }}
       onMouseEnter={e => {
         restSelectionBgAngle.set(`${ringPercent}%`);
-        selectionAngleMotionValue.set(selectionAngle);
+        selectionAngleMotionValue.set(getNextSelectionAngle());
       }}
     >
       <div
