@@ -208,23 +208,6 @@ const IndexPage = () => {
         </ContentList.Item>
 
         <ContentList.Item>
-          <Link to="/particle-text">
-            <ContentBox title="particle-text">
-              <StaticImage
-                src="../images/thumbnails/particle-text.jpg"
-                alt="particle text content preview"
-                objectFit="contain"
-                style={{
-                  display: 'flex',
-                  height: 250,
-                  justifyContent: 'center',
-                }}
-              />
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-
-        <ContentList.Item>
           <Link to="/blurred-logo">
             <ContentBox title="blurred-logo">
               <StaticImage
@@ -237,25 +220,6 @@ const IndexPage = () => {
                   height: 250,
                   justifyContent: 'center',
                 }}
-              />
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-
-        <ContentList.Item>
-          <Link to="/light-bulb">
-            <ContentBox title="light-bulb">
-              <StaticImage
-                src="../images/thumbnails/light-bulb.jpg"
-                alt="light bulb content preview"
-                placeholder="blurred"
-                style={{
-                  display: 'flex',
-                  height: 250,
-                  justifyContent: 'center',
-                  width: '100%',
-                }}
-                quality={100}
               />
             </ContentBox>
           </Link>
