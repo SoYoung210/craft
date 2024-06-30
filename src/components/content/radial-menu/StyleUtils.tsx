@@ -1,5 +1,11 @@
 import { motion } from 'framer-motion';
-import { ComponentPropsWithoutRef } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  MouseEventHandler,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 
 import { SIZE } from './constants';
 
@@ -69,5 +75,48 @@ export function InnerCircle() {
         }}
       />
     </div>
+  );
+}
+
+interface LinePathProps {
+  initialPos: { x: number; y: number };
+}
+export function LinePath(props: LinePathProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const { initialPos } = props;
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(e => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const pathD =
+    mousePos.x !== 0
+      ? `M ${initialPos.x},${initialPos.y} L ${mousePos.x},${mousePos.y}`
+      : '';
+
+  return (
+    <svg
+      onMouseMove={handleMouseMove}
+      ref={svgRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <path
+        d={pathD}
+        stroke="black"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          stroke: 'rgba(0, 0, 0, 0.05)',
+        }}
+      />
+    </svg>
   );
 }

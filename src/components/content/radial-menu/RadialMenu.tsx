@@ -1,6 +1,7 @@
 import {
   Children,
   ComponentPropsWithoutRef,
+  Fragment,
   MouseEventHandler,
   ReactNode,
   useCallback,
@@ -20,8 +21,13 @@ import { Key } from 'w3c-keys';
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
 
-import { RadialMenuItemProvider, useRadialMenuItemContext } from './context';
-import { InnerCircle, Shadow } from './StyleUtils';
+import {
+  RadialMenuItemProvider,
+  RadialMenuProvider,
+  useRadialMenuContext,
+  useRadialMenuItemContext,
+} from './context';
+import { InnerCircle, LinePath, Shadow } from './StyleUtils';
 import { CURSOR, SIZE } from './constants';
 
 interface RadialMenuProps {
@@ -33,8 +39,9 @@ interface RadialMenuProps {
  * 2024-06-30 TODO
  * - [x] 위치가 변경될 때 mount/unmount animation (아주 약한 스프링. 약간 돌면서 opacity + scale?)
  * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
- * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
- * - [] refactor: 계산식
+ *
+ * Next TODO
+ * - [] 아이템 활성화 될때 밑에 라벨 정보 보여줘야 함 (Item이 받아서 보여주도록?)
  */
 
 /**
@@ -46,7 +53,7 @@ interface RadialMenuProps {
  * - [x] 활성아이템 dot은 진하게, 사진은 grey filter 해제
  * - [] 마우스 움직임에 따라 지정된 아이템 이름 보여주기
  * - [] (detail) dynamic card effect
- * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
+ * - [x] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
 
  */
 
@@ -56,12 +63,24 @@ interface RadialMenuProps {
  */
 
 const ringPercent = 87.4;
+interface Position {
+  x: number;
+  y: number;
+}
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const restSelectionBgAngle = useMotionValue('100%');
-  const [activationMode, setActivationMode] = useState(true);
+
+  const activeModeRef = useRef(true);
+  const [position, setPosition] = useState<Position | null>({
+    x: 500,
+    y: 500,
+  });
+  const menuVisible = position != null;
+
   const rootRef = useRef<HTMLDivElement>(null);
+  const labelTrackElementRef = useRef<HTMLDivElement>(null);
 
   const springSelectionBgAngle = useSpring(selectionBgAngle, {
     stiffness: 500,
@@ -75,21 +94,26 @@ export function RadialMenu(props: RadialMenuProps) {
     rgb(255 255 255) 100%
   )`;
 
-  const [position, setPosition] = useState({ x: 500, y: 500 });
   const handleRootMouseDown: MouseEventHandler<HTMLDivElement> = useCallback(
     e => {
-      if (activationMode) {
+      if (activeModeRef.current) {
         setPosition({ x: e.clientX, y: e.clientY });
       }
     },
-    [activationMode]
+    []
   );
+  const handleRootMouseUp: MouseEventHandler<HTMLDivElement> =
+    useCallback(() => {
+      setPosition(null);
+      // 초기값이 true이기 때문에 최초의 mouseUp에서 false로 되돌려줌
+      activeModeRef.current = false;
+    }, []);
 
   const { children } = props;
 
-  const calcAngle = (x: number, y: number) => {
-    const dx = x - position.x;
-    const dy = y - position.y;
+  const calcAngle = (curr: Position, prev: Position) => {
+    const dx = curr.x - prev.x;
+    const dy = curr.y - prev.y;
     let angle = Math.atan2(dy, dx) * (180 / Math.PI);
     if (angle < 0) {
       angle += 360;
@@ -110,11 +134,12 @@ export function RadialMenu(props: RadialMenuProps) {
     return Math.floor(adjustedAngle / 45) % 8; // Divide by 45 degrees per section
   };
 
+  // TODO: activeMode핸들하는걸 훅으로  빼던가.. 뭔가 중앙 관리가 필요해보임.
   useHotKey({
     keycode: [Key.A],
     mode: 'keydown',
     callback: () => {
-      setActivationMode(true);
+      activeModeRef.current = true;
       if (rootRef.current) {
         rootRef.current.style.cursor = CURSOR;
       }
@@ -125,7 +150,7 @@ export function RadialMenu(props: RadialMenuProps) {
     keycode: [Key.A],
     mode: 'keyup',
     callback: () => {
-      setActivationMode(false);
+      activeModeRef.current = false;
       if (rootRef.current) {
         rootRef.current.style.cursor = 'auto';
       }
@@ -136,6 +161,7 @@ export function RadialMenu(props: RadialMenuProps) {
     <motion.div
       ref={rootRef}
       onMouseDown={handleRootMouseDown}
+      onMouseUp={handleRootMouseUp}
       style={{
         position: 'fixed',
         left: 0,
@@ -144,7 +170,10 @@ export function RadialMenu(props: RadialMenuProps) {
         height: '100%',
       }}
       onMouseMove={e => {
-        const angle = calcAngle(e.clientX, e.clientY);
+        if (position == null) {
+          return;
+        }
+        const angle = calcAngle({ x: e.clientX, y: e.clientY }, position);
         const sectionIndex = (getActiveSection(angle) + 1) % 8;
 
         const currentAngle = springSelectionBgAngle.get();
@@ -164,43 +193,58 @@ export function RadialMenu(props: RadialMenuProps) {
       }}
     >
       <AnimatePresence>
-        <Root
-          key={`${position.x}-${position.y}`}
-          style={{
-            left: position.x - SIZE / 2,
-            top: position.y - SIZE / 2,
-          }}
-          initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          exit={{ scale: 0.8, opacity: 0, rotate: 20 }}
-          transition={{
-            type: 'spring',
-            stiffness: 480,
-            damping: 50,
-            mass: 1,
-          }}
-        >
-          {/* 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
-          <Shadow style={{ background }} />
-          <Menu>
-            {Children.map(children, (child, index) => {
-              return (
-                <RadialMenuItemProvider
-                  key={index}
-                  index={index}
-                  // TODO: 이게 꼭.. 상태 + context여야 할까.....?
-                  selectedIndex={selectedIndex}
-                  active={activationMode}
+        {menuVisible && (
+          <Fragment key={`${position.x}-${position.y}`}>
+            <Root
+              style={{
+                left: position.x - SIZE / 2,
+                top: position.y - SIZE / 2,
+              }}
+              initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              exit={{ scale: 0.8, opacity: 0, rotate: 20 }}
+              transition={{
+                type: 'spring',
+                stiffness: 480,
+                damping: 50,
+                mass: 1,
+              }}
+            >
+              {/* 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
+              <Shadow style={{ background }} />
+              <Menu>
+                <RadialMenuProvider
+                  labelTrackElement={labelTrackElementRef.current}
                 >
-                  {child}
-                </RadialMenuItemProvider>
-              );
-            })}
-            <InnerCircle />
-          </Menu>
-        </Root>
+                  {Children.map(children, (child, index) => {
+                    return (
+                      <RadialMenuItemProvider
+                        key={index}
+                        index={index}
+                        // TODO: 이게 꼭.. 상태 + context여야 할까.....?
+                        selectedIndex={selectedIndex}
+                        active={menuVisible}
+                      >
+                        {child}
+                      </RadialMenuItemProvider>
+                    );
+                  })}
+                </RadialMenuProvider>
+
+                <InnerCircle />
+              </Menu>
+            </Root>
+          </Fragment>
+        )}
       </AnimatePresence>
-      <LinePath active={activationMode} />
+      {position != null ? (
+        <LinePath
+          initialPos={{
+            x: position.x,
+            y: position.y,
+          }}
+        />
+      ) : null}
     </motion.div>
   );
 }
@@ -208,42 +252,61 @@ export function RadialMenu(props: RadialMenuProps) {
 interface MenuItemProps extends ComponentPropsWithoutRef<typeof Item> {
   children: React.ReactNode;
   onSelect?: VoidFunction;
+  label?: string;
 }
 const SKEW = 45;
 export function RadialMenuItem(props: MenuItemProps) {
   const { index, selectedIndex, active } =
     useRadialMenuItemContext('RadialMenuItem');
+  const { labelTrackElement } = useRadialMenuContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
-  const { children, onSelect, style: styleFromProps, ...restProps } = props;
+  const {
+    children,
+    onSelect,
+    style: styleFromProps,
+    label,
+    ...restProps
+  } = props;
+  const selected = index === selectedIndex;
+  // const renderLabel = labelTrackElement != null && selected && label != null;
 
   useEffect(() => {
-    if (index === selectedIndex && active === false) {
+    if (selected && active === false) {
       onSelect?.();
     }
-  }, [active, index, onSelect, selectedIndex]);
+  }, [active, onSelect, selected]);
 
   return (
-    <Item
-      role="menuitem"
-      aria-selected={index === selectedIndex}
-      style={{
-        ...styleFromProps,
-        transform: `rotate(${angle}deg) skew(${SKEW}deg)`,
-      }}
-      {...restProps}
-    >
-      <div
+    <>
+      <Item
+        role="menuitem"
+        aria-selected={index === selectedIndex}
         style={{
-          position: 'absolute',
-          top: '72%',
-          left: '65%',
-          width: 32,
-          height: 32,
+          ...styleFromProps,
+          transform: `rotate(${angle}deg) skew(${SKEW}deg)`,
         }}
+        {...restProps}
       >
-        <ItemContent>{children}</ItemContent>
-      </div>
-    </Item>
+        <div
+          style={{
+            position: 'absolute',
+            top: '72%',
+            left: '65%',
+            width: 32,
+            height: 32,
+          }}
+        >
+          <ItemContent>{children}</ItemContent>
+        </div>
+      </Item>
+      {/* 짜증나니까 타입가드로 바꾸기; */}
+      {/* {selected != null && labelTrackElement != null
+        ? createPortal(
+            label != null ? <div>{label}</div> : <></>,
+            labelTrackElement
+          )
+        : null} */}
+    </>
   );
 }
 
@@ -252,67 +315,6 @@ const Root = styled(motion.div, {
   width: SIZE,
   height: SIZE,
 });
-
-interface LinePathProps {
-  active: boolean;
-}
-
-function LinePath(props: LinePathProps) {
-  const { active } = props;
-  const svgRef = useRef<SVGSVGElement>(null);
-
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseDown: MouseEventHandler<SVGSVGElement> = useCallback(
-    e => {
-      if (active) {
-        setStartPos({ x: e.clientX, y: e.clientY });
-      }
-    },
-    [active]
-  );
-
-  const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
-    e => {
-      if (active) {
-        setMousePos({ x: e.clientX, y: e.clientY });
-      }
-    },
-    [active]
-  );
-
-  const pathD =
-    startPos.x !== 0
-      ? `M ${startPos.x},${startPos.y} L ${mousePos.x},${mousePos.y}`
-      : '';
-
-  return (
-    <svg
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      ref={svgRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        // pointerEvents: 'none',
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <path
-        d={pathD}
-        stroke="black"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          stroke: 'rgba(0, 0, 0, 0.05)',
-        }}
-      />
-    </svg>
-  );
-}
 
 const Menu = styled('div', {
   width: SIZE,
