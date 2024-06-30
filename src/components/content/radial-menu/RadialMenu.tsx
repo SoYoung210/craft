@@ -1,5 +1,6 @@
 import {
   Children,
+  ComponentPropsWithoutRef,
   MouseEventHandler,
   ReactNode,
   useCallback,
@@ -21,7 +22,7 @@ import useHotKey from '../../../hooks/useHotKey';
 
 import { RadialMenuItemProvider, useRadialMenuItemContext } from './context';
 import { InnerCircle, Shadow } from './StyleUtils';
-import { SIZE } from './constants';
+import { CURSOR, SIZE } from './constants';
 
 interface RadialMenuProps {
   children: ReactNode;
@@ -43,14 +44,15 @@ interface RadialMenuProps {
  * - [x] 마우스 움직임 따라 path가 그려지는 것
  * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
  * - [x] 활성아이템 dot은 진하게, 사진은 grey filter 해제
+ * - [] 마우스 움직임에 따라 지정된 아이템 이름 보여주기
  * - [] (detail) dynamic card effect
  * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
 
  */
 
 /**
- * TODO: 리팩토링
- * - [] 컬러토큰 정리
+ * TODO: DX
+ * - [] 8개를 넘거나 부족한 경우에 대한 처리
  */
 
 const ringPercent = 87.4;
@@ -58,7 +60,6 @@ export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const restSelectionBgAngle = useMotionValue('100%');
-  // const activationMode = useRef(true);
   const [activationMode, setActivationMode] = useState(true);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -86,8 +87,6 @@ export function RadialMenu(props: RadialMenuProps) {
 
   const { children } = props;
 
-  // FIXME: TEST
-
   const calcAngle = (x: number, y: number) => {
     const dx = x - position.x;
     const dy = y - position.y;
@@ -95,12 +94,14 @@ export function RadialMenu(props: RadialMenuProps) {
     if (angle < 0) {
       angle += 360;
     }
-    // return angle;
+
     return Math.floor(angle);
   };
 
   const getActiveSection = (angle: number) => {
-    // 그냥 180도만 더해주면 되는건데.. 왜 몰랐징..?
+    /**
+     * NOTE: RadialMenuItem 아이템 시작점과 맞추기 위해 180도 플러스
+     */
     let startPositionAdjustedAngle = angle + 180; // 시작점 보정
     if (startPositionAdjustedAngle > 360) {
       startPositionAdjustedAngle -= 360;
@@ -115,7 +116,7 @@ export function RadialMenu(props: RadialMenuProps) {
     callback: () => {
       setActivationMode(true);
       if (rootRef.current) {
-        rootRef.current.style.cursor = 'grab';
+        rootRef.current.style.cursor = CURSOR;
       }
     },
   });
@@ -126,7 +127,7 @@ export function RadialMenu(props: RadialMenuProps) {
     callback: () => {
       setActivationMode(false);
       if (rootRef.current) {
-        rootRef.current.style.cursor = 'normal';
+        rootRef.current.style.cursor = 'auto';
       }
     },
   });
@@ -179,9 +180,8 @@ export function RadialMenu(props: RadialMenuProps) {
             mass: 1,
           }}
         >
-          {/* 이게.. 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
+          {/* 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
           <Shadow style={{ background }} />
-          {/* TODO: 빼내기? 혹은 아이템만 */}
           <Menu>
             {Children.map(children, (child, index) => {
               return (
@@ -205,7 +205,7 @@ export function RadialMenu(props: RadialMenuProps) {
   );
 }
 
-interface MenuItemProps {
+interface MenuItemProps extends ComponentPropsWithoutRef<typeof Item> {
   children: React.ReactNode;
   onSelect?: VoidFunction;
 }
@@ -214,7 +214,7 @@ export function RadialMenuItem(props: MenuItemProps) {
   const { index, selectedIndex, active } =
     useRadialMenuItemContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
-  const { children, onSelect } = props;
+  const { children, onSelect, style: styleFromProps, ...restProps } = props;
 
   useEffect(() => {
     if (index === selectedIndex && active === false) {
@@ -227,8 +227,10 @@ export function RadialMenuItem(props: MenuItemProps) {
       role="menuitem"
       aria-selected={index === selectedIndex}
       style={{
+        ...styleFromProps,
         transform: `rotate(${angle}deg) skew(${SKEW}deg)`,
       }}
+      {...restProps}
     >
       <div
         style={{
