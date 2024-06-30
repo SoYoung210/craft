@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import {
+  AnimatePresence,
   motion,
   useMotionTemplate,
   useMotionValue,
@@ -16,27 +17,47 @@ import {
 
 import { styled } from '../../../../stitches.config';
 
-import {
-  RadialMenuItemProvider,
-  RadialMenuProvider,
-  useRadialMenuContext,
-  useRadialMenuItemContext,
-} from './context';
+import { RadialMenuItemProvider, useRadialMenuItemContext } from './context';
 
 interface RadialMenuProps {
   children: ReactNode;
 }
 
 /**
- * TODO:
- * - [ ] 초기 떠있는 위치가 있고, 마우스를 클릭했을 때 그 위치에 다시 그려지면서
- * - [ ] 마우스 움직임 따라 path가 그려지는 것
- * - [ ] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
- * - [ ] (detail) dynamic card effect
+ * WorkLog
+ * 2024-06-30 TODO
+ * - [x] 위치가 변경될 때 mount/unmount animation (아주 약한 스프링. 약간 돌면서 opacity + scale?)
+ * - [] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
+ * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
+ * - [] refactor: 계산식
+ */
+
+/**
+ * TODO: 기능
+ * - [x] 누르고 있을 때 원 범위 벗어나서도 선택된 아이템 바뀌는 것...
+ * - [x] 초기 떠있는 위치가 있고, 마우스를 클릭했을 때 그 위치에 다시 그려지면서
+ * - [x] 마우스 움직임 따라 path가 그려지는 것
+ * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
+ * - [] 활성아이템 dot은 진하게, 사진은 grey filter 해제
+ * - [] (detail) dynamic card effect
+ * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
+
+ */
+
+/**
+ * TODO: 리팩토링
+ * - [] 컬러토큰 정리
+ */
+
+/**
+ * TODO: 디자인
+ * - [x] placeholder (dot)
  */
 const ringPercent = 87.4;
+const SIZE = 280;
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const restSelectionBgAngle = useMotionValue('100%');
 
   const springSelectionBgAngle = useSpring(selectionBgAngle, {
@@ -50,65 +71,136 @@ export function RadialMenu(props: RadialMenuProps) {
     rgb(255 255 255) 0,
     rgb(255 255 255) 100%
   )`;
+
+  const [position, setPosition] = useState({ x: 500, y: 500 });
+  const handleRootClick: MouseEventHandler<HTMLDivElement> = useCallback(e => {
+    setPosition({ x: e.clientX, y: e.clientY });
+  }, []);
+
   const { children } = props;
 
+  // FIXME: TEST
+
+  const calcAngle = (x: number, y: number) => {
+    const dx = x - position.x;
+    const dy = y - position.y;
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (angle < 0) {
+      angle += 360;
+    }
+    // return angle;
+    return Math.floor(angle);
+  };
+
+  const getActiveSection = (angle: number) => {
+    // 그냥 180도만 더해주면 되는건데.. 왜 몰랐징..?
+    let startPositionAdjustedAngle = angle + 180; // 시작점 보정
+    if (startPositionAdjustedAngle > 360) {
+      startPositionAdjustedAngle -= 360;
+    }
+    const adjustedAngle = startPositionAdjustedAngle % 360; // Shift by 22.5 degrees to center sections
+    return Math.floor(adjustedAngle / 45) % 8; // Divide by 45 degrees per section
+  };
+
   return (
-    <Root>
-      <Shadow style={{ background }} />
-      {/* TODO: 빼내기? 혹은 아이템만 */}
-      <Menu>
-        <RadialMenuProvider
-          selectionAngleMotionValue={springSelectionBgAngle}
-          restSelectionBgAngle={restSelectionBgAngle}
+    <motion.div
+      onClick={handleRootClick}
+      style={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+      }}
+      onMouseMove={e => {
+        const angle = calcAngle(e.clientX, e.clientY);
+        const sectionIndex = (getActiveSection(angle) + 1) % 8;
+
+        const currentAngle = springSelectionBgAngle.get();
+        let nextAngle = (45 * sectionIndex + 270) % 360;
+
+        const delta = nextAngle - currentAngle;
+        if (delta > 180) {
+          nextAngle -= 360;
+        } else if (delta < -180) {
+          nextAngle += 360;
+        }
+
+        springSelectionBgAngle.set(nextAngle);
+        restSelectionBgAngle.set(`${ringPercent}%`);
+
+        // setSelectedIndex(sectionIndex);
+
+        setSelectedIndex(sectionIndex);
+      }}
+    >
+      <AnimatePresence>
+        <Root
+          key={`${position.x}-${position.y}`}
+          style={{
+            left: position.x - SIZE / 2,
+            top: position.y - SIZE / 2,
+          }}
+          // TODO: 튜닝..을 해야함...
+          initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          exit={{ scale: 0.8, opacity: 0, rotate: 20 }}
+          transition={{
+            type: 'spring',
+            stiffness: 480,
+            damping: 50,
+            mass: 1,
+          }}
         >
-          {Children.map(children, (child, index) => {
-            return (
-              <RadialMenuItemProvider key={index} index={index}>
-                {child}
-              </RadialMenuItemProvider>
-            );
-          })}
-          <InnerCircle />
-        </RadialMenuProvider>
-        <LinePath />
-      </Menu>
-    </Root>
+          {/* 이게.. 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
+          <Shadow style={{ background }} />
+          {/* TODO: 빼내기? 혹은 아이템만 */}
+          <Menu>
+            {Children.map(children, (child, index) => {
+              return (
+                <RadialMenuItemProvider
+                  key={index}
+                  index={index}
+                  // TODO: 이게 꼭.. 상태 + context여야 할까.....?
+                  selectedIndex={selectedIndex}
+                >
+                  {child}
+                </RadialMenuItemProvider>
+              );
+            })}
+            <InnerCircle />
+          </Menu>
+        </Root>
+      </AnimatePresence>
+      <LinePath />
+    </motion.div>
   );
 }
 
 interface MenuItemProps {
   children: React.ReactNode;
+  onSelect?: VoidFunction;
 }
+const SKEW = 45;
 export function RadialMenuItem(props: MenuItemProps) {
-  const { selectionAngleMotionValue, restSelectionBgAngle } =
-    useRadialMenuContext('RadialMenuItem');
-  const { index } = useRadialMenuItemContext('RadialMenuItem');
+  const { index, selectedIndex } = useRadialMenuItemContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
-  const { children } = props;
+  const { children, onSelect } = props;
 
-  const getNextSelectionAngle = useCallback(() => {
-    const currentAngle = selectionAngleMotionValue.get();
-    let nextAngle = (45 * index + 270) % 360;
-
-    const delta = nextAngle - currentAngle;
-    if (delta > 180) {
-      nextAngle -= 360;
-    } else if (delta < -180) {
-      nextAngle += 360;
-    }
-
-    return nextAngle;
-  }, [index, selectionAngleMotionValue]);
+  console.log('@@@ selectedIndex', selectedIndex);
+  console.log('--------');
+  // useEffect(() => {
+  //   if (index === selectedIndex) {
+  //     onSelect?.();
+  //   }
+  // }, [index, onSelect, selectedIndex]);
 
   return (
     <Item
       role="menuitem"
+      aria-selected={index === selectedIndex}
       style={{
-        transform: `rotate(${angle}deg) skew(45deg)`,
-      }}
-      onMouseEnter={e => {
-        restSelectionBgAngle.set(`${ringPercent}%`);
-        selectionAngleMotionValue.set(getNextSelectionAngle());
+        transform: `rotate(${angle}deg) skew(${SKEW}deg)`,
       }}
     >
       <div
@@ -120,16 +212,16 @@ export function RadialMenuItem(props: MenuItemProps) {
           height: 32,
         }}
       >
-        {children}
+        <ItemContent>{children}</ItemContent>
       </div>
     </Item>
   );
 }
 
-const Root = styled('div', {
-  position: 'relative',
-  width: 280,
-  height: 280,
+const Root = styled(motion.div, {
+  position: 'absolute',
+  width: SIZE,
+  height: SIZE,
 });
 
 function InnerCircle() {
@@ -212,8 +304,8 @@ function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
     <div
       style={{
         position: 'absolute',
-        width: 280,
-        height: 280,
+        width: SIZE,
+        height: SIZE,
       }}
     >
       <motion.div
@@ -236,8 +328,8 @@ function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 288,
-            height: 288,
+            width: SIZE + 8,
+            height: SIZE + 8,
             borderRadius: 999,
             background: 'rgb(250,250,250)',
           }}
@@ -248,12 +340,22 @@ function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
 }
 
 const Menu = styled('div', {
-  width: 280,
-  height: 280,
+  width: SIZE,
+  height: SIZE,
   position: 'relative',
   borderRadius: 999,
   overflow: 'hidden',
   background: 'white',
+});
+
+const ItemContent = styled('div', {
+  transform: `skew(${SKEW * -1}deg)`,
+  filter: 'grayscale(1) saturate(0.9) brightness(0.9)',
+  opacity: 0.26,
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 const Item = styled('div', {
@@ -264,4 +366,11 @@ const Item = styled('div', {
   width: 200,
   height: 200,
   transformOrigin: '100% 100% 0',
+
+  '&[aria-selected="true"]': {
+    [`& ${ItemContent}`]: {
+      filter: 'grayscale(0)',
+      opacity: 0.8,
+    },
+  },
 });
