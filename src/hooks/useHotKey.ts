@@ -18,6 +18,7 @@ type AllowedKey = Key | string;
 
 type EventItem = {
   keycode: AllowedKey[];
+  mode?: 'keydown' | 'keyup';
   callback: (event: KeyboardEvent) => void;
 };
 function toLowerCase(str: string) {
@@ -27,6 +28,7 @@ const reservedKeys = [Key.Alt, Key.Control, Key.Meta, Key.Shift];
 
 export default function useHotKey<T extends HTMLElement>({
   keycode,
+  mode = 'keydown',
   callback,
 }: EventItem) {
   const triggerRef = useRef<T | null>(null);
@@ -39,10 +41,10 @@ export default function useHotKey<T extends HTMLElement>({
 
   useEffect(() => {
     const targetRef = triggerRef.current ?? document?.documentElement;
-    targetRef.addEventListener('keydown', handleKeyDown);
+    targetRef.addEventListener(mode, handleKeyDown);
 
-    return () => targetRef.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    return () => targetRef.removeEventListener(mode, handleKeyDown);
+  }, [handleKeyDown, mode]);
 
   return triggerRef;
 }
