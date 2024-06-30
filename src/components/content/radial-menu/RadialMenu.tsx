@@ -14,8 +14,10 @@ import {
   useMotionValue,
   useSpring,
 } from 'framer-motion';
+import { Key } from 'w3c-keys';
 
 import { styled } from '../../../../stitches.config';
+import useHotKey from '../../../hooks/useHotKey';
 
 import { RadialMenuItemProvider, useRadialMenuItemContext } from './context';
 
@@ -38,7 +40,7 @@ interface RadialMenuProps {
  * - [x] 초기 떠있는 위치가 있고, 마우스를 클릭했을 때 그 위치에 다시 그려지면서
  * - [x] 마우스 움직임 따라 path가 그려지는 것
  * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
- * - [] 활성아이템 dot은 진하게, 사진은 grey filter 해제
+ * - [x] 활성아이템 dot은 진하게, 사진은 grey filter 해제
  * - [] (detail) dynamic card effect
  * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
 
@@ -49,16 +51,15 @@ interface RadialMenuProps {
  * - [] 컬러토큰 정리
  */
 
-/**
- * TODO: 디자인
- * - [x] placeholder (dot)
- */
 const ringPercent = 87.4;
 const SIZE = 280;
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const restSelectionBgAngle = useMotionValue('100%');
+  // const activationMode = useRef(true);
+  const [activationMode, setActivationMode] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const springSelectionBgAngle = useSpring(selectionBgAngle, {
     stiffness: 500,
@@ -73,9 +74,14 @@ export function RadialMenu(props: RadialMenuProps) {
   )`;
 
   const [position, setPosition] = useState({ x: 500, y: 500 });
-  const handleRootClick: MouseEventHandler<HTMLDivElement> = useCallback(e => {
-    setPosition({ x: e.clientX, y: e.clientY });
-  }, []);
+  const handleRootMouseDown: MouseEventHandler<HTMLDivElement> = useCallback(
+    e => {
+      if (activationMode) {
+        setPosition({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [activationMode]
+  );
 
   const { children } = props;
 
@@ -102,9 +108,35 @@ export function RadialMenu(props: RadialMenuProps) {
     return Math.floor(adjustedAngle / 45) % 8; // Divide by 45 degrees per section
   };
 
+  useHotKey({
+    keycode: [Key.A],
+    mode: 'keydown',
+    callback: () => {
+      setActivationMode(true);
+      if (rootRef.current) {
+        rootRef.current.style.cursor = 'grab';
+      }
+    },
+  });
+
+  useHotKey({
+    keycode: [Key.A],
+    mode: 'keyup',
+    callback: () => {
+      setActivationMode(false);
+      if (rootRef.current) {
+        rootRef.current.style.cursor = 'normal';
+      }
+    },
+  });
+
   return (
     <motion.div
-      onClick={handleRootClick}
+      ref={rootRef}
+      onMouseDown={handleRootMouseDown}
+      onKeyUp={e => {
+        console.log('e', e.key);
+      }}
       style={{
         position: 'fixed',
         left: 0,
@@ -129,8 +161,6 @@ export function RadialMenu(props: RadialMenuProps) {
         springSelectionBgAngle.set(nextAngle);
         restSelectionBgAngle.set(`${ringPercent}%`);
 
-        // setSelectedIndex(sectionIndex);
-
         setSelectedIndex(sectionIndex);
       }}
     >
@@ -141,7 +171,6 @@ export function RadialMenu(props: RadialMenuProps) {
             left: position.x - SIZE / 2,
             top: position.y - SIZE / 2,
           }}
-          // TODO: 튜닝..을 해야함...
           initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
           animate={{ scale: 1, opacity: 1, rotate: 0 }}
           exit={{ scale: 0.8, opacity: 0, rotate: 20 }}
@@ -172,7 +201,7 @@ export function RadialMenu(props: RadialMenuProps) {
           </Menu>
         </Root>
       </AnimatePresence>
-      <LinePath />
+      <LinePath active={activationMode} />
     </motion.div>
   );
 }
@@ -186,14 +215,6 @@ export function RadialMenuItem(props: MenuItemProps) {
   const { index, selectedIndex } = useRadialMenuItemContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
   const { children, onSelect } = props;
-
-  console.log('@@@ selectedIndex', selectedIndex);
-  console.log('--------');
-  // useEffect(() => {
-  //   if (index === selectedIndex) {
-  //     onSelect?.();
-  //   }
-  // }, [index, onSelect, selectedIndex]);
 
   return (
     <Item
@@ -253,18 +274,33 @@ function InnerCircle() {
   );
 }
 
-function LinePath() {
+interface LinePathProps {
+  active: boolean;
+}
+
+function LinePath(props: LinePathProps) {
+  const { active } = props;
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseDown: MouseEventHandler<SVGSVGElement> = useCallback(e => {
-    setStartPos({ x: e.clientX, y: e.clientY });
-  }, []);
+  const handleMouseDown: MouseEventHandler<SVGSVGElement> = useCallback(
+    e => {
+      if (active) {
+        setStartPos({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [active]
+  );
 
-  const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(e => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  }, []);
+  const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
+    e => {
+      if (active) {
+        setMousePos({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [active]
+  );
 
   const pathD =
     startPos.x !== 0
