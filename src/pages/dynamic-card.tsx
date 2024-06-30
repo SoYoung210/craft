@@ -30,11 +30,7 @@ export default function CardPage() {
       <Caption>
         Card Designed by{' '}
         <Text asChild color="gray6" css={{ textDecoration: 'underline' }}>
-          <a
-            href="https://jihoon-yu.github.io/"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://jihoonwrks.me/" target="_blank" rel="noreferrer">
             jihoon-yu
           </a>
         </Text>
