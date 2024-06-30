@@ -1,9 +1,9 @@
 import {
   Children,
-  ComponentPropsWithoutRef,
   MouseEventHandler,
   ReactNode,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -20,6 +20,8 @@ import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
 
 import { RadialMenuItemProvider, useRadialMenuItemContext } from './context';
+import { InnerCircle, Shadow } from './StyleUtils';
+import { SIZE } from './constants';
 
 interface RadialMenuProps {
   children: ReactNode;
@@ -29,7 +31,7 @@ interface RadialMenuProps {
  * WorkLog
  * 2024-06-30 TODO
  * - [x] 위치가 변경될 때 mount/unmount animation (아주 약한 스프링. 약간 돌면서 opacity + scale?)
- * - [] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
+ * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
  * - [] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
  * - [] refactor: 계산식
  */
@@ -52,7 +54,6 @@ interface RadialMenuProps {
  */
 
 const ringPercent = 87.4;
-const SIZE = 280;
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -134,9 +135,6 @@ export function RadialMenu(props: RadialMenuProps) {
     <motion.div
       ref={rootRef}
       onMouseDown={handleRootMouseDown}
-      onKeyUp={e => {
-        console.log('e', e.key);
-      }}
       style={{
         position: 'fixed',
         left: 0,
@@ -192,6 +190,7 @@ export function RadialMenu(props: RadialMenuProps) {
                   index={index}
                   // TODO: 이게 꼭.. 상태 + context여야 할까.....?
                   selectedIndex={selectedIndex}
+                  active={activationMode}
                 >
                   {child}
                 </RadialMenuItemProvider>
@@ -212,9 +211,16 @@ interface MenuItemProps {
 }
 const SKEW = 45;
 export function RadialMenuItem(props: MenuItemProps) {
-  const { index, selectedIndex } = useRadialMenuItemContext('RadialMenuItem');
+  const { index, selectedIndex, active } =
+    useRadialMenuItemContext('RadialMenuItem');
   const angle = 45 * (index + 1) - 90;
   const { children, onSelect } = props;
+
+  useEffect(() => {
+    if (index === selectedIndex && active === false) {
+      onSelect?.();
+    }
+  }, [active, index, onSelect, selectedIndex]);
 
   return (
     <Item
@@ -244,35 +250,6 @@ const Root = styled(motion.div, {
   width: SIZE,
   height: SIZE,
 });
-
-function InnerCircle() {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 140,
-        height: 140,
-        borderRadius: 999,
-        background: 'rgb(250,250,250)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <div
-        style={{
-          width: 132,
-          height: 132,
-          borderRadius: 'inherit',
-          border: '3px solid #fff',
-        }}
-      />
-    </div>
-  );
-}
 
 interface LinePathProps {
   active: boolean;
@@ -332,46 +309,6 @@ function LinePath(props: LinePathProps) {
         }}
       />
     </svg>
-  );
-}
-
-function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        width: SIZE,
-        height: SIZE,
-      }}
-    >
-      <motion.div
-        {...props}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 300,
-          height: 300,
-          borderRadius: 999,
-          boxShadow: `rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.25) 0px 25px 50px -12px`,
-          ...props.style,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: SIZE + 8,
-            height: SIZE + 8,
-            borderRadius: 999,
-            background: 'rgb(250,250,250)',
-          }}
-        />
-      </motion.div>
-    </div>
   );
 }
 
