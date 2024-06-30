@@ -46,56 +46,56 @@ export default function RadialMenuPage() {
       <RadialMenu>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 1');
+            console.log('[onSelect] 0');
           }}
         >
           <Image index={0} />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 2');
+            console.log('[onSelect] 1');
           }}
         >
           <Image index={1} />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 3');
+            console.log('[onSelect] 2');
           }}
         >
           <Image index={2} />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 4');
+            console.log('[onSelect] 3');
           }}
         >
           <Placeholder />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 5');
+            console.log('[onSelect] 4');
           }}
         >
           <Placeholder />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 6');
+            console.log('[onSelect] 5');
           }}
         >
           <Image index={4} />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 7');
+            console.log('[onSelect] 6');
           }}
         >
           <Image index={3} />
         </RadialMenuItem>
         <RadialMenuItem
           onSelect={() => {
-            console.log('@@@ 1');
+            console.log('[onSelect] 7');
           }}
         >
           <Placeholder />
