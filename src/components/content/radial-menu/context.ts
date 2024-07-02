@@ -12,3 +12,10 @@ export const [RadialMenuItemProvider, useRadialMenuItemContext] =
     selectedIndex: -1,
     active: true,
   });
+
+interface RadialMenuContext {
+  labelTrackElement: HTMLDivElement | null;
+}
+
+export const [RadialMenuProvider, useRadialMenuContext] =
+  createContext<RadialMenuContext>('RadialMenu');
