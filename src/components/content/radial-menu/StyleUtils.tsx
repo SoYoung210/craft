@@ -10,6 +10,7 @@ import {
 import { getAngleBetweenPositions } from '../../../utils/math';
 
 import { SIZE } from './constants';
+import { Position } from './types';
 
 export function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
   return (
@@ -89,17 +90,22 @@ export function LinePath(props: LinePathProps) {
   const { initialPos } = props;
   const [mousePos, setMousePos] = useState({ x: 600, y: 600 });
   const lassoRef = useRef<SVGPathElement>(null);
+  const mouseCursorRef = useRef<SVGSVGElement>(null);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
   const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
     e => {
       const x = e.clientX;
       const y = e.clientY;
+      // const x = 880;
+      // const y = 499;
       const angle = getAngleBetweenPositions(initialPos, {
         x,
         y,
       });
-
+      console.log('@@ angle', angle, x, y);
       const lassoAngle = (93 / 90) * angle - 289;
+
       if (svgRef.current != null) {
         svgRef.current.style.setProperty(
           LASSO_ANGLE_CSS_VAR,
@@ -113,11 +119,13 @@ export function LinePath(props: LinePathProps) {
       }
 
       setMousePos({ x, y });
+      setCursorPos({
+        x: lassoRef.current?.getBBox().x ?? 0,
+        y: lassoRef.current?.getBBox().y ?? 0,
+      });
     },
     [initialPos]
   );
-
-  // 여기서 시도중
 
   const pathD =
     mousePos.x !== 0
@@ -168,13 +176,24 @@ export function LinePath(props: LinePathProps) {
       />
       {/* Grabbing Cursor */}
       <svg
+        ref={mouseCursorRef}
         width="24"
         height="24"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        x={mousePos.x + 12}
-        y={mousePos.y + 12}
+        x={
+          mousePos.x +
+          calculateCursorTranslateX(
+            getAngleBetweenPositions(initialPos, mousePos)
+          )
+        }
+        y={
+          mousePos.y +
+          calculateCursorTranslateY(
+            getAngleBetweenPositions(initialPos, mousePos)
+          )
+        }
       >
         <g
           style={{
@@ -245,7 +264,7 @@ function calculateLassoTranslateX(angle: number) {
   }
 }
 
-const generateLassoPath = (position: { x: number; y: number }, scale = 2) => {
+const generateLassoPath = (position: Position, scale = 2) => {
   const { x, y } = position;
   return `M ${x} ${y}
           C ${x + 2 * scale} ${y - 1.1111 * scale} ${x + 2 * scale} ${
@@ -285,3 +304,31 @@ const generateLassoPath = (position: { x: number; y: number }, scale = 2) => {
             x - 1.5 * scale
           } ${y + 4 * scale}`;
 };
+
+function calculateCursorTranslateX(angle: number) {
+  if (angle >= 0 && angle <= 90) {
+    return 12 - ((angle - 0) / 90) * 12; // 12에서 0까지
+  } else if (angle > 90 && angle <= 180) {
+    return 0 - ((angle - 90) / 90) * 37; // 0에서 -37까지
+  } else if (angle > 180 && angle <= 270) {
+    return -37 + ((angle - 180) / 90) * 13; // -37에서 -24까지
+  } else if (angle > 270 && angle <= 360) {
+    return -24 + ((angle - 270) / 90) * 36; // -24에서 12까지
+  } else {
+    return 0;
+  }
+}
+
+function calculateCursorTranslateY(angle: number) {
+  if (angle >= 0 && angle <= 90) {
+    return -36 + ((angle - 0) / 90) * 47; // -36에서 11까지
+  } else if (angle > 90 && angle <= 180) {
+    return 11 - ((angle - 90) / 90) * 11; // 11에서 0까지
+  } else if (angle > 180 && angle <= 270) {
+    return 0 - ((angle - 180) / 90) * 28; // 0에서 -28까지
+  } else if (angle > 270 && angle <= 360) {
+    return -28 + ((angle - 270) / 90) * 7; // -28에서 -21까지
+  } else {
+    return 0;
+  }
+}
