@@ -5,6 +5,7 @@ import {
   MouseEventHandler,
   ReactNode,
   useCallback,
+  MouseEvent,
   useEffect,
   useRef,
   useState,
@@ -20,7 +21,9 @@ import { Key } from 'w3c-keys';
 
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
+import { getAngleBetweenPositions } from '../../../utils/math';
 
+import { Position } from './types';
 import {
   RadialMenuItemProvider,
   RadialMenuProvider,
@@ -63,10 +66,8 @@ interface RadialMenuProps {
  */
 
 const ringPercent = 87.4;
-interface Position {
-  x: number;
-  y: number;
-}
+const ROTATE_X_VAR = '--rotateX';
+const ROTATE_Y_VAR = '--rotateY';
 export function RadialMenu(props: RadialMenuProps) {
   const selectionBgAngle = useMotionValue(-1);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -111,17 +112,6 @@ export function RadialMenu(props: RadialMenuProps) {
 
   const { children } = props;
 
-  const calcAngle = (curr: Position, prev: Position) => {
-    const dx = curr.x - prev.x;
-    const dy = curr.y - prev.y;
-    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
-    if (angle < 0) {
-      angle += 360;
-    }
-
-    return Math.floor(angle);
-  };
-
   const getActiveSection = (angle: number) => {
     /**
      * NOTE: RadialMenuItem 아이템 시작점과 맞추기 위해 180도 플러스
@@ -133,6 +123,60 @@ export function RadialMenu(props: RadialMenuProps) {
     const adjustedAngle = startPositionAdjustedAngle % 360; // Shift by 22.5 degrees to center sections
     return Math.floor(adjustedAngle / 45) % 8; // Divide by 45 degrees per section
   };
+
+  const handleMouseMoveRotate = useCallback(
+    (e: MouseEvent<HTMLDivElement>, position: Position) => {
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const leftX = mouseX - (position.x - SIZE / 2);
+      const topY = mouseY - (position.y - SIZE / 2);
+
+      const contentX = leftX - SIZE / 2;
+      const contentY = topY - SIZE / 2;
+
+      const contentRotateX = contentY / 100;
+      const contentRotateY = (-1 * contentX) / 100;
+
+      const weight = 1.8;
+      if (rootRef.current != null) {
+        rootRef.current.style.setProperty(
+          ROTATE_X_VAR,
+          `${contentRotateX * weight}deg`
+        );
+        rootRef.current.style.setProperty(
+          ROTATE_Y_VAR,
+          `${contentRotateY * weight}deg`
+        );
+      }
+    },
+    []
+  );
+
+  const handleMouseMoveSelectionAngle = useCallback(
+    (e: MouseEvent<HTMLDivElement>, position: Position) => {
+      const angle = getAngleBetweenPositions(position, {
+        x: e.clientX,
+        y: e.clientY,
+      });
+      const sectionIndex = (getActiveSection(angle) + 1) % 8;
+
+      const currentAngle = springSelectionBgAngle.get();
+      let nextAngle = (45 * sectionIndex + 270) % 360;
+
+      const delta = nextAngle - currentAngle;
+      if (delta > 180) {
+        nextAngle -= 360;
+      } else if (delta < -180) {
+        nextAngle += 360;
+      }
+
+      springSelectionBgAngle.set(nextAngle);
+      restSelectionBgAngle.set(`${ringPercent}%`);
+
+      setSelectedIndex(sectionIndex);
+    },
+    [restSelectionBgAngle, springSelectionBgAngle]
+  );
 
   // TODO: activeMode핸들하는걸 훅으로  빼던가.. 뭔가 중앙 관리가 필요해보임.
   useHotKey({
@@ -168,28 +212,14 @@ export function RadialMenu(props: RadialMenuProps) {
         top: 0,
         width: '100%',
         height: '100%',
+        perspective: 1250,
       }}
       onMouseMove={e => {
         if (position == null) {
           return;
         }
-        const angle = calcAngle({ x: e.clientX, y: e.clientY }, position);
-        const sectionIndex = (getActiveSection(angle) + 1) % 8;
-
-        const currentAngle = springSelectionBgAngle.get();
-        let nextAngle = (45 * sectionIndex + 270) % 360;
-
-        const delta = nextAngle - currentAngle;
-        if (delta > 180) {
-          nextAngle -= 360;
-        } else if (delta < -180) {
-          nextAngle += 360;
-        }
-
-        springSelectionBgAngle.set(nextAngle);
-        restSelectionBgAngle.set(`${ringPercent}%`);
-
-        setSelectedIndex(sectionIndex);
+        handleMouseMoveRotate(e, position);
+        handleMouseMoveSelectionAngle(e, position);
       }}
     >
       <AnimatePresence>
@@ -199,6 +229,8 @@ export function RadialMenu(props: RadialMenuProps) {
               style={{
                 left: position.x - SIZE / 2,
                 top: position.y - SIZE / 2,
+                rotateX: `var(${ROTATE_X_VAR})`,
+                rotateY: `var(${ROTATE_Y_VAR})`,
               }}
               initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
