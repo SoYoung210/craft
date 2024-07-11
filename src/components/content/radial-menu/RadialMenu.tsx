@@ -18,7 +18,6 @@ import {
   useSpring,
 } from 'framer-motion';
 import { Key } from 'w3c-keys';
-import { createPortal } from 'react-dom';
 
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
@@ -45,7 +44,6 @@ interface RadialMenuProps {
  * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
  *
  * Next TODO
- * - [] 커서와 올가미 위치 맞추기
  * - [] 아이템 활성화 될때 밑에 라벨 정보 보여줘야 함 (Item이 받아서 보여주도록?)
  */
 
@@ -264,20 +262,10 @@ export function RadialMenu(props: RadialMenuProps) {
                     );
                   })}
                 </RadialMenuProvider>
+
                 <InnerCircle />
               </Menu>
             </Root>
-            <div
-              ref={labelTrackElementRef}
-              style={{
-                position: 'absolute',
-                left: position.x,
-                top: position.y + SIZE / 2,
-                transform: 'translateX(-50%)',
-              }}
-            >
-              createPortal
-            </div>
           </Fragment>
         )}
       </AnimatePresence>
@@ -312,7 +300,7 @@ export function RadialMenuItem(props: MenuItemProps) {
     ...restProps
   } = props;
   const selected = index === selectedIndex;
-  const renderLabel = labelTrackElement != null && selected && label != null;
+  // const renderLabel = labelTrackElement != null && selected && label != null;
 
   useEffect(() => {
     if (selected && active === false) {
@@ -343,10 +331,13 @@ export function RadialMenuItem(props: MenuItemProps) {
           <ItemContent>{children}</ItemContent>
         </div>
       </Item>
-      {/* 타입가드로 바꾸기; */}
-      {selected && labelTrackElement != null
-        ? createPortal(<div>{label}</div>, labelTrackElement)
-        : null}
+      {/* 짜증나니까 타입가드로 바꾸기; */}
+      {/* {selected != null && labelTrackElement != null
+        ? createPortal(
+            label != null ? <div>{label}</div> : <></>,
+            labelTrackElement
+          )
+        : null} */}
     </>
   );
 }
