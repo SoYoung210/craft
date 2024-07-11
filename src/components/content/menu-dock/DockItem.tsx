@@ -75,11 +75,12 @@ export function DockItem({
         },
       }}
       transition={{
-        ease: [0.45, 0, 0.55, 1],
-        duration: 0.6,
         scale: {
-          duration: 0.3,
+          duration: 0.1,
         },
+        type: 'spring',
+        duration: 0.6,
+        bounce: 0.1,
       }}
       {...restProps}
     >

@@ -83,9 +83,9 @@ export const DockContentImpl = forwardRef<HTMLDivElement, DockContentProps>(
             animate="center"
             exit="exit"
             transition={{
-              ease: [0.45, 0, 0.55, 1],
-              duration: 0.5,
-              opacity: { duration: 0.3 },
+              type: 'spring',
+              duration: 0.6,
+              bounce: 0.1,
             }}
             {...restProps}
           >
