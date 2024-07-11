@@ -236,7 +236,7 @@ export default function DynamicCard() {
           </IllustRoot>
           <PersonalContent>
             <Text color="white" weight={800} size={26}>
-              이소영
+              SoYoung
             </Text>
             <Text
               color="white"
@@ -253,7 +253,7 @@ export default function DynamicCard() {
               monospace={true}
               style={{ marginTop: 15 }}
             >
-              2022년 12월 23일
+              2022. 12. 23
             </Text>
           </PersonalContent>
           <div
