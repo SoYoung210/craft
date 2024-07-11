@@ -12,8 +12,8 @@ import TextField from '../components/material/TextField';
 import Text from '../components/material/Text';
 import example1 from '../images/link-preview/soso.png';
 import example2 from '../images/link-preview/radix-ui.png';
-import example3 from '../images/link-preview/apple.png';
-import { VStack } from '../components/material/Stack';
+import example3 from '../images/link-preview/arc.png';
+import example4 from '../images/link-preview/figma.png';
 import SEO from '../components/layout/SEO';
 
 interface LinkData {
@@ -23,9 +23,10 @@ interface LinkData {
 }
 
 const initialData: LinkData[] = [
-  { url: 'https://so-so.dev', label: 'so-so', preview: example1 },
-  { url: 'https://radix-ui.com', label: 'radix-ui', preview: example2 },
-  { url: 'https://apple.com', label: 'apple', preview: example3 },
+  { url: 'https://so-so.dev', label: 'soyoung', preview: example1 },
+  { url: 'https://arc.net/', label: 'arc', preview: example3 },
+  { url: 'https://figma.com/', label: 'figma', preview: example4 },
+  { url: 'https://radix.com/', label: 'radix', preview: example2 },
 ];
 function PageContent() {
   const { error } = useToast();
@@ -76,15 +77,20 @@ function PageContent() {
         </PageLayout.DetailsContent>
       </PageLayout.Details>
 
-      <form onSubmit={handleSubmit}>
+      {/* <form onSubmit={handleSubmit}>
         <TextField
           placeholder="so-so.dev"
           leftSlot={<Text color="gray6">https://</Text>}
           value={value}
           onChange={e => setValue(e.target.value.replace('https://', ''))}
         />
-      </form>
-      <VStack asChild gap={8}>
+      </form> */}
+      <div
+        style={{
+          height: 'calc(100vh - 80px)',
+          marginTop: 'min( calc(8vh) , 60px)',
+        }}
+      >
         <Ul>
           {links.map(link => (
             <Li key={link.label}>
@@ -96,7 +102,7 @@ function PageContent() {
             </Li>
           ))}
         </Ul>
-      </VStack>
+      </div>
     </PageLayout>
   );
 }
@@ -110,13 +116,16 @@ export default function LinkPreviewPage() {
 
 const Ul = styled('ul', {
   listStyle: 'none',
+  display: 'flex',
+  justifyContent: 'space-between',
 });
 
 const Li = styled('li', {
   lineHeight: '24px',
+  color: '#222',
+  fontWeight: 600,
 
   '&:before': {
-    content: '-',
     color: '#999',
     position: 'absolute',
     marginLeft: -16,

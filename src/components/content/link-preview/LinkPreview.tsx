@@ -31,7 +31,7 @@ const LinkPreview = ({ label, preview, url }: Props) => {
             className="TooltipContent"
             sideOffset={12}
             side="top"
-            align="start"
+            align="center"
           >
             {imgLoading && <LoadingSkeleton />}
             <Tooltip.Image
@@ -60,18 +60,20 @@ const Link = styled('a', {
 
   '&::after': {
     content: '""',
-    width: 0,
+    width: '100%',
     height: 2,
     backgroundColor: '$gray10',
     position: 'absolute',
     bottom: -2,
-    left: 0,
-    transition: 'width 0.2s ease',
+    left: '50%',
+    transition: 'transform 0.2s ease',
+    transformOrigin: 'center',
+    transform: 'translateX(-50%) scaleX(0)',
   },
 
   '&:focus, &:hover': {
     '&::after': {
-      width: '100%',
+      transform: 'translateX(-50%) scaleX(1)',
     },
   },
 });

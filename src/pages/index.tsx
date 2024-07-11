@@ -190,24 +190,6 @@ const IndexPage = () => {
         </ContentList.Item>
 
         <ContentList.Item>
-          <Link to="/genie-window">
-            <ContentBox title="genie-window">
-              <StaticImage
-                src="../images/thumbnails/genie-effect.png"
-                alt="Modal Interaction with Genie Effect Preview"
-                objectFit="contain"
-                placeholder="blurred"
-                style={{
-                  display: 'flex',
-                  height: 250,
-                  justifyContent: 'center',
-                }}
-              />
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-
-        <ContentList.Item>
           <Link to="/blurred-logo">
             <ContentBox title="blurred-logo">
               <StaticImage

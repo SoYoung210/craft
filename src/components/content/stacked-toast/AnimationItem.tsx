@@ -150,7 +150,7 @@ const originGeometryVariants: MotionProps = {
     },
   },
   transition: {
-    duration: 0.4,
+    duration: 0.35,
     type: 'ease',
   },
 };
@@ -168,7 +168,7 @@ const scaleDownVariants: MotionProps = {
     },
   },
   transition: {
-    duration: 0.5,
+    duration: 0.45,
     ease: [0.07, 0.19, 0.27, 1],
   },
 };
@@ -192,7 +192,7 @@ const slideInVariants: MotionProps = {
     },
   },
   transition: {
-    duration: 0.3,
+    duration: 0.25,
     ease: [0.07, 0.19, 0.27, 1],
   },
 };
@@ -207,7 +207,7 @@ const StyledItem = styled(motion.li, {
   border: '1px solid rgba(0, 0, 0, 0.06)',
   padding: '0 1rem',
   filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
-  borderRadius: '0.5rem',
+  borderRadius: '12px',
   minHeight: TOAST_HEIGHT,
   minWidth: 320,
   py: 14,

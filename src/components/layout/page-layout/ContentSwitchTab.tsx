@@ -87,7 +87,7 @@ interface Props {
 }
 export function ContentSwitchTab({
   defaultOpen,
-  defaultValue = CONTENTS[2].title,
+  defaultValue = CONTENTS[0].title,
 }: Props) {
   const [showHomeIcon, setShowHomeIcon, setHideHomeIcon] =
     useBooleanState(false);
