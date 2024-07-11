@@ -53,7 +53,7 @@ const Content = styled(RadixTooltip.Content, {
 });
 
 const Image = styled('img', {
-  borderRadius: 12,
+  borderRadius: 9,
   width: 200,
   height: 120,
   objectFit: 'cover',
