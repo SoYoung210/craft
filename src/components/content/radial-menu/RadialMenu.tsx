@@ -137,16 +137,9 @@ export function RadialMenu(props: RadialMenuProps) {
       const contentRotateX = contentY / 100;
       const contentRotateY = (-1 * contentX) / 100;
 
-      const weight = 1.8;
       if (rootRef.current != null) {
-        rootRef.current.style.setProperty(
-          ROTATE_X_VAR,
-          `${contentRotateX * weight}deg`
-        );
-        rootRef.current.style.setProperty(
-          ROTATE_Y_VAR,
-          `${contentRotateY * weight}deg`
-        );
+        rootRef.current.style.setProperty(ROTATE_X_VAR, `${contentRotateX}deg`);
+        rootRef.current.style.setProperty(ROTATE_Y_VAR, `${contentRotateY}deg`);
       }
     },
     []
@@ -212,7 +205,7 @@ export function RadialMenu(props: RadialMenuProps) {
         top: 0,
         width: '100%',
         height: '100%',
-        perspective: 1250,
+        perspective: 2000,
       }}
       onMouseMove={e => {
         if (position == null) {
