@@ -18,6 +18,7 @@ import {
   useSpring,
 } from 'framer-motion';
 import { Key } from 'w3c-keys';
+import { createPortal } from 'react-dom';
 
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
@@ -138,8 +139,14 @@ export function RadialMenu(props: RadialMenuProps) {
       const contentRotateY = (-1 * contentX) / 100;
 
       if (rootRef.current != null) {
-        rootRef.current.style.setProperty(ROTATE_X_VAR, `${contentRotateX}deg`);
-        rootRef.current.style.setProperty(ROTATE_Y_VAR, `${contentRotateY}deg`);
+        rootRef.current.style.setProperty(
+          ROTATE_X_VAR,
+          `${contentRotateX * 1}deg`
+        );
+        rootRef.current.style.setProperty(
+          ROTATE_Y_VAR,
+          `${contentRotateY * 1}deg`
+        );
       }
     },
     []
@@ -205,7 +212,7 @@ export function RadialMenu(props: RadialMenuProps) {
         top: 0,
         width: '100%',
         height: '100%',
-        perspective: 2000,
+        perspective: 1800,
       }}
       onMouseMove={e => {
         if (position == null) {
@@ -255,9 +262,12 @@ export function RadialMenu(props: RadialMenuProps) {
                     );
                   })}
                 </RadialMenuProvider>
-
                 <InnerCircle />
               </Menu>
+              <div
+                ref={labelTrackElementRef}
+                data-debug-role="label-track-element"
+              />
             </Root>
           </Fragment>
         )}
@@ -324,13 +334,12 @@ export function RadialMenuItem(props: MenuItemProps) {
           <ItemContent>{children}</ItemContent>
         </div>
       </Item>
-      {/* 짜증나니까 타입가드로 바꾸기; */}
-      {/* {selected != null && labelTrackElement != null
+      {selected && labelTrackElement != null
         ? createPortal(
             label != null ? <div>{label}</div> : <></>,
             labelTrackElement
           )
-        : null} */}
+        : null}
     </>
   );
 }
