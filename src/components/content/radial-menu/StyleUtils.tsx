@@ -91,7 +91,6 @@ export function LinePath(props: LinePathProps) {
   const [mousePos, setMousePos] = useState({ x: 600, y: 600 });
   const lassoRef = useRef<SVGPathElement>(null);
   const mouseCursorRef = useRef<SVGSVGElement>(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
   const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
     e => {
@@ -103,7 +102,6 @@ export function LinePath(props: LinePathProps) {
         x,
         y,
       });
-      console.log('@@ angle', angle, x, y);
       const lassoAngle = (93 / 90) * angle - 289;
 
       if (svgRef.current != null) {
@@ -119,10 +117,6 @@ export function LinePath(props: LinePathProps) {
       }
 
       setMousePos({ x, y });
-      setCursorPos({
-        x: lassoRef.current?.getBBox().x ?? 0,
-        y: lassoRef.current?.getBBox().y ?? 0,
-      });
     },
     [initialPos]
   );
