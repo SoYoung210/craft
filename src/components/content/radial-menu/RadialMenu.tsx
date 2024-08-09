@@ -329,9 +329,7 @@ export function RadialMenuItem(props: MenuItemProps) {
 
   const selected = index === selectedIndex;
   const shouldRenderLabel =
-    labelTrackElement != null &&
-    selectedIndex !== INITIAL_SELECTED_INDEX &&
-    label != null;
+    labelTrackElement != null && selected && label != null;
 
   const shouldAnimate =
     (prevSelectedIndex === INITIAL_SELECTED_INDEX &&
@@ -344,11 +342,6 @@ export function RadialMenuItem(props: MenuItemProps) {
     }
   }, [active, onSelect, selected]);
 
-  /*
-    TODO: TODO:handleMouseMoveSelectionAngle 시점에 Collection.ItemSlot으로
-    Item의 라벨을 가져오자. 그걸로 setSelectedLabel을 설정하고, 여기서 애니메이션 컨트롤 하면 될
-    아.. 근데 더 나은 리팩토링 방법 없나. 성능상 좀 안좋긴 한데...
-  */
   return (
     <Collection.ItemSlot scope={undefined} label={label ?? null}>
       <div>
@@ -375,10 +368,7 @@ export function RadialMenuItem(props: MenuItemProps) {
         </Item>
         {shouldRenderLabel
           ? createPortal(
-              <LabelMotion
-                key={shouldAnimate ? 'animate' : 'default'}
-                selected={selected}
-              >
+              <LabelMotion shouldAnimate={shouldAnimate} selected={selected}>
                 {label}
               </LabelMotion>,
               labelTrackElement
@@ -392,18 +382,18 @@ export function RadialMenuItem(props: MenuItemProps) {
 function LabelMotion({
   children,
   selected,
+  shouldAnimate,
 }: {
   children: ReactNode;
   selected: boolean;
+  shouldAnimate: boolean;
 }) {
   if (children == null) {
     return <></>;
   }
   return (
     <motion.div
-      initial={{
-        scale: 1.1,
-      }}
+      initial={shouldAnimate ? { scale: 1.1 } : { scale: 1.05 }}
       animate={{
         scale: 1.05,
       }}
