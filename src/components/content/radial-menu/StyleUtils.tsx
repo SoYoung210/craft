@@ -94,14 +94,20 @@ export function LinePath(props: LinePathProps) {
 
   const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
     e => {
-      const x = e.clientX;
-      const y = e.clientY;
-      // const x = 880;
-      // const y = 499;
+      // const x = e.clientX;
+      // const y = e.clientY;
+      // console.log('@@ x, y', x, y);
+      const x = 620;
+      const y = 260;
       const angle = getAngleBetweenPositions(initialPos, {
         x,
         y,
       });
+      console.log(
+        '[보정값]: ',
+        calculateCursorTranslateX(angle),
+        calculateCursorTranslateY(angle)
+      );
       const lassoAngle = (93 / 90) * angle - 289;
 
       if (svgRef.current != null) {
@@ -300,6 +306,7 @@ const generateLassoPath = (position: Position, scale = 2) => {
 };
 
 function calculateCursorTranslateX(angle: number) {
+  console.log('@@ angle', angle);
   if (angle >= 0 && angle <= 90) {
     return 12 - ((angle - 0) / 90) * 12; // 12에서 0까지
   } else if (angle > 90 && angle <= 180) {
@@ -320,8 +327,10 @@ function calculateCursorTranslateY(angle: number) {
     return 11 - ((angle - 90) / 90) * 11; // 11에서 0까지
   } else if (angle > 180 && angle <= 270) {
     return 0 - ((angle - 180) / 90) * 28; // 0에서 -28까지
-  } else if (angle > 270 && angle <= 360) {
-    return -28 + ((angle - 270) / 90) * 7; // -28에서 -21까지
+  } else if (angle > 270 && angle <= 296) {
+    return -28 - ((angle - 270) / 26) * 6; // -28에서 -34까지
+  } else if (angle > 296 && angle <= 360) {
+    return -34 + ((angle - 296) / 64) * 13; // -34에서 -21까지
   } else {
     return 0;
   }
