@@ -10,6 +10,10 @@ export const globalStyles = globalCss({
     height: `100%`,
     fontSize: `14px`,
     fontFamily: `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif`,
+    fontFeatureSettings: `"liga" 1, "calt" 1`,
+    '@supports (font-variation-settings: normal)': {
+      fontFamily: `"Inter Variable", sans-serif`,
+    },
   },
   a: {
     textDecoration: 'none',
