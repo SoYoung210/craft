@@ -97,8 +97,8 @@ export function LinePath(props: LinePathProps) {
       // const x = e.clientX;
       // const y = e.clientY;
 
-      const x = 820;
-      const y = 230;
+      const x = 163;
+      const y = 573;
       const angle = getAngleBetweenPositions(initialPos, {
         x,
         y,
@@ -311,17 +311,21 @@ const generateLassoPath = (position: Position, scale = 2) => {
 
 function calculateCursorTranslateX(angle: number) {
   if (angle >= 0 && angle <= 60) {
-    return 12 - ((angle - 0) / 60) * 3; // 12에서 9까지
+    return 12 - ((angle - 0) / 60) * 3; // 12 to 9
   } else if (angle > 60 && angle <= 90) {
-    return 9 - ((angle - 60) / 30) * 9; // 9에서 0까지
+    return 9 - ((angle - 60) / 30) * 9; // 9 to 0
   } else if (angle > 90 && angle <= 180) {
-    return 0 - ((angle - 90) / 90) * 37; // 0에서 -37까지
+    return 0 - ((angle - 90) / 90) * 37; // 0 to -37
   } else if (angle > 180 && angle <= 270) {
-    return -37 + ((angle - 180) / 90) * 13; // -37에서 -24까지
+    return -37 + ((angle - 180) / 90) * 13; // -37 to -24
   } else if (angle > 270 && angle <= 320) {
-    return -24 + ((angle - 270) / 50) * 22; // -24에서 -2까지
-  } else if (angle > 320 && angle <= 360) {
-    return -2 + ((angle - 320) / 40) * 14; // -2에서 12까지
+    return -24 + ((angle - 270) / 50) * 24; // -24 to 0
+  } else if (angle > 320 && angle <= 322) {
+    return 0 + ((angle - 320) / 2) * 2; // 0 to 2
+  } else if (angle > 322 && angle <= 345) {
+    return 2 + ((angle - 322) / 23) * 6; // 2 to 8
+  } else if (angle > 345 && angle <= 360) {
+    return 8 + ((angle - 345) / 15) * 4; // 8 to 12
   } else {
     return 0;
   }
@@ -329,19 +333,21 @@ function calculateCursorTranslateX(angle: number) {
 
 function calculateCursorTranslateY(angle: number) {
   if (angle >= 0 && angle <= 60) {
-    return -21 + ((angle - 0) / 60) * 21; // -21에서 0까지
+    return -21 + ((angle - 0) / 60) * 21; // -21 to 0
   } else if (angle > 60 && angle <= 90) {
-    return 0 + ((angle - 60) / 30) * 11; // 0에서 11까지
+    return 0 + ((angle - 60) / 30) * 11; // 0 to 11
   } else if (angle > 90 && angle <= 180) {
-    return 11 - ((angle - 90) / 90) * 11; // 11에서 0까지
+    return 11 - ((angle - 90) / 90) * 11; // 11 to 0
   } else if (angle > 180 && angle <= 270) {
-    return 0 - ((angle - 180) / 90) * 28; // 0에서 -28까지
-  } else if (angle > 270 && angle <= 296) {
-    return -28 - ((angle - 270) / 26) * 6; // -28에서 -34까지
-  } else if (angle > 296 && angle <= 320) {
-    return -34 + ((angle - 296) / 24) * 5; // -34에서 -29까지
-  } else if (angle > 320 && angle <= 360) {
-    return -29 + ((angle - 320) / 40) * 8; // -29에서 -21까지
+    return 0 - ((angle - 180) / 90) * 28; // 0 to -28
+  } else if (angle > 270 && angle <= 320) {
+    return -28 - ((angle - 270) / 50) * 5; // -28 to -33
+  } else if (angle > 320 && angle <= 322) {
+    return -33; // Stays at -33 for this small range
+  } else if (angle > 322 && angle <= 345) {
+    return -33 + ((angle - 322) / 23) * 5; // -33 to -28
+  } else if (angle > 345 && angle <= 360) {
+    return -28 + ((angle - 345) / 15) * 7; // -28 to -21
   } else {
     return 0;
   }
