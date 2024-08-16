@@ -94,11 +94,11 @@ export function LinePath(props: LinePathProps) {
 
   const handleMouseMove: MouseEventHandler<SVGSVGElement> = useCallback(
     e => {
-      // const x = e.clientX;
-      // const y = e.clientY;
+      const x = e.clientX;
+      const y = e.clientY;
 
-      const x = 163;
-      const y = 573;
+      // const x = 240;
+      // const y = 148;
       const angle = getAngleBetweenPositions(initialPos, {
         x,
         y,
@@ -314,10 +314,16 @@ function calculateCursorTranslateX(angle: number) {
     return 12 - ((angle - 0) / 60) * 3; // 12 to 9
   } else if (angle > 60 && angle <= 90) {
     return 9 - ((angle - 60) / 30) * 9; // 9 to 0
-  } else if (angle > 90 && angle <= 180) {
-    return 0 - ((angle - 90) / 90) * 37; // 0 to -37
-  } else if (angle > 180 && angle <= 270) {
-    return -37 + ((angle - 180) / 90) * 13; // -37 to -24
+  } else if (angle > 90 && angle <= 105) {
+    return 0 - ((angle - 90) / 15) * 9; // 0 to -9
+  } else if (angle > 105 && angle <= 168) {
+    return -9 - ((angle - 105) / 63) * 24; // -9 to -33
+  } else if (angle > 168 && angle <= 198) {
+    return -33 - ((angle - 168) / 30) * 4; // -33 to -37
+  } else if (angle > 198 && angle <= 234) {
+    return -37 + ((angle - 198) / 36) * 3; // -37 to -34
+  } else if (angle > 234 && angle <= 270) {
+    return -34 + ((angle - 234) / 36) * 10; // -34 to -24
   } else if (angle > 270 && angle <= 320) {
     return -24 + ((angle - 270) / 50) * 24; // -24 to 0
   } else if (angle > 320 && angle <= 322) {
@@ -336,10 +342,16 @@ function calculateCursorTranslateY(angle: number) {
     return -21 + ((angle - 0) / 60) * 21; // -21 to 0
   } else if (angle > 60 && angle <= 90) {
     return 0 + ((angle - 60) / 30) * 11; // 0 to 11
-  } else if (angle > 90 && angle <= 180) {
-    return 11 - ((angle - 90) / 90) * 11; // 11 to 0
-  } else if (angle > 180 && angle <= 270) {
-    return 0 - ((angle - 180) / 90) * 28; // 0 to -28
+  } else if (angle > 90 && angle <= 105) {
+    return 11 + ((angle - 90) / 15) * 1; // 11 to 12
+  } else if (angle > 105 && angle <= 168) {
+    return 12 - ((angle - 105) / 63) * 8; // 12 to 4
+  } else if (angle > 168 && angle <= 198) {
+    return 4 - ((angle - 168) / 30) * 15; // 4 to -11
+  } else if (angle > 198 && angle <= 234) {
+    return -11 - ((angle - 198) / 36) * 13; // -11 to -24
+  } else if (angle > 234 && angle <= 270) {
+    return -24 - ((angle - 234) / 36) * 4; // -24 to -28
   } else if (angle > 270 && angle <= 320) {
     return -28 - ((angle - 270) / 50) * 5; // -28 to -33
   } else if (angle > 320 && angle <= 322) {
