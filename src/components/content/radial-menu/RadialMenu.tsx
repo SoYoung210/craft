@@ -46,23 +46,10 @@ interface RadialMenuProps {
 
 /**
  * WorkLog
- * - [] 아이템 활성화 될때 밑에 라벨 정보 보여줘야 함 (Item이 받아서 보여주도록?)
- * - [] NOTE: 어차피 Children API를 쓰고 있는데... 부분에 대한 리팩토링 고민해보기
+ * - [x] 라벨 폰트 스타일 점검 (amie랑 유사한지)
+ * - [] 오른쪽 위쪽 커서 포지션 조금 더 튜닝
+ * - [] 처음 뜨는 포지션 다시 고민하기 (지금은 맥북 에어에서 굉장히 이상함)
  */
-
-/**
- * TODO: 기능
- * - [x] 누르고 있을 때 원 범위 벗어나서도 선택된 아이템 바뀌는 것...
- * - [x] 초기 떠있는 위치가 있고, 마우스를 클릭했을 때 그 위치에 다시 그려지면서
- * - [x] 마우스 움직임 따라 path가 그려지는 것
- * - [x] 마우스를 때면 선택된 아이템 정보를 담은 콜백을 실행할 것
- * - [x] 활성아이템 dot은 진하게, 사진은 grey filter 해제
- * - [] 마우스 움직임에 따라 지정된 아이템 이름 보여주기
- * - [] (detail) dynamic card effect
- * - [x] 처음엔 그냥 나오고, A를 누르고 클릭하면 커서를 바꾸고, 그 위치에 나오도록
-
- */
-
 /**
  * TODO: DX
  * - [] 8개를 넘거나 부족한 경우에 대한 처리
@@ -462,7 +449,9 @@ const LabelContent = styled('div', {
   padding: '4px 6px',
   borderRadius: 6,
   boxShadow: '0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)',
-  backdropFilter: 'blur(12px)',
   color: 'rgb(23, 23, 23)',
-  fontWeight: 450,
+  fontVariationSettings: '"wght" 540',
+  // fallback
+  fontWeight: 530,
+  fontSize: 12,
 });
