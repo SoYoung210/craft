@@ -48,7 +48,7 @@ export default function RadialMenuPage() {
           onSelect={() => {
             console.log('[onSelect] 0');
           }}
-          label="Label 0"
+          label="BeautyBush"
         >
           <Image index={0} />
         </RadialMenuItem>
@@ -56,7 +56,7 @@ export default function RadialMenuPage() {
           onSelect={() => {
             console.log('[onSelect] 1');
           }}
-          label="Label 1"
+          label="BananaMania"
         >
           <Image index={1} />
         </RadialMenuItem>
@@ -64,7 +64,7 @@ export default function RadialMenuPage() {
           onSelect={() => {
             console.log('[onSelect] 2');
           }}
-          label="Label 2"
+          label="RoyalHeath"
         >
           <Image index={2} />
         </RadialMenuItem>
@@ -86,7 +86,7 @@ export default function RadialMenuPage() {
           onSelect={() => {
             console.log('[onSelect] 5');
           }}
-          label="Label 4"
+          label="Flax"
         >
           <Image index={4} />
         </RadialMenuItem>
@@ -94,7 +94,7 @@ export default function RadialMenuPage() {
           onSelect={() => {
             console.log('[onSelect] 6');
           }}
-          label="Label 3"
+          label="PaleCornflowerBlue"
         >
           <Image index={3} />
         </RadialMenuItem>
