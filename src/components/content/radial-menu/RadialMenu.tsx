@@ -19,6 +19,7 @@ import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
 import { usePrevious } from '../../../hooks/usePrevious';
 import { getDistanceBetween } from '../../../utils/math';
+import { useBooleanState } from '../../../hooks/useBooleanState';
 
 import { Position } from './types';
 import {
@@ -33,7 +34,6 @@ import {
 import { InnerCircle, LinePath, Shadow } from './StyleUtils';
 import { SIZE } from './constants';
 import { useSelectionAngle } from './hooks/useSelectionAngle';
-import { useActiveMode } from './hooks/useActiveMode';
 import { useCursor } from './hooks/useCursor';
 
 interface RadialMenuProps {
@@ -74,7 +74,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
     const initialVisible = initialPosition != null;
     const menuVisible = position != null;
 
-    const { activeMode, activate, deactivate } = useActiveMode(menuVisible);
+    const [activeMode, activate, deactivate] = useBooleanState(menuVisible);
 
     const rootRef = useRef<HTMLDivElement>(null);
     const [cursorTargetRef, changeCursor] = useCursor<HTMLDivElement>();
