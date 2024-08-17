@@ -186,7 +186,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           top: 0,
           width: '100%',
           height: '100%',
-          perspective: 1200,
+          perspective: 1000,
         }}
         onMouseMove={e => {
           if (position == null) {
