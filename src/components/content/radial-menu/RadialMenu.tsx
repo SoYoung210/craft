@@ -40,7 +40,7 @@ interface RadialMenuProps {
 
 /**
  * WorkLog
- * - [] 처음 뜨는 포지션 훅으로 좀 빼고... 기타 다른 로직들도 훅으로 빼두기
+ * - [] 마우스커서
  */
 /**
  * TODO: DX
@@ -62,13 +62,7 @@ const ROTATE_Y_VAR = '--rotateY';
 const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   (props, ref) => {
     const { updateSelectionAngle, restSelectionBgAngle, springSelectionAngle } =
-      useSelectionAngle(-1, {
-        springMotion: {
-          stiffness: 500,
-          damping: 30,
-          mass: 1,
-        },
-      });
+      useSelectionAngle(-1);
 
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -122,7 +116,6 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       useCallback(() => {
         setPosition(null);
         // 초기값이 true이기 때문에 최초의 mouseUp에서 false로 되돌려줌
-        // activeModeRef.current = false;
         deactivate();
       }, [deactivate]);
 
@@ -130,26 +123,18 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
     const handleMouseMoveRotate = useCallback(
       (e: MouseEvent<HTMLDivElement>, position: Position) => {
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        const leftX = mouseX - (position.x - SIZE / 2);
-        const topY = mouseY - (position.y - SIZE / 2);
-
-        const contentX = leftX - SIZE / 2;
-        const contentY = topY - SIZE / 2;
-
-        const contentRotateX = contentY / 100;
-        const contentRotateY = (-1 * contentX) / 100;
+        const { x, y } = getRotateValue(
+          {
+            x: e.clientX,
+            y: e.clientY,
+          },
+          position,
+          SIZE
+        );
 
         if (rootRef.current != null) {
-          rootRef.current.style.setProperty(
-            ROTATE_X_VAR,
-            `${contentRotateX * 1}deg`
-          );
-          rootRef.current.style.setProperty(
-            ROTATE_Y_VAR,
-            `${contentRotateY * 1}deg`
-          );
+          rootRef.current.style.setProperty(ROTATE_X_VAR, `${x}deg`);
+          rootRef.current.style.setProperty(ROTATE_Y_VAR, `${y}deg`);
         }
       },
       []
@@ -437,3 +422,25 @@ const LabelContent = styled('div', {
   fontWeight: 530,
   fontSize: 12,
 });
+
+function getRotateValue(
+  currentPosition: Position,
+  prevPosition: Position,
+  size: number
+) {
+  const mouseX = currentPosition.x;
+  const mouseY = currentPosition.y;
+  const leftX = mouseX - (prevPosition.x - size / 2);
+  const topY = mouseY - (prevPosition.y - size / 2);
+
+  const contentX = leftX - size / 2;
+  const contentY = topY - size / 2;
+
+  const contentRotateX = contentY / 100;
+  const contentRotateY = (-1 * contentX) / 100;
+
+  return {
+    x: contentRotateX,
+    y: contentRotateY,
+  };
+}
