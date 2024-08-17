@@ -1,7 +1,6 @@
 import {
   Children,
   ComponentPropsWithoutRef,
-  Fragment,
   MouseEventHandler,
   ReactNode,
   useCallback,
@@ -11,20 +10,13 @@ import {
   useState,
   forwardRef,
 } from 'react';
-import {
-  AnimatePresence,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useSpring,
-} from 'framer-motion';
+import { AnimatePresence, motion, useMotionTemplate } from 'framer-motion';
 import { Key } from 'w3c-keys';
 import { createPortal } from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
-import { getAngleBetweenPositions } from '../../../utils/math';
 import { usePrevious } from '../../../hooks/usePrevious';
 
 import { Position } from './types';
@@ -40,6 +32,7 @@ import {
 import { InnerCircle, LinePath, Shadow } from './StyleUtils';
 import { CURSOR, SIZE } from './constants';
 import { useSelectionAngle } from './hooks/useSelectionAngle';
+import { useActiveMode } from './hooks/useActiveMode';
 
 interface RadialMenuProps {
   children: ReactNode;
@@ -63,22 +56,26 @@ export function RadialMenu(props: RadialMenuProps) {
     </Collection.Provider>
   );
 }
-const ringPercent = 87.4;
+
 const ROTATE_X_VAR = '--rotateX';
 const ROTATE_Y_VAR = '--rotateY';
 const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   (props, ref) => {
     const { updateSelectionAngle, restSelectionBgAngle, springSelectionAngle } =
-      useSelectionAngle(-1);
+      useSelectionAngle(-1, {
+        springMotion: {
+          stiffness: 500,
+          damping: 30,
+          mass: 1,
+        },
+      });
 
-    // const selectionBgAngle = useMotionValue(-1);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
     const [firstMove, setFirstMove] = useState(false);
     const getItemLabels = useCollection(undefined);
-    // const restSelectionBgAngle = useMotionValue('360deg');
 
-    const activeModeRef = useRef(true);
+    const { activeMode, activate, deactivate } = useActiveMode(true);
     const [position, setPosition] = useState<Position | null>(null);
     const menuVisible = position != null;
 
@@ -86,11 +83,6 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
     const combinedRefs = useComposedRefs(ref, rootRef);
     const labelTrackElementRef = useRef<HTMLDivElement>(null);
 
-    // const springSelectionBgAngle = useSpring(selectionBgAngle, {
-    //   stiffness: 500,
-    //   damping: 30,
-    //   mass: 1,
-    // });
     const background = useMotionTemplate`conic-gradient(
     from ${springSelectionAngle}deg,
     rgb(245 245 245) ${restSelectionBgAngle},
@@ -120,32 +112,21 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
     const handleRootMouseDown: MouseEventHandler<HTMLDivElement> = useCallback(
       e => {
-        if (activeModeRef.current) {
+        if (activeMode) {
           setPosition({ x: e.clientX, y: e.clientY });
         }
       },
-      []
+      [activeMode]
     );
     const handleRootMouseUp: MouseEventHandler<HTMLDivElement> =
       useCallback(() => {
         setPosition(null);
         // 초기값이 true이기 때문에 최초의 mouseUp에서 false로 되돌려줌
-        activeModeRef.current = false;
-      }, []);
+        // activeModeRef.current = false;
+        deactivate();
+      }, [deactivate]);
 
     const { children } = props;
-
-    const getActiveSection = (angle: number) => {
-      /**
-       * NOTE: RadialMenuItem 아이템 시작점과 맞추기 위해 180도 플러스
-       */
-      let startPositionAdjustedAngle = angle + 180; // 시작점 보정
-      if (startPositionAdjustedAngle > 360) {
-        startPositionAdjustedAngle -= 360;
-      }
-      const adjustedAngle = startPositionAdjustedAngle % 360; // Shift by 22.5 degrees to center sections
-      return Math.floor(adjustedAngle / 45) % 8; // Divide by 45 degrees per section
-    };
 
     const handleMouseMoveRotate = useCallback(
       (e: MouseEvent<HTMLDivElement>, position: Position) => {
@@ -183,48 +164,19 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           },
           position
         );
-        // const angle = getAngleBetweenPositions(position, {
-        //   x: e.clientX,
-        //   y: e.clientY,
-        // });
-        // const sectionIndex = (getActiveSection(angle) + 1) % 8;
-
-        // const currentAngle = springSelectionBgAngle.get();
-        // let nextAngle = (45 * sectionIndex + 270) % 360;
-
-        // const delta = nextAngle - currentAngle;
-        // if (delta > 180) {
-        //   nextAngle -= 360;
-        // } else if (delta < -180) {
-        //   nextAngle += 360;
-        // }
-
-        // if (currentAngle === -1) {
-        //   springSelectionBgAngle.jump(nextAngle);
-        // } else {
-        //   springSelectionBgAngle.set(nextAngle);
-        // }
-
-        // restSelectionBgAngle.set(`${ringPercent}%`);
 
         setSelectedIndex(sectionIndex);
         const itemLabels = getItemLabels();
-        /**
-         * NOTE: 어차피 Children API를 쓰고 있는데... 이런식으로 복잡하게 할 필요가 있나?
-         * 뭔가... Children.map도는 부분에서 selectedIndex랑 비교해서 현재 선택된 라벨만 넣어주면... (prop을 참조해서...)
-         * 그게 뭔가 깔끔하진 않지만 간단한 구현이긴한듯?
-         */
         setSelectedLabel(itemLabels[sectionIndex]?.label);
       },
       [getItemLabels, updateSelectionAngle]
     );
 
-    // TODO: activeMode핸들하는걸 훅으로  빼던가.. 뭔가 중앙 관리가 필요해보임.
     useHotKey({
       keycode: [Key.A],
       mode: 'keydown',
       callback: () => {
-        activeModeRef.current = true;
+        activate();
         if (rootRef.current) {
           rootRef.current.style.cursor = CURSOR;
         }
@@ -235,7 +187,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       keycode: [Key.A],
       mode: 'keyup',
       callback: () => {
-        activeModeRef.current = false;
+        deactivate();
         if (rootRef.current) {
           rootRef.current.style.cursor = 'auto';
         }
@@ -266,14 +218,14 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       >
         <AnimatePresence>
           {menuVisible && (
-            <Fragment>
-              <Root
-                style={{
-                  left: position.x - SIZE / 2,
-                  top: position.y - SIZE / 2,
-                  rotateX: `var(${ROTATE_X_VAR})`,
-                  rotateY: `var(${ROTATE_Y_VAR})`,
-                }}
+            <Root
+              style={{
+                left: position.x - SIZE / 2,
+                top: position.y - SIZE / 2,
+                transform: `rotateX(var(${ROTATE_X_VAR})) rotateY(var(${ROTATE_Y_VAR}))`,
+              }}
+            >
+              <motion.div
                 initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0.8, opacity: 0, rotate: 0 }}
@@ -304,12 +256,9 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
                   </RadialMenuProvider>
                   <InnerCircle />
                 </Menu>
-                <LabelContainer
-                  ref={labelTrackElementRef}
-                  data-debug-role="label-track-element"
-                />
-              </Root>
-            </Fragment>
+                <LabelContainer ref={labelTrackElementRef} />
+              </motion.div>
+            </Root>
           )}
         </AnimatePresence>
         {position != null && firstMove ? (
@@ -428,7 +377,7 @@ function LabelMotion({
   );
 }
 
-const Root = styled(motion.div, {
+const Root = styled('div', {
   position: 'absolute',
   width: SIZE,
   height: SIZE,
