@@ -18,6 +18,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { styled } from '../../../../stitches.config';
 import useHotKey from '../../../hooks/useHotKey';
 import { usePrevious } from '../../../hooks/usePrevious';
+import { getDistanceBetween } from '../../../utils/math';
 
 import { Position } from './types';
 import {
@@ -40,7 +41,7 @@ interface RadialMenuProps {
 
 /**
  * WorkLog
- * - [] 마우스커서
+ * - [] 마우스커서... A를 누른순간에는 커스텀 커서로 보이게하고, 끄는 순간 감춰야 한다.
  */
 /**
  * TODO: DX
@@ -66,7 +67,9 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-    const [firstMove, setFirstMove] = useState(false);
+
+    const moveFlag = useRef(false);
+
     const getItemLabels = useCollection(undefined);
 
     const { activeMode, activate, deactivate } = useActiveMode(true);
@@ -117,6 +120,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
         setPosition(null);
         // 초기값이 true이기 때문에 최초의 mouseUp에서 false로 되돌려줌
         deactivate();
+        moveFlag.current = false;
       }, [deactivate]);
 
     const { children } = props;
@@ -131,10 +135,23 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           position,
           SIZE
         );
+        const distance = getDistanceBetween(position, {
+          x: e.clientX,
+          y: e.clientY,
+        });
+
+        if (distance >= 20) {
+          moveFlag.current = true;
+        }
 
         if (rootRef.current != null) {
           rootRef.current.style.setProperty(ROTATE_X_VAR, `${x}deg`);
           rootRef.current.style.setProperty(ROTATE_Y_VAR, `${y}deg`);
+        }
+
+        // hide cursor
+        if (rootRef.current != null) {
+          rootRef.current.style.cursor = 'none';
         }
       },
       []
@@ -162,7 +179,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       mode: 'keydown',
       callback: () => {
         activate();
-        if (rootRef.current) {
+        if (rootRef.current && !moveFlag.current) {
           rootRef.current.style.cursor = CURSOR;
         }
       },
@@ -173,6 +190,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       mode: 'keyup',
       callback: () => {
         deactivate();
+        moveFlag.current = false;
         if (rootRef.current) {
           rootRef.current.style.cursor = 'auto';
         }
@@ -196,7 +214,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           if (position == null) {
             return;
           }
-          setFirstMove(true);
+
           handleMouseMoveRotate(e, position);
           handleMouseMoveSelectionAngle(e, position);
         }}
@@ -246,7 +264,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
             </Root>
           )}
         </AnimatePresence>
-        {position != null && firstMove ? (
+        {position != null ? (
           <LinePath
             initialPos={{
               x: position.x,

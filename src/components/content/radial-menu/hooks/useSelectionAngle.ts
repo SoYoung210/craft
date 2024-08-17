@@ -46,7 +46,7 @@ export function useSelectionAngle(
         nextAngle += 360;
       }
 
-      if (currentAngle === initialValue && config.initial) {
+      if (currentAngle === initialValue && !config.initial) {
         springSelectionAngle.jump(nextAngle);
       } else {
         springSelectionAngle.set(nextAngle);

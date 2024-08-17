@@ -7,7 +7,10 @@ import {
   useState,
 } from 'react';
 
-import { getAngleBetweenPositions } from '../../../utils/math';
+import {
+  getAngleBetweenPositions,
+  getDistanceBetween,
+} from '../../../utils/math';
 
 import { SIZE } from './constants';
 import { Position } from './types';
@@ -125,18 +128,15 @@ export function LinePath(props: LinePathProps) {
     [initialPos]
   );
 
-  const pathD =
-    mousePos.x !== 0
-      ? `M ${initialPos.x},${initialPos.y} L ${mousePos.x},${mousePos.y}`
-      : '';
-  const pathD2 = mousePos.x !== 0 ? `${pathD}` : '';
-  const lassoPath =
-    mousePos.x !== 0
-      ? generateLassoPath({
-          x: mousePos.x,
-          y: mousePos.y,
-        })
-      : '';
+  const distance = getDistanceBetween(initialPos, mousePos);
+  const isProperDistance = distance > 30;
+  const pathD = `M ${initialPos.x},${initialPos.y} L ${mousePos.x},${mousePos.y}`;
+  const lassoPath = isProperDistance
+    ? generateLassoPath({
+        x: mousePos.x,
+        y: mousePos.y,
+      })
+    : '';
 
   return (
     <svg
@@ -152,7 +152,7 @@ export function LinePath(props: LinePathProps) {
       }}
     >
       <path
-        d={pathD2}
+        d={pathD}
         stroke="rgba(0, 0, 0, 0.05)"
         strokeWidth="3"
         fill="none"
@@ -180,6 +180,9 @@ export function LinePath(props: LinePathProps) {
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{
+          opacity: isProperDistance ? 1 : 0,
+        }}
         x={
           mousePos.x +
           calculateCursorTranslateX(

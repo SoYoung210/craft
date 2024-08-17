@@ -16,3 +16,9 @@ export function getAngleBetweenPositions(a: Position, b: Position) {
 
   return angle;
 }
+
+export function getDistanceBetween(a: Position, b: Position): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
