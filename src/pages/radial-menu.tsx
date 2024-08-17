@@ -42,7 +42,7 @@ const Image = ({ index }: { index: number }) => {
 export default function RadialMenuPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
-      <PageLayout.Title>RadialMenu</PageLayout.Title>
+      <PageLayout.Title>Radial Menu</PageLayout.Title>
       <RadialMenu>
         <RadialMenuItem
           onSelect={() => {

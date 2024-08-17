@@ -23,6 +23,7 @@ export function Shadow(props: ComponentPropsWithoutRef<typeof motion.div>) {
     >
       <motion.div
         {...props}
+        initial={false}
         style={{
           position: 'absolute',
           top: '50%',
@@ -88,7 +89,10 @@ const LASSO_ANGLE_CSS_VAR = '--lassoAngle';
 export function LinePath(props: LinePathProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const { initialPos } = props;
-  const [mousePos, setMousePos] = useState({ x: 600, y: 600 });
+  const [mousePos, setMousePos] = useState({
+    x: initialPos.x,
+    y: initialPos.y,
+  });
   const lassoRef = useRef<SVGPathElement>(null);
   const mouseCursorRef = useRef<SVGSVGElement>(null);
 
@@ -97,21 +101,11 @@ export function LinePath(props: LinePathProps) {
       const x = e.clientX;
       const y = e.clientY;
 
-      // const x = 240;
-      // const y = 148;
       const angle = getAngleBetweenPositions(initialPos, {
         x,
         y,
       });
-      console.log(
-        'x,y',
-        x,
-        y,
-        angle,
-        '[보정값]: ',
-        calculateCursorTranslateX(angle),
-        calculateCursorTranslateY(angle)
-      );
+
       const lassoAngle = (93 / 90) * angle - 289;
 
       if (svgRef.current != null) {
