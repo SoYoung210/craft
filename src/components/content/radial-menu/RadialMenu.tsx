@@ -31,12 +31,14 @@ import {
   useRadialMenuItemContext,
 } from './context';
 import { InnerCircle, LinePath, Shadow } from './StyleUtils';
-import { CURSOR, SIZE } from './constants';
+import { SIZE } from './constants';
 import { useSelectionAngle } from './hooks/useSelectionAngle';
 import { useActiveMode } from './hooks/useActiveMode';
+import { useCursor } from './hooks/useCursor';
 
 interface RadialMenuProps {
   children: ReactNode;
+  initialPosition?: Position;
 }
 
 export function RadialMenu(props: RadialMenuProps) {
@@ -51,8 +53,11 @@ export function RadialMenu(props: RadialMenuProps) {
 
 const ROTATE_X_VAR = '--rotateX';
 const ROTATE_Y_VAR = '--rotateY';
+
 const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   (props, ref) => {
+    const { initialPosition, children } = props;
+
     const { updateSelectionAngle, restSelectionBgAngle, springSelectionAngle } =
       useSelectionAngle(-1);
 
@@ -63,13 +68,17 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
     const getItemLabels = useCollection(undefined);
 
-    const { activeMode, activate, deactivate } = useActiveMode(true);
-    const [position, setPosition] = useState<Position | null>(null);
+    const [position, setPosition] = useState<Position | null>(
+      initialPosition ?? null
+    );
+    const initialVisible = initialPosition != null;
     const menuVisible = position != null;
-    const prevMenuVisible = usePrevious(menuVisible);
+
+    const { activeMode, activate, deactivate } = useActiveMode(menuVisible);
 
     const rootRef = useRef<HTMLDivElement>(null);
-    const combinedRefs = useComposedRefs(ref, rootRef);
+    const [cursorTargetRef, changeCursor] = useCursor<HTMLDivElement>();
+    const combinedRefs = useComposedRefs(ref, rootRef, cursorTargetRef);
     const labelTrackElementRef = useRef<HTMLDivElement>(null);
 
     const background = useMotionTemplate`conic-gradient(
@@ -79,43 +88,24 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
     rgb(255 255 255) 100%
   )`;
 
-    useEffect(() => {
-      const handleResize = () => {
-        setPosition({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-        });
-      };
-
-      if (typeof window !== 'undefined') {
-        handleResize();
-        window.addEventListener('resize', handleResize);
-      }
-
-      return () => {
-        if (typeof window !== 'undefined') {
-          window.removeEventListener('resize', handleResize);
-        }
-      };
-    }, []);
-
     const handleRootMouseDown: MouseEventHandler<HTMLDivElement> = useCallback(
       e => {
-        if (activeMode) {
+        const defaultOpened = initialVisible && menuVisible;
+
+        // If the menu is `defaultOpen`, the menu should not be closed when clicking outside the menu.
+        if (activeMode && !defaultOpened) {
           setPosition({ x: e.clientX, y: e.clientY });
         }
       },
-      [activeMode]
+      [activeMode, initialVisible, menuVisible]
     );
     const handleRootMouseUp: MouseEventHandler<HTMLDivElement> =
       useCallback(() => {
         setPosition(null);
-        // 초기값이 true이기 때문에 최초의 mouseUp에서 false로 되돌려줌
         deactivate();
         setMoveFlag(false);
-      }, [deactivate]);
-
-    const { children } = props;
+        changeCursor('auto');
+      }, [changeCursor, deactivate]);
 
     const handleMouseMoveRotate = useCallback(
       (e: MouseEvent<HTMLDivElement>, position: Position) => {
@@ -134,19 +124,15 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
         if (distance >= 20) {
           setMoveFlag(true);
+          changeCursor('hide');
         }
 
         if (rootRef.current != null) {
-          rootRef.current.style.setProperty(ROTATE_X_VAR, `${x}deg`);
-          rootRef.current.style.setProperty(ROTATE_Y_VAR, `${y}deg`);
-        }
-
-        // hide cursor
-        if (rootRef.current != null) {
-          rootRef.current.style.cursor = 'none';
+          rootRef.current.style.setProperty(ROTATE_X_VAR, `${x * 1.05}deg`);
+          rootRef.current.style.setProperty(ROTATE_Y_VAR, `${y * 1.05}deg`);
         }
       },
-      []
+      [changeCursor]
     );
 
     const handleMouseMoveSelectionAngle = useCallback(
@@ -171,8 +157,8 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       mode: 'keydown',
       callback: () => {
         activate();
-        if (rootRef.current && !moveFlag && !prevMenuVisible) {
-          rootRef.current.style.cursor = CURSOR;
+        if (rootRef.current && !moveFlag) {
+          changeCursor('active');
         }
       },
     });
@@ -183,8 +169,8 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       callback: () => {
         deactivate();
         setMoveFlag(false);
-        if (rootRef.current) {
-          rootRef.current.style.cursor = 'auto';
+        if (rootRef.current && !moveFlag) {
+          changeCursor('auto');
         }
       },
     });
@@ -200,7 +186,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           top: 0,
           width: '100%',
           height: '100%',
-          perspective: 1400,
+          perspective: 1200,
         }}
         onMouseMove={e => {
           if (position == null) {

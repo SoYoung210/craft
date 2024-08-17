@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import {
   RadialMenu,
   RadialMenuItem,
@@ -40,10 +42,40 @@ const Image = ({ index }: { index: number }) => {
   );
 };
 export default function RadialMenuPage() {
+  const [initialPos, setInitialPos] = useState<
+    | {
+        x: number;
+        y: number;
+      }
+    | undefined
+  >(undefined);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setInitialPos({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
+  const key =
+    initialPos != null ? `${initialPos.x}-${initialPos.y}` : undefined;
+
   return (
     <PageLayout style={{ minWidth: 760 }}>
       <PageLayout.Title>Radial Menu</PageLayout.Title>
-      <RadialMenu>
+      <RadialMenu key={key} initialPosition={initialPos}>
         <RadialMenuItem
           onSelect={() => {
             console.log('[onSelect] 0');
