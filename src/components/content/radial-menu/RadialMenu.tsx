@@ -39,6 +39,7 @@ import {
 } from './context';
 import { InnerCircle, LinePath, Shadow } from './StyleUtils';
 import { CURSOR, SIZE } from './constants';
+import { useSelectionAngle } from './hooks/useSelectionAngle';
 
 interface RadialMenuProps {
   children: ReactNode;
@@ -46,9 +47,7 @@ interface RadialMenuProps {
 
 /**
  * WorkLog
- * - [x] 라벨 폰트 스타일 점검 (amie랑 유사한지)
- * - [] 오른쪽 위쪽 커서 포지션 조금 더 튜닝
- * - [] 처음 뜨는 포지션 다시 고민하기 (지금은 맥북 에어에서 굉장히 이상함)
+ * - [] 처음 뜨는 포지션 훅으로 좀 빼고... 기타 다른 로직들도 훅으로 빼두기
  */
 /**
  * TODO: DX
@@ -69,34 +68,55 @@ const ROTATE_X_VAR = '--rotateX';
 const ROTATE_Y_VAR = '--rotateY';
 const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   (props, ref) => {
-    const selectionBgAngle = useMotionValue(-1);
+    const { updateSelectionAngle, restSelectionBgAngle, springSelectionAngle } =
+      useSelectionAngle(-1);
+
+    // const selectionBgAngle = useMotionValue(-1);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+    const [firstMove, setFirstMove] = useState(false);
     const getItemLabels = useCollection(undefined);
-    const restSelectionBgAngle = useMotionValue('100%');
+    // const restSelectionBgAngle = useMotionValue('360deg');
 
     const activeModeRef = useRef(true);
-    const [position, setPosition] = useState<Position | null>({
-      x: 500,
-      y: 500,
-    });
+    const [position, setPosition] = useState<Position | null>(null);
     const menuVisible = position != null;
 
     const rootRef = useRef<HTMLDivElement>(null);
     const combinedRefs = useComposedRefs(ref, rootRef);
     const labelTrackElementRef = useRef<HTMLDivElement>(null);
 
-    const springSelectionBgAngle = useSpring(selectionBgAngle, {
-      stiffness: 500,
-      damping: 30,
-      mass: 1,
-    });
+    // const springSelectionBgAngle = useSpring(selectionBgAngle, {
+    //   stiffness: 500,
+    //   damping: 30,
+    //   mass: 1,
+    // });
     const background = useMotionTemplate`conic-gradient(
-    from ${springSelectionBgAngle}deg,
+    from ${springSelectionAngle}deg,
     rgb(245 245 245) ${restSelectionBgAngle},
     rgb(255 255 255) 0,
     rgb(255 255 255) 100%
   )`;
+
+    useEffect(() => {
+      const handleResize = () => {
+        setPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        });
+      };
+
+      if (typeof window !== 'undefined') {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+      }
+
+      return () => {
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('resize', handleResize);
+        }
+      };
+    }, []);
 
     const handleRootMouseDown: MouseEventHandler<HTMLDivElement> = useCallback(
       e => {
@@ -156,24 +176,36 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
 
     const handleMouseMoveSelectionAngle = useCallback(
       (e: MouseEvent<HTMLDivElement>, position: Position) => {
-        const angle = getAngleBetweenPositions(position, {
-          x: e.clientX,
-          y: e.clientY,
-        });
-        const sectionIndex = (getActiveSection(angle) + 1) % 8;
+        const sectionIndex = updateSelectionAngle(
+          {
+            x: e.clientX,
+            y: e.clientY,
+          },
+          position
+        );
+        // const angle = getAngleBetweenPositions(position, {
+        //   x: e.clientX,
+        //   y: e.clientY,
+        // });
+        // const sectionIndex = (getActiveSection(angle) + 1) % 8;
 
-        const currentAngle = springSelectionBgAngle.get();
-        let nextAngle = (45 * sectionIndex + 270) % 360;
+        // const currentAngle = springSelectionBgAngle.get();
+        // let nextAngle = (45 * sectionIndex + 270) % 360;
 
-        const delta = nextAngle - currentAngle;
-        if (delta > 180) {
-          nextAngle -= 360;
-        } else if (delta < -180) {
-          nextAngle += 360;
-        }
+        // const delta = nextAngle - currentAngle;
+        // if (delta > 180) {
+        //   nextAngle -= 360;
+        // } else if (delta < -180) {
+        //   nextAngle += 360;
+        // }
 
-        springSelectionBgAngle.set(nextAngle);
-        restSelectionBgAngle.set(`${ringPercent}%`);
+        // if (currentAngle === -1) {
+        //   springSelectionBgAngle.jump(nextAngle);
+        // } else {
+        //   springSelectionBgAngle.set(nextAngle);
+        // }
+
+        // restSelectionBgAngle.set(`${ringPercent}%`);
 
         setSelectedIndex(sectionIndex);
         const itemLabels = getItemLabels();
@@ -184,7 +216,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
          */
         setSelectedLabel(itemLabels[sectionIndex]?.label);
       },
-      [getItemLabels, restSelectionBgAngle, springSelectionBgAngle]
+      [getItemLabels, updateSelectionAngle]
     );
 
     // TODO: activeMode핸들하는걸 훅으로  빼던가.. 뭔가 중앙 관리가 필요해보임.
@@ -227,13 +259,14 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
           if (position == null) {
             return;
           }
+          setFirstMove(true);
           handleMouseMoveRotate(e, position);
           handleMouseMoveSelectionAngle(e, position);
         }}
       >
         <AnimatePresence>
           {menuVisible && (
-            <Fragment key={`${position.x}-${position.y}`}>
+            <Fragment>
               <Root
                 style={{
                   left: position.x - SIZE / 2,
@@ -243,7 +276,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
                 }}
                 initial={{ scale: 0.8, opacity: 0, rotate: 20 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                exit={{ scale: 0.8, opacity: 0, rotate: 20 }}
+                exit={{ scale: 0.8, opacity: 0, rotate: 0 }}
                 transition={{
                   type: 'spring',
                   stiffness: 480,
@@ -279,7 +312,7 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
             </Fragment>
           )}
         </AnimatePresence>
-        {position != null ? (
+        {position != null && firstMove ? (
           <LinePath
             initialPos={{
               x: position.x,
