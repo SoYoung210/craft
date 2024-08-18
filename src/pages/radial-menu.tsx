@@ -11,6 +11,7 @@ import Flax from '../images/menu-dock/flax.webp';
 import RoyalHeath from '../images/menu-dock/royal-heath.webp';
 import PaleCornflowerBlue from '../images/menu-dock/pale-cornflower-blue.webp';
 import { Placeholder } from '../components/content/radial-menu/Placeholder';
+import { styled } from '../../stitches.config';
 
 export const GRADIENT_IMAGES = [
   BeautyBush,
@@ -66,6 +67,10 @@ export default function RadialMenuPage() {
   return (
     <PageLayout style={{ minWidth: 760 }}>
       <PageLayout.Title>Radial Menu</PageLayout.Title>
+      <Description>
+        Initially, the menu is closed when clicking outside. Press 'A', then
+        move the mouse elsewhere
+      </Description>
       <RadialMenu key={key} initialPosition={initialPos}>
         <RadialMenuItem
           onSelect={() => {
@@ -120,3 +125,8 @@ export default function RadialMenuPage() {
     </PageLayout>
   );
 }
+
+const Description = styled('p', {
+  color: '$gray6',
+  marginTop: -22,
+});
