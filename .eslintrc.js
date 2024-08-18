@@ -48,6 +48,7 @@ module.exports = {
         ],
       },
     ],
+    '@typescript-eslint/no-explicit-any': 'off',
     'import/no-useless-path-segments': [
       'error',
       {
