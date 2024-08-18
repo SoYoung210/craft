@@ -12,6 +12,22 @@ const IndexPage = () => {
       <PageLayout.Title>Craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/radial-menu">
+            <ContentBox title="Radial Menu">
+              <StaticImage
+                src="../images/thumbnails/radial-menu.jpeg"
+                alt="Radial Menu with Content"
+                placeholder="none"
+                style={{
+                  height: 250,
+                }}
+                quality={70}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/dock-menu">
             <ContentBox title="Dock Menu">
               <StaticImage
