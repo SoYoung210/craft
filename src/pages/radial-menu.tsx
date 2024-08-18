@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { graphql, PageProps } from 'gatsby';
 
 import {
   RadialMenu,
@@ -12,6 +13,7 @@ import RoyalHeath from '../images/menu-dock/royal-heath.webp';
 import PaleCornflowerBlue from '../images/menu-dock/pale-cornflower-blue.webp';
 import { Placeholder } from '../components/content/radial-menu/Placeholder';
 import { styled } from '../../stitches.config';
+import SEO from '../components/layout/SEO';
 
 export const GRADIENT_IMAGES = [
   BeautyBush,
@@ -130,3 +132,28 @@ const Description = styled('p', {
   color: '$gray6',
   marginTop: -22,
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Radial Menu"
+      description="Radial Menu with Content"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/radial-menu.jpeg" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
