@@ -66,8 +66,8 @@ export default function RadialMenuPage() {
 
   return (
     <PageLayout style={{ minWidth: 760 }}>
-      <PageLayout.Title>Radial Menu</PageLayout.Title>
-      <Description>
+      <PageLayout.Title style={{ zIndex: 1 }}>Radial Menu</PageLayout.Title>
+      <Description style={{ zIndex: 1 }}>
         Initially, the menu is closed when clicking outside. Press 'A', then
         move the mouse elsewhere
       </Description>
