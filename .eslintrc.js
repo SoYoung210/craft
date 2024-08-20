@@ -77,5 +77,6 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     'react/jsx-filename-extension': ['error', { extensions: ['tsx'] }],
+    'react/no-unknown-property': 'off',
   },
 };
