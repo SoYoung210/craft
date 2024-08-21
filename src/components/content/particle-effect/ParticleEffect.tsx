@@ -59,8 +59,6 @@ const ParticleText = () => {
     const targetPositions = [];
 
     const boundingBox = geometry.boundingBox!;
-    const center = new THREE.Vector3();
-    boundingBox.getCenter(center);
 
     // Create a canvas to draw the text
     const canvas = document.createElement('canvas');
@@ -90,17 +88,15 @@ const ParticleText = () => {
 
       initialPositions.push(xPos, yPos, 0);
 
-      const directionVector = new THREE.Vector3(
-        xPos - center.x,
-        yPos - center.y,
-        0
-      ).normalize();
-      const distance = 5 + Math.random() * 5;
+      // Generate random direction for each particle
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const distance = 2 + Math.random() * 3; // Scatter between 2 and 5 units
 
       targetPositions.push(
-        xPos + directionVector.x * distance,
-        yPos + directionVector.y * distance,
-        (Math.random() - 0.5) * 2 * distance
+        xPos + distance * Math.sin(phi) * Math.cos(theta),
+        yPos + distance * Math.sin(phi) * Math.sin(theta),
+        distance * Math.cos(phi)
       );
     }
 
