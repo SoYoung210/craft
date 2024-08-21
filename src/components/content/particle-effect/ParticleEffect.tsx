@@ -21,10 +21,17 @@ const ParticleText = () => {
         varying float vOpacity;
 
         void main() {
-          vec3 pos = mix(initialPosition, targetPosition, progress);
+          vec3 pos;
+          if (progress < 0.2) {
+            pos = initialPosition;
+            vOpacity = 1.0;
+          } else {
+            float scatterProgress = (progress - 0.2) / 0.8;
+            pos = mix(initialPosition, targetPosition, scatterProgress);
+            vOpacity = 1.0 - scatterProgress;
+          }
           gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = mix(2.0, 0.5, progress);
-          vOpacity = 1.0 - progress;
         }
       `,
       fragmentShader: `
@@ -48,68 +55,68 @@ const ParticleText = () => {
     geometry.computeBoundingBox();
 
     const particleCount = 5000;
-    const initialPositions = new Float32Array(particleCount * 3);
-    const targetPositions = new Float32Array(particleCount * 3);
+    const initialPositions = [];
+    const targetPositions = [];
 
     const boundingBox = geometry.boundingBox!;
     const center = new THREE.Vector3();
     boundingBox.getCenter(center);
 
-    const tempPosition = new THREE.Vector3();
-    const raycaster = new THREE.Raycaster();
-    const direction = new THREE.Vector3(0, 0, 1);
+    // Create a canvas to draw the text
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    if (!context) return;
+
+    context.fillStyle = 'white';
+    context.font = 'bold 200px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText('Hello', canvas.width / 2, canvas.height / 2);
+
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
 
     for (let i = 0; i < particleCount; i++) {
-      // Sample a random point within the bounding box
-      tempPosition.set(
-        THREE.MathUtils.randFloat(boundingBox.min.x, boundingBox.max.x),
-        THREE.MathUtils.randFloat(boundingBox.min.y, boundingBox.max.y),
-        boundingBox.min.z
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * canvas.width);
+        y = Math.floor(Math.random() * canvas.height);
+      } while (pixels[(y * canvas.width + x) * 4] === 0);
+
+      const xPos = (x / canvas.width - 0.5) * boundingBox.max.x * 2;
+      const yPos = (0.5 - y / canvas.height) * boundingBox.max.y * 2;
+
+      initialPositions.push(xPos, yPos, 0);
+
+      const directionVector = new THREE.Vector3(
+        xPos - center.x,
+        yPos - center.y,
+        0
+      ).normalize();
+      const distance = 5 + Math.random() * 5;
+
+      targetPositions.push(
+        xPos + directionVector.x * distance,
+        yPos + directionVector.y * distance,
+        (Math.random() - 0.5) * 2 * distance
       );
-
-      // Check if the point is inside the text
-      raycaster.set(tempPosition, direction);
-      const intersects = raycaster.intersectObject(textRef.current);
-
-      if (intersects.length % 2 === 1) {
-        // Point is inside the text
-        initialPositions[i * 3] = tempPosition.x;
-        initialPositions[i * 3 + 1] = tempPosition.y;
-        initialPositions[i * 3 + 2] = tempPosition.z;
-
-        // Calculate target position
-        const directionVector = new THREE.Vector3(
-          tempPosition.x - center.x,
-          tempPosition.y - center.y,
-          tempPosition.z - center.z
-        ).normalize();
-
-        const distance = 5 + Math.random() * 5; // Scatter between 5 and 10 units
-
-        targetPositions[i * 3] = tempPosition.x + directionVector.x * distance;
-        targetPositions[i * 3 + 1] =
-          tempPosition.y + directionVector.y * distance;
-        targetPositions[i * 3 + 2] =
-          tempPosition.z + directionVector.z * distance;
-      } else {
-        // Point is outside the text, try again
-        i--;
-      }
     }
 
     const particleGeometry = points.current.geometry;
 
     particleGeometry.setAttribute(
       'position',
-      new THREE.BufferAttribute(initialPositions, 3)
+      new THREE.Float32BufferAttribute(initialPositions, 3)
     );
     particleGeometry.setAttribute(
       'initialPosition',
-      new THREE.BufferAttribute(initialPositions, 3)
+      new THREE.Float32BufferAttribute(initialPositions, 3)
     );
     particleGeometry.setAttribute(
       'targetPosition',
-      new THREE.BufferAttribute(targetPositions, 3)
+      new THREE.Float32BufferAttribute(targetPositions, 3)
     );
 
     particleGeometry.setDrawRange(0, particleCount);
@@ -119,7 +126,7 @@ const ParticleText = () => {
     if (startAnimation) {
       generateParticles();
 
-      const animationDuration = 2000; // 2 seconds
+      const animationDuration = 3000; // 3 seconds
       const startTime = Date.now();
 
       const animateParticles = () => {
