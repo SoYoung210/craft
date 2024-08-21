@@ -91,13 +91,19 @@ const ParticleText = () => {
       // Generate random direction for each particle
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(Math.random() * 2 - 1);
-      const distance = 2 + Math.random() * 3; // Scatter between 2 and 5 units
 
-      targetPositions.push(
-        xPos + distance * Math.sin(phi) * Math.cos(theta),
-        yPos + distance * Math.sin(phi) * Math.sin(theta),
-        distance * Math.cos(phi)
-      );
+      // Base distance
+      let distance = 2 + Math.random() * 3; // Scatter between 2 and 5 units
+
+      // Adjust distance based on direction
+      const upwardBias = Math.max(0, Math.cos(phi)); // 1 when moving straight up, 0 when moving horizontally
+      distance *= 1 + upwardBias; // Increase distance for upward motion
+
+      const targetX = xPos + distance * Math.sin(phi) * Math.cos(theta);
+      const targetY = yPos + distance * Math.cos(phi);
+      const targetZ = distance * Math.sin(phi) * Math.sin(theta);
+
+      targetPositions.push(targetX, targetY, targetZ);
     }
 
     const particleGeometry = points.current.geometry;
