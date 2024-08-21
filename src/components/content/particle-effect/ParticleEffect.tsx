@@ -99,9 +99,14 @@ const ParticleText = () => {
       const upwardBias = Math.max(0, Math.cos(phi)); // 1 when moving straight up, 0 when moving horizontally
       distance *= 1 + upwardBias; // Increase distance for upward motion
 
-      const targetX = xPos + distance * Math.sin(phi) * Math.cos(theta);
+      // Increase horizontal spread
+      const horizontalSpread = 1.5; // Adjust this value to control horizontal spread
+
+      const targetX =
+        xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
       const targetY = yPos + distance * Math.cos(phi);
-      const targetZ = distance * Math.sin(phi) * Math.sin(theta);
+      const targetZ =
+        horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
 
       targetPositions.push(targetX, targetY, targetZ);
     }
