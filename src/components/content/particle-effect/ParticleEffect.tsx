@@ -1,13 +1,17 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useMemo, useEffect, useState, ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+import html2canvas from 'html2canvas';
 
-const ParticleText = () => {
+import { ContentToCanvas } from './ContentToCanvas';
+
+interface ParticleSystemProps {
+  texture: THREE.Texture;
+}
+const ParticleSystem = ({ texture }: ParticleSystemProps) => {
   const points = useRef<THREE.Points>(null);
-  const [startAnimation, setStartAnimation] = useState(false);
   const [animationProgress, setAnimationProgress] = useState(0);
-  const textRef = useRef<THREE.Mesh>(null);
 
   const shaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
@@ -48,109 +52,103 @@ const ParticleText = () => {
     });
   }, []);
 
-  const generateParticles = () => {
-    if (!textRef.current || !points.current) return;
+  // FIXME: initial particle is awkward.
+  const generateParticles = useMemo(() => {
+    const particleCount = 10000;
+    const initialPositions: number[] = [];
+    const targetPositions: number[] = [];
 
-    const geometry = textRef.current.geometry;
-    geometry.computeBoundingBox();
+    const aspectRatio = texture.image.width / texture.image.height;
+    const fieldWidth = 10;
+    const fieldHeight = fieldWidth / aspectRatio;
 
-    const particleCount = 5000;
-    const initialPositions = [];
-    const targetPositions = [];
-
-    const boundingBox = geometry.boundingBox!;
-
-    // Create a canvas to draw the text
+    // Create a temporary canvas to read pixel data
     const canvas = document.createElement('canvas');
+    canvas.width = texture.image.width;
+    canvas.height = texture.image.height;
     const context = canvas.getContext('2d');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    if (!context) return;
 
-    context.fillStyle = 'white';
-    context.font = 'bold 200px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText('Hello', canvas.width / 2, canvas.height / 2);
+    if (context == null) {
+      return;
+    }
 
+    context.drawImage(texture.image, 0, 0);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
 
-    for (let i = 0; i < particleCount; i++) {
-      let x, y;
-      do {
-        x = Math.floor(Math.random() * canvas.width);
-        y = Math.floor(Math.random() * canvas.height);
-      } while (pixels[(y * canvas.width + x) * 4] === 0);
+    let particlesCreated = 0;
+    while (particlesCreated < particleCount) {
+      const x = Math.floor(Math.random() * canvas.width);
+      const y = Math.floor(Math.random() * canvas.height);
+      const i = (y * canvas.width + x) * 4;
 
-      const xPos = (x / canvas.width - 0.5) * boundingBox.max.x * 2;
-      const yPos = (0.5 - y / canvas.height) * boundingBox.max.y * 2;
+      // Check if the pixel is not transparent (alpha > 0)
+      if (pixels[i + 3] > 0) {
+        const xPos = (x / canvas.width - 0.5) * fieldWidth;
+        const yPos = (0.5 - y / canvas.height) * fieldHeight;
 
-      initialPositions.push(xPos, yPos, 0);
+        initialPositions.push(xPos, yPos, 0);
 
-      // Generate random direction for each particle
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        let distance = 2 + Math.random() * 3;
+        const upwardBias = Math.max(0, Math.cos(phi));
+        distance *= 1 + upwardBias;
+        const horizontalSpread = 1.5;
 
-      // Base distance
-      let distance = 2 + Math.random() * 3; // Scatter between 2 and 5 units
+        const targetX =
+          xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
+        const targetY = yPos + distance * Math.cos(phi);
+        const targetZ =
+          horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
 
-      // Adjust distance based on direction
-      const upwardBias = Math.max(0, Math.cos(phi)); // 1 when moving straight up, 0 when moving horizontally
-      distance *= 1 + upwardBias; // Increase distance for upward motion
+        targetPositions.push(targetX, targetY, targetZ);
 
-      // Increase horizontal spread
-      const horizontalSpread = 1.5; // Adjust this value to control horizontal spread
-
-      const targetX =
-        xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
-      const targetY = yPos + distance * Math.cos(phi);
-      const targetZ =
-        horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
-
-      targetPositions.push(targetX, targetY, targetZ);
+        particlesCreated++;
+      }
     }
 
-    const particleGeometry = points.current.geometry;
-
-    particleGeometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(initialPositions, 3)
-    );
-    particleGeometry.setAttribute(
-      'initialPosition',
-      new THREE.Float32BufferAttribute(initialPositions, 3)
-    );
-    particleGeometry.setAttribute(
-      'targetPosition',
-      new THREE.Float32BufferAttribute(targetPositions, 3)
-    );
-
-    particleGeometry.setDrawRange(0, particleCount);
-  };
+    return { initialPositions, targetPositions };
+  }, [texture]);
 
   useEffect(() => {
-    if (startAnimation) {
-      generateParticles();
+    const animationDuration = 3000; // 3 seconds
+    const startTime = Date.now();
 
-      const animationDuration = 3000; // 3 seconds
-      const startTime = Date.now();
+    const animateParticles = () => {
+      const currentTime = Date.now();
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(1, elapsed / animationDuration);
 
-      const animateParticles = () => {
-        const currentTime = Date.now();
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(1, elapsed / animationDuration);
+      setAnimationProgress(progress);
 
-        setAnimationProgress(progress);
+      if (progress < 1) {
+        requestAnimationFrame(animateParticles);
+      }
+    };
 
-        if (progress < 1) {
-          requestAnimationFrame(animateParticles);
-        }
-      };
+    requestAnimationFrame(animateParticles);
+  }, [texture, generateParticles]);
 
-      requestAnimationFrame(animateParticles);
+  useEffect(() => {
+    if (points.current == null || generateParticles == null) {
+      return;
     }
-  }, [startAnimation]);
+
+    const geometry = points.current.geometry;
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
+    );
+    geometry.setAttribute(
+      'initialPosition',
+      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
+    );
+    geometry.setAttribute(
+      'targetPosition',
+      new THREE.Float32BufferAttribute(generateParticles.targetPositions, 3)
+    );
+  }, [generateParticles]);
 
   useFrame(() => {
     if (points.current && 'uniforms' in points.current.material) {
@@ -160,36 +158,9 @@ const ParticleText = () => {
     }
   });
 
-  const handleClick = () => {
-    setStartAnimation(true);
-  };
-
   return (
     <group>
-      <Text
-        ref={textRef}
-        position={[0, 0, 0]}
-        fontSize={2}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-        visible={!startAnimation}
-        // font="/path/to/your/font.ttf" // Specify a font that supports high detail
-      >
-        Hello
-      </Text>
-      <Text
-        position={[0, -2, 0]}
-        fontSize={0.5}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-        onClick={handleClick}
-        visible={!startAnimation}
-      >
-        Click me!
-      </Text>
-      <points ref={points} visible={startAnimation}>
+      <points ref={points}>
         <bufferGeometry />
         <primitive object={shaderMaterial} attach="material" />
       </points>
@@ -197,14 +168,69 @@ const ParticleText = () => {
   );
 };
 
-export const ParticleEffect = () => {
+interface ParticleEffectProps {
+  children: ReactNode;
+}
+export const ParticleEffect = ({ children }: ParticleEffectProps) => {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [startAnimation, setStartAnimation] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      html2canvas(contentRef.current, { backgroundColor: null }).then(
+        canvas => {
+          const newTexture = new THREE.CanvasTexture(canvas);
+          setTexture(newTexture);
+        }
+      );
+    }
+  }, []);
+
   return (
-    <div style={{ width: '100%', height: 500 }}>
-      <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
-        <color attach="background" args={['#000000']} />
-        <OrbitControls />
-        <ParticleText />
-      </Canvas>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div
+        ref={contentRef}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          visibility: startAnimation ? 'hidden' : 'visible',
+          color: 'white',
+        }}
+      >
+        {children}
+      </div>
+      {texture && (
+        <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
+          <color attach="background" args={['#000000']} />
+          <OrbitControls />
+          {!startAnimation ? (
+            <mesh>
+              <planeGeometry
+                args={[10, 10 * (texture.image.height / texture.image.width)]}
+              />
+              <meshBasicMaterial>
+                <primitive attach="map" object={texture} />
+              </meshBasicMaterial>
+            </mesh>
+          ) : (
+            <ParticleSystem texture={texture} />
+          )}
+        </Canvas>
+      )}
+      <button
+        onClick={() => setStartAnimation(true)}
+        style={{
+          position: 'absolute',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+      >
+        Start Animation
+      </button>
     </div>
   );
 };
