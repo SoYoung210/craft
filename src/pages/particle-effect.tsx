@@ -12,6 +12,20 @@ export default function ParticleEffectPage() {
         <ParticleEffect>🎅</ParticleEffect>
       </div>
 
+      <div style={{ marginTop: 40 }}>
+        <ParticleEffect>
+          <div
+            style={{
+              padding: 20,
+              borderRadius: 8,
+              backgroundColor: '#2775FC',
+              color: 'white',
+            }}
+          >
+            custom div style
+          </div>
+        </ParticleEffect>
+      </div>
       {/* FIXME: have to solve img CORS issue (on canvas rendering) */}
       {/* <div style={{ marginTop: 40 }}>
         <ParticleEffect>
