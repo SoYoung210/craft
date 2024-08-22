@@ -123,16 +123,23 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
         pixels[pixelIndex + 2] / 255
       );
 
+      // Modified particle scattering logic
       const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
+      const phi = Math.acos(Math.random() * 0.5); // Bias towards upward direction
       let distance = 2 + Math.random() * 3;
-      const upwardBias = Math.max(0, Math.cos(phi));
-      distance *= 1 + upwardBias;
-      const horizontalSpread = 1.5;
+
+      // Increase upward bias
+      const upwardBias = Math.pow(Math.max(0, Math.cos(phi)), 2); // Stronger upward bias
+      distance *= 1 + upwardBias * 1.4;
+
+      const horizontalSpread = 0.5; // Reduced horizontal spread
+
+      // Add a constant upward velocity
+      const constantUpwardVelocity = 1.5;
 
       const targetX =
         xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
-      const targetY = yPos + distance * Math.cos(phi);
+      const targetY = yPos + distance * Math.cos(phi) + constantUpwardVelocity;
       const targetZ =
         horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
 
@@ -143,7 +150,7 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
   }, [texture]);
 
   useEffect(() => {
-    const animationDuration = 3000; // 3 seconds
+    const animationDuration = 3000;
     const startTime = Date.now();
 
     const animateParticles = () => {
@@ -241,6 +248,7 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
           transform: 'translate(-50%, -50%)',
           visibility: startAnimation ? 'hidden' : 'visible',
           color: 'white',
+          fontSize: 40,
           ...style,
         }}
       >
