@@ -1,9 +1,21 @@
-import { useRef, useMemo, useEffect, useState, ReactNode } from 'react';
+import {
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  ReactNode,
+  CSSProperties,
+} from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
 
+/**
+ * NOTE
+ *FIXME: 1) initial particle is awkward.
+ * -> It can be solved by set opacity to 0 when scattering is not started.
+ */
 interface ParticleSystemProps {
   texture: THREE.Texture;
 }
@@ -43,13 +55,12 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
       `,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
     });
   }, []);
 
-  // FIXME: initial particle is awkward.
   const generateParticles = useMemo(() => {
-    const particleCount = 30000;
+    // TODO: performance test
+    const particleCount = 50000;
     const initialPositions: number[] = [];
     const targetPositions: number[] = [];
     const colors: number[] = [];
@@ -194,8 +205,12 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
 
 interface ParticleEffectProps {
   children: ReactNode;
+  // custom target `html2Canvas` element's style
+  style?: CSSProperties;
+  className?: string;
 }
-export const ParticleEffect = ({ children }: ParticleEffectProps) => {
+export const ParticleEffect = (props: ParticleEffectProps) => {
+  const { children, className, style } = props;
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [startAnimation, setStartAnimation] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -208,7 +223,6 @@ export const ParticleEffect = ({ children }: ParticleEffectProps) => {
     html2canvas(contentRef.current, {
       backgroundColor: null,
       allowTaint: true,
-      useCORS: true,
     }).then(canvas => {
       const newTexture = new THREE.CanvasTexture(canvas);
       setTexture(newTexture);
@@ -219,6 +233,7 @@ export const ParticleEffect = ({ children }: ParticleEffectProps) => {
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div
         ref={contentRef}
+        className={className}
         style={{
           position: 'absolute',
           top: '50%',
@@ -226,12 +241,14 @@ export const ParticleEffect = ({ children }: ParticleEffectProps) => {
           transform: 'translate(-50%, -50%)',
           visibility: startAnimation ? 'hidden' : 'visible',
           color: 'white',
+          ...style,
         }}
       >
         {children}
       </div>
       {texture && (
-        <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
+        // NOTE: linear: https://github.com/pmndrs/react-three-fiber/discussions/1290#discussioncomment-668649
+        <Canvas linear camera={{ position: [0, 0, 10], fov: 60 }}>
           <color attach="background" args={['#000000']} />
           <OrbitControls />
           {!startAnimation ? (
@@ -239,7 +256,7 @@ export const ParticleEffect = ({ children }: ParticleEffectProps) => {
               <planeGeometry
                 args={[10, 10 * (texture.image.height / texture.image.width)]}
               />
-              <meshBasicMaterial>
+              <meshBasicMaterial transparent={true} toneMapped={false}>
                 <primitive attach="map" object={texture} />
               </meshBasicMaterial>
             </mesh>
