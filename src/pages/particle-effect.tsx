@@ -1,3 +1,4 @@
+import IMessageComponent from '../components/content/particle-effect/MessageContainer';
 import { ParticleEffect } from '../components/content/particle-effect/ParticleEffect';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
@@ -42,6 +43,28 @@ export default function ParticleEffectPage() {
           />
         </ParticleEffect>
       </div> */}
+      <IMessageComponent>
+        <IMessageComponent.Container>
+          <IMessageComponent.MessageBubble from="them">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
+            dignissimos ut cumque quibusdam sint repudiandae et officia officiis
+            eos pariatur enim excepturi praesentium, aliquam mollitia nam
+            voluptas debitis porro! Quisquam.
+          </IMessageComponent.MessageBubble>
+          <IMessageComponent.MessageBubble from="me">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
+          </IMessageComponent.MessageBubble>
+          <IMessageComponent.MessageBubble from="them" marginBottom="one">
+            s pariatur enim exceptu
+          </IMessageComponent.MessageBubble>
+          <IMessageComponent.MessageBubble from="me" emoji noTail>
+            👍🏻
+          </IMessageComponent.MessageBubble>
+          <IMessageComponent.MessageBubble from="me">
+            Reply Test
+          </IMessageComponent.MessageBubble>
+        </IMessageComponent.Container>
+      </IMessageComponent>
     </PageLayout>
   );
 }
