@@ -25,17 +25,10 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
         varying vec3 vColor;
 
         void main() {
-          vec3 pos;
-          if (progress < 0.2) {
-            pos = initialPosition;
-            vOpacity = 1.0;
-          } else {
-            float scatterProgress = (progress - 0.2) / 0.8;
-            pos = mix(initialPosition, targetPosition, scatterProgress);
-            vOpacity = 1.0 - scatterProgress;
-          }
+          vec3 pos = mix(initialPosition, targetPosition, progress);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = mix(2.0, 0.5, progress);
+          vOpacity = 1.0 - progress;
           vColor = color;
         }
       `,
