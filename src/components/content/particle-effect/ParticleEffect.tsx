@@ -4,8 +4,6 @@ import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
 
-import { ContentToCanvas } from './ContentToCanvas';
-
 interface ParticleSystemProps {
   texture: THREE.Texture;
 }
@@ -21,8 +19,10 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
       vertexShader: `
         attribute vec3 initialPosition;
         attribute vec3 targetPosition;
+        attribute vec3 color;
         uniform float progress;
         varying float vOpacity;
+        varying vec3 vColor;
 
         void main() {
           vec3 pos;
@@ -36,14 +36,16 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
           }
           gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = mix(2.0, 0.5, progress);
+          vColor = color;
         }
       `,
       fragmentShader: `
         varying float vOpacity;
+        varying vec3 vColor;
 
         void main() {
           if (length(gl_PointCoord - vec2(0.5)) > 0.5) discard;
-          gl_FragColor = vec4(1.0, 1.0, 1.0, vOpacity);
+          gl_FragColor = vec4(vColor, vOpacity);
         }
       `,
       transparent: true,
@@ -54,9 +56,10 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
 
   // FIXME: initial particle is awkward.
   const generateParticles = useMemo(() => {
-    const particleCount = 10000;
+    const particleCount = 30000;
     const initialPositions: number[] = [];
     const targetPositions: number[] = [];
+    const colors: number[] = [];
 
     const aspectRatio = texture.image.width / texture.image.height;
     const fieldWidth = 10;
@@ -76,39 +79,63 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
 
-    let particlesCreated = 0;
-    while (particlesCreated < particleCount) {
-      const x = Math.floor(Math.random() * canvas.width);
-      const y = Math.floor(Math.random() * canvas.height);
-      const i = (y * canvas.width + x) * 4;
-
-      // Check if the pixel is not transparent (alpha > 0)
-      if (pixels[i + 3] > 0) {
-        const xPos = (x / canvas.width - 0.5) * fieldWidth;
-        const yPos = (0.5 - y / canvas.height) * fieldHeight;
-
-        initialPositions.push(xPos, yPos, 0);
-
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(Math.random() * 2 - 1);
-        let distance = 2 + Math.random() * 3;
-        const upwardBias = Math.max(0, Math.cos(phi));
-        distance *= 1 + upwardBias;
-        const horizontalSpread = 1.5;
-
-        const targetX =
-          xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
-        const targetY = yPos + distance * Math.cos(phi);
-        const targetZ =
-          horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
-
-        targetPositions.push(targetX, targetY, targetZ);
-
-        particlesCreated++;
+    const nonTransparentPixels: [number, number][] = [];
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const i = (y * canvas.width + x) * 4;
+        if (pixels[i + 3] > 0) {
+          nonTransparentPixels.push([x, y]);
+        }
       }
     }
 
-    return { initialPositions, targetPositions };
+    const totalPixels = nonTransparentPixels.length;
+    const particlesPerPixel = Math.max(
+      1,
+      Math.min(5, Math.floor(particleCount / totalPixels))
+    );
+    const totalParticles = Math.min(
+      particleCount,
+      totalPixels * particlesPerPixel
+    );
+
+    for (let i = 0; i < totalParticles; i++) {
+      const [x, y] =
+        nonTransparentPixels[Math.floor(Math.random() * totalPixels)];
+
+      const xOffset = (Math.random() - 0.5) / canvas.width;
+      const yOffset = (Math.random() - 0.5) / canvas.height;
+
+      const xPos = (x / canvas.width + xOffset - 0.5) * fieldWidth;
+      const yPos = (0.5 - y / canvas.height - yOffset) * fieldHeight;
+
+      initialPositions.push(xPos, yPos, 0);
+
+      // Get color from pixel
+      const pixelIndex = (y * canvas.width + x) * 4;
+      colors.push(
+        pixels[pixelIndex] / 255,
+        pixels[pixelIndex + 1] / 255,
+        pixels[pixelIndex + 2] / 255
+      );
+
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      let distance = 2 + Math.random() * 3;
+      const upwardBias = Math.max(0, Math.cos(phi));
+      distance *= 1 + upwardBias;
+      const horizontalSpread = 1.5;
+
+      const targetX =
+        xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
+      const targetY = yPos + distance * Math.cos(phi);
+      const targetZ =
+        horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
+
+      targetPositions.push(targetX, targetY, targetZ);
+    }
+
+    return { initialPositions, targetPositions, colors };
   }, [texture]);
 
   useEffect(() => {
@@ -148,6 +175,10 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
       'targetPosition',
       new THREE.Float32BufferAttribute(generateParticles.targetPositions, 3)
     );
+    geometry.setAttribute(
+      'color',
+      new THREE.Float32BufferAttribute(generateParticles.colors, 3)
+    );
   }, [generateParticles]);
 
   useFrame(() => {
@@ -177,14 +208,18 @@ export const ParticleEffect = ({ children }: ParticleEffectProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (contentRef.current) {
-      html2canvas(contentRef.current, { backgroundColor: null }).then(
-        canvas => {
-          const newTexture = new THREE.CanvasTexture(canvas);
-          setTexture(newTexture);
-        }
-      );
+    if (contentRef.current == null) {
+      return;
     }
+
+    html2canvas(contentRef.current, {
+      backgroundColor: null,
+      allowTaint: true,
+      useCORS: true,
+    }).then(canvas => {
+      const newTexture = new THREE.CanvasTexture(canvas);
+      setTexture(newTexture);
+    });
   }, []);
 
   return (
