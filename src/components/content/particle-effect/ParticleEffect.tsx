@@ -18,8 +18,9 @@ import html2canvas from 'html2canvas';
  */
 interface ParticleSystemProps {
   texture: THREE.Texture;
+  dimensions: { width: number; height: number };
 }
-const ParticleSystem = ({ texture }: ParticleSystemProps) => {
+const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   const points = useRef<THREE.Points>(null);
   const [animationProgress, setAnimationProgress] = useState(0);
 
@@ -65,7 +66,7 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
     const targetPositions: number[] = [];
     const colors: number[] = [];
 
-    const aspectRatio = texture.image.width / texture.image.height;
+    const aspectRatio = dimensions.width / dimensions.height;
     const fieldWidth = 10;
     const fieldHeight = fieldWidth / aspectRatio;
 
@@ -114,7 +115,6 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
       const yPos = (0.5 - y / canvas.height - yOffset) * fieldHeight;
 
       initialPositions.push(xPos, yPos, 0);
-
       // Get color from pixel
       const pixelIndex = (y * canvas.width + x) * 4;
       colors.push(
@@ -123,16 +123,15 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
         pixels[pixelIndex + 2] / 255
       );
 
-      // Modified particle scattering logic
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(Math.random() * 0.5); // Bias towards upward direction
       let distance = 2 + Math.random() * 3;
 
       // Increase upward bias
-      const upwardBias = Math.pow(Math.max(0, Math.cos(phi)), 2); // Stronger upward bias
+      const upwardBias = Math.pow(Math.max(0, Math.cos(phi)), 2);
       distance *= 1 + upwardBias * 1.4;
 
-      const horizontalSpread = 0.5; // Reduced horizontal spread
+      const horizontalSpread = 0.25;
 
       // Add a constant upward velocity
       const constantUpwardVelocity = 1.5;
@@ -140,17 +139,17 @@ const ParticleSystem = ({ texture }: ParticleSystemProps) => {
       const targetX =
         xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
       const targetY = yPos + distance * Math.cos(phi) + constantUpwardVelocity;
-      const targetZ =
-        horizontalSpread * distance * Math.sin(phi) * Math.sin(theta);
+      // preserve keep distance from camera
+      const targetZ = 1;
 
       targetPositions.push(targetX, targetY, targetZ);
     }
 
     return { initialPositions, targetPositions, colors };
-  }, [texture]);
+  }, [dimensions.height, dimensions.width, texture.image]);
 
   useEffect(() => {
-    const animationDuration = 3000;
+    const animationDuration = 2000;
     const startTime = Date.now();
 
     const animateParticles = () => {
@@ -222,6 +221,18 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
   const [startAnimation, setStartAnimation] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [contentDimensions, setContentDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  useEffect(() => {
+    if (contentRef.current) {
+      const { width, height } = contentRef.current.getBoundingClientRect();
+      setContentDimensions({ width, height });
+    }
+  }, []);
+
   useEffect(() => {
     if (contentRef.current == null) {
       return;
@@ -230,11 +241,13 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
     html2canvas(contentRef.current, {
       backgroundColor: null,
       allowTaint: true,
+      width: contentDimensions.width,
+      height: contentDimensions.height,
     }).then(canvas => {
       const newTexture = new THREE.CanvasTexture(canvas);
       setTexture(newTexture);
     });
-  }, []);
+  }, [contentDimensions.height, contentDimensions.width]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -242,13 +255,8 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
         ref={contentRef}
         className={className}
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
           visibility: startAnimation ? 'hidden' : 'visible',
           color: 'white',
-          fontSize: 40,
           ...style,
         }}
       >
@@ -256,9 +264,18 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
       </div>
       {texture && (
         // NOTE: linear: https://github.com/pmndrs/react-three-fiber/discussions/1290#discussioncomment-668649
-        <Canvas linear camera={{ position: [0, 0, 10], fov: 60 }}>
+        <Canvas
+          linear
+          // origin camera config
+          // camera={{ position: [0, 0, 10], fov: 60 }}
+          camera={{ position: [0, 0, 5], fov: 75 }}
+          style={{
+            width: contentDimensions.width,
+            height: contentDimensions.height * 2,
+          }}
+        >
           <color attach="background" args={['#000000']} />
-          <OrbitControls />
+          <OrbitControls enableRotate={false} />
           {!startAnimation ? (
             <mesh>
               <planeGeometry
@@ -269,7 +286,7 @@ export const ParticleEffect = (props: ParticleEffectProps) => {
               </meshBasicMaterial>
             </mesh>
           ) : (
-            <ParticleSystem texture={texture} />
+            <ParticleSystem texture={texture} dimensions={contentDimensions} />
           )}
         </Canvas>
       )}
