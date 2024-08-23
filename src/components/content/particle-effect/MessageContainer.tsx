@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
+import { If } from '../../utility/If';
 
 const IMessageComponent = ({ children }: { children: ReactNode }) => {
   return <Container>{children}</Container>;
@@ -36,22 +37,14 @@ const IMessage = styled('div', {
   },
 });
 
-const MessageBubble = styled('p', {
+const MessageBubble = styled('div', {
   borderRadius: '1.15rem',
   lineHeight: 1.25,
   maxWidth: '75%',
   padding: '0.5rem 0.875rem',
   position: 'relative',
   wordWrap: 'break-word',
-  margin: '0.5rem 0',
   width: 'fit-content',
-
-  '&::before, &::after': {
-    bottom: '-0.1rem',
-    content: '""',
-    height: '1rem',
-    position: 'absolute',
-  },
 
   variants: {
     from: {
@@ -59,21 +52,6 @@ const MessageBubble = styled('p', {
         alignSelf: 'flex-end',
         backgroundColor: '#248bf5',
         color: '#fff',
-
-        '&::before': {
-          borderBottomLeftRadius: '0.8rem 0.7rem',
-          borderRight: '1rem solid #248bf5',
-          right: '-0.35rem',
-          transform: 'translate(0, -0.1rem)',
-        },
-
-        '&::after': {
-          backgroundColor: '#fff',
-          borderBottomLeftRadius: '0.5rem',
-          right: '-40px',
-          transform: 'translate(-30px, -2px)',
-          width: '10px',
-        },
 
         '& + &': {
           marginTop: '0.25rem',
@@ -87,21 +65,6 @@ const MessageBubble = styled('p', {
         alignSelf: 'flex-start',
         backgroundColor: '#e5e5ea',
         color: '#000',
-
-        '&::before': {
-          borderBottomRightRadius: '0.8rem 0.7rem',
-          borderLeft: '1rem solid #e5e5ea',
-          left: '-0.35rem',
-          transform: 'translate(0, -0.1rem)',
-        },
-
-        '&::after': {
-          backgroundColor: '#fff',
-          borderBottomRightRadius: '0.5rem',
-          left: '20px',
-          transform: 'translate(-30px, -2px)',
-          width: '10px',
-        },
       },
     },
     emoji: {
@@ -137,7 +100,95 @@ const MessageBubble = styled('p', {
   },
 });
 
+// has same color as the bubble
+const MessageBubbleTail1 = styled('div', {
+  bottom: '-0.1rem',
+  height: '1rem',
+  width: '1rem',
+  position: 'absolute',
+
+  variants: {
+    from: {
+      me: {
+        backgroundColor: '#248bf5',
+        right: '-0.35rem',
+        transform: 'translate(0, -0.1rem)',
+        borderBottomLeftRadius: '0.8rem 0.7rem',
+      },
+      them: {
+        borderBottomRightRadius: '0.8rem 0.7rem',
+        backgroundColor: '#e5e5ea',
+        left: '-0.35rem',
+        transform: 'translate(0, -0.1rem)',
+      },
+    },
+  },
+});
+
+const MessageBubbleTail2 = styled('div', {
+  bottom: '-0.1rem',
+  height: '1rem',
+  width: '10px',
+  position: 'absolute',
+  backgroundColor: '#fff',
+
+  variants: {
+    from: {
+      me: {
+        borderBottomLeftRadius: '0.5rem',
+        right: '-40px',
+        transform: 'translate(-30px, -2px)',
+      },
+      them: {
+        borderBottomRightRadius: '0.5rem',
+        left: '20px',
+        transform: 'translate(-30px, -2px)',
+      },
+    },
+  },
+});
+
+interface MessageBubbleImplProps {
+  from: 'me' | 'them';
+  children: React.ReactNode;
+  emoji?: boolean;
+  noTail?: boolean;
+  marginBottom?: 'none' | 'one';
+  marginTop?: 'one';
+}
+
+const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
+  const { from, children, emoji, noTail, marginBottom, marginTop } = props;
+
+  return (
+    <div style={{ padding: '0.5rem' }}>
+      <MessageBubble
+        from={from}
+        emoji={emoji}
+        noTail={noTail}
+        marginBottom={marginBottom}
+        marginTop={marginTop}
+      >
+        <If condition={from === 'me' && !noTail}>
+          <MessageBubbleTail1 from="me" />
+        </If>
+
+        <If condition={from === 'them' && !noTail}>
+          <MessageBubbleTail1 from="them" />
+        </If>
+        {children}
+        <If condition={from === 'me' && !noTail}>
+          <MessageBubbleTail2 from="me" />
+        </If>
+        <If condition={from === 'them' && !noTail}>
+          <MessageBubbleTail2 from="them" />
+        </If>
+      </MessageBubble>
+    </div>
+  );
+};
+
 IMessageComponent.Container = IMessage;
-IMessageComponent.MessageBubble = MessageBubble;
+IMessageComponent.MessageBubble = MessageBubbleImpl;
 
 export default IMessageComponent;

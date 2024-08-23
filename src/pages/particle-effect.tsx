@@ -45,21 +45,27 @@ export default function ParticleEffectPage() {
       </div> */}
       <IMessageComponent>
         <IMessageComponent.Container>
-          <IMessageComponent.MessageBubble from="them">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
-            dignissimos ut cumque quibusdam sint repudiandae et officia officiis
-            eos pariatur enim excepturi praesentium, aliquam mollitia nam
-            voluptas debitis porro! Quisquam.
-          </IMessageComponent.MessageBubble>
-          <IMessageComponent.MessageBubble from="me">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
-          </IMessageComponent.MessageBubble>
+          <ParticleEffect>
+            <IMessageComponent.MessageBubble from="them">
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
+              dignissimos ut cumque quibusdam sint repudiandae et officia
+              officiis eos pariatur enim excepturi praesentium, aliquam mollitia
+              nam voluptas debitis porro! Quisquam.
+            </IMessageComponent.MessageBubble>
+          </ParticleEffect>
+          <ParticleEffect>
+            <IMessageComponent.MessageBubble from="me">
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid
+            </IMessageComponent.MessageBubble>
+          </ParticleEffect>
           <IMessageComponent.MessageBubble from="them" marginBottom="one">
             s pariatur enim exceptu
           </IMessageComponent.MessageBubble>
-          <IMessageComponent.MessageBubble from="me" emoji noTail>
-            👍🏻
-          </IMessageComponent.MessageBubble>
+          <ParticleEffect>
+            <IMessageComponent.MessageBubble from="me" emoji noTail>
+              👍🏻
+            </IMessageComponent.MessageBubble>
+          </ParticleEffect>
           <IMessageComponent.MessageBubble from="me">
             Reply Test
           </IMessageComponent.MessageBubble>
