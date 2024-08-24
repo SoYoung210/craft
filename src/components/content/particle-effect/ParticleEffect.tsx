@@ -13,35 +13,69 @@ import html2canvas from 'html2canvas';
 
 /**
  * NOTE
- *FIXME: 1) initial particle is awkward.
- * -> It can be solved by set opacity to 0 when scattering is not started.
+ *FIXME: 
+  1. Real Tanos Effect를 향한 여정...
+ * float particleProgress = smoothstep(sweepProgress - 0.1, sweepProgress, initialPosition.x / 5.0 + 0.5);
+  이 부분 때문에 파티클이 전혀 움직이지 않는거였음... 약간의 딜레이가 필요하긴한데, 이걸 어떻게 전달한담?
  */
 interface ParticleSystemProps {
   texture: THREE.Texture;
   dimensions: { width: number; height: number };
 }
 const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
-  const points = useRef<THREE.Points>(null);
+  const particles = useRef<THREE.Points>(null);
+  const content = useRef<THREE.Mesh>(null);
   const [animationProgress, setAnimationProgress] = useState(0);
 
-  const shaderMaterial = useMemo(() => {
+  const contentShaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        textureSampler: { value: texture },
+        progress: { value: 0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D textureSampler;
+        uniform float progress;
+        varying vec2 vUv;
+        void main() {
+          vec4 texColor = texture2D(textureSampler, vUv);
+          float alpha = smoothstep(progress, progress + 0.1, vUv.x);
+          gl_FragColor = vec4(texColor.rgb, texColor.a * alpha);
+        }
+      `,
+      transparent: true,
+    });
+  }, [texture]);
+
+  const particleShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         progress: { value: 0 },
       },
       vertexShader: `
         attribute vec3 initialPosition;
-        attribute vec3 targetPosition;
+        attribute vec3 finalPosition;
         attribute vec3 color;
         uniform float progress;
         varying float vOpacity;
         varying vec3 vColor;
 
         void main() {
-          vec3 pos = mix(initialPosition, targetPosition, progress);
+          float particleProgress = smoothstep(0.0, 1.0, (progress - uv.x) * 5.0);
+          particleProgress = clamp(particleProgress, 0.0, 1.0);
+          vec3 pos = mix(initialPosition, finalPosition, particleProgress);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-          gl_PointSize = mix(2.0, 0.5, progress);
-          vOpacity = 1.0 - progress;
+
+          gl_PointSize = mix(2.0, 1.0, particleProgress);
+
+          vOpacity = 1.0 - step(0.99, particleProgress);
           vColor = color;
         }
       `,
@@ -60,17 +94,16 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   }, []);
 
   const generateParticles = useMemo(() => {
-    // TODO: performance test
-    const particleCount = 50000;
+    const particleCount = 100000;
     const initialPositions: number[] = [];
-    const targetPositions: number[] = [];
+    const finalPositions: number[] = [];
     const colors: number[] = [];
+    const uvs: number[] = [];
 
     const aspectRatio = dimensions.width / dimensions.height;
     const fieldWidth = 10;
     const fieldHeight = fieldWidth / aspectRatio;
 
-    // Create a temporary canvas to read pixel data
     const canvas = document.createElement('canvas');
     canvas.width = texture.image.width;
     canvas.height = texture.image.height;
@@ -115,7 +148,7 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
       const yPos = (0.5 - y / canvas.height - yOffset) * fieldHeight;
 
       initialPositions.push(xPos, yPos, 0);
-      // Get color from pixel
+
       const pixelIndex = (y * canvas.width + x) * 4;
       colors.push(
         pixels[pixelIndex] / 255,
@@ -123,30 +156,48 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
         pixels[pixelIndex + 2] / 255
       );
 
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 0.5); // Bias towards upward direction
-      let distance = 2 + Math.random() * 3;
+      uvs.push(x / canvas.width, y / canvas.height);
 
-      // Increase upward bias
-      const upwardBias = Math.pow(Math.max(0, Math.cos(phi)), 2);
-      distance *= 1 + upwardBias * 1.4;
+      const xNormalized = x / canvas.width;
+      const spread = 3 - xNormalized * 2;
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * spread;
 
-      const horizontalSpread = 0.25;
-
-      // Add a constant upward velocity
-      const constantUpwardVelocity = 1.5;
-
-      const targetX =
-        xPos + horizontalSpread * distance * Math.sin(phi) * Math.cos(theta);
-      const targetY = yPos + distance * Math.cos(phi) + constantUpwardVelocity;
-      // preserve keep distance from camera
-      const targetZ = 1;
-
-      targetPositions.push(targetX, targetY, targetZ);
+      const finalX = xPos + Math.cos(angle) * distance;
+      const finalY = yPos + Math.sin(angle) * distance;
+      finalPositions.push(finalX, finalY, 0);
     }
 
-    return { initialPositions, targetPositions, colors };
+    return { initialPositions, finalPositions, colors, uvs };
   }, [dimensions.height, dimensions.width, texture.image]);
+
+  useEffect(() => {
+    if (!particles.current || !generateParticles) return;
+
+    const geometry = particles.current.geometry;
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
+    );
+    geometry.setAttribute(
+      'initialPosition',
+      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
+    );
+    geometry.setAttribute(
+      'finalPosition',
+      new THREE.Float32BufferAttribute(generateParticles.finalPositions, 3)
+    );
+    geometry.setAttribute(
+      'color',
+      new THREE.Float32BufferAttribute(generateParticles.colors, 3)
+    );
+    geometry.setAttribute(
+      'uv',
+      new THREE.Float32BufferAttribute(generateParticles.uvs, 2)
+    );
+
+    geometry.computeBoundingSphere();
+  }, [generateParticles]);
 
   useEffect(() => {
     const animationDuration = 2000;
@@ -165,45 +216,30 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
     };
 
     requestAnimationFrame(animateParticles);
-  }, [texture, generateParticles]);
-
-  useEffect(() => {
-    if (points.current == null || generateParticles == null) {
-      return;
-    }
-
-    const geometry = points.current.geometry;
-    geometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
-    );
-    geometry.setAttribute(
-      'initialPosition',
-      new THREE.Float32BufferAttribute(generateParticles.initialPositions, 3)
-    );
-    geometry.setAttribute(
-      'targetPosition',
-      new THREE.Float32BufferAttribute(generateParticles.targetPositions, 3)
-    );
-    geometry.setAttribute(
-      'color',
-      new THREE.Float32BufferAttribute(generateParticles.colors, 3)
-    );
-  }, [generateParticles]);
+  }, []);
 
   useFrame(() => {
-    if (points.current && 'uniforms' in points.current.material) {
-      (
-        points.current.material as THREE.ShaderMaterial
-      ).uniforms.progress.value = animationProgress;
+    if (particles.current && content.current) {
+      const particleMaterial = particles.current
+        .material as THREE.ShaderMaterial;
+      const contentMaterial = content.current.material as THREE.ShaderMaterial;
+
+      particleMaterial.uniforms.progress.value = animationProgress;
+      contentMaterial.uniforms.progress.value = animationProgress;
     }
   });
 
   return (
     <group>
-      <points ref={points}>
+      <mesh ref={content}>
+        <planeGeometry
+          args={[10, 10 * (dimensions.height / dimensions.width)]}
+        />
+        <primitive object={contentShaderMaterial} attach="material" />
+      </mesh>
+      <points ref={particles}>
         <bufferGeometry />
-        <primitive object={shaderMaterial} attach="material" />
+        <primitive object={particleShaderMaterial} attach="material" />
       </points>
     </group>
   );

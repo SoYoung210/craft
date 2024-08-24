@@ -1,48 +1,43 @@
+import { useState } from 'react';
+
 import IMessageComponent from '../components/content/particle-effect/MessageContainer';
 import { ParticleEffect } from '../components/content/particle-effect/ParticleEffect';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
 export default function ParticleEffectPage() {
+  const [debugKey, setDebugKey] = useState(0);
+  const increaseDebugKey = () => setDebugKey(prev => prev + 1);
+  const [targetMultiple, setTargetMultiple] = useState(2);
+
   return (
     <PageLayout>
       <PageLayout.Title>Particle Effect</PageLayout.Title>
 
-      <ParticleEffect>Hello !</ParticleEffect>
-
       <div style={{ marginTop: 40 }}>
-        <ParticleEffect>🎅</ParticleEffect>
-      </div>
-
-      <div style={{ marginTop: 40 }}>
-        <ParticleEffect>
+        <button onClick={increaseDebugKey}>re-render</button>
+        <input
+          value={targetMultiple}
+          onChange={e => {
+            const value = Number(e.target.value);
+            if (value >= 0) {
+              setTargetMultiple(value);
+            }
+          }}
+        />
+        <ParticleEffect key={debugKey}>
           <div
             style={{
               padding: 20,
               borderRadius: 8,
               backgroundColor: '#2775FC',
               color: 'white',
+              width: 140,
             }}
           >
             custom div style
           </div>
         </ParticleEffect>
       </div>
-      {/* FIXME: have to solve img CORS issue (on canvas rendering) */}
-      {/* <div style={{ marginTop: 40 }}>
-        <ParticleEffect>
-          <img
-            width={120}
-            height={120}
-            style={{
-              borderRadius: 999,
-              width: 120,
-              height: 120,
-            }}
-            crossOrigin="anonymous"
-            src="https://products.ls.graphics/mesh-gradients/images/03.-Snowy-Mint_1.jpg"
-          />
-        </ParticleEffect>
-      </div> */}
       <IMessageComponent>
         <IMessageComponent.Container>
           <ParticleEffect>
