@@ -18,7 +18,7 @@ export default function BlurredLogoPage() {
       <PageLayout.Title>Blurred Logo</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
-          로고를 여러 레이어로 겹치고, 각 레이어에 필터 적용
+          Overlay multiple layers of the logo and apply filters to each layer
         </PageLayout.Summary>
         <PageLayout.DetailsContent>
           <StaticImage

@@ -12,10 +12,11 @@ export default function CardPage() {
       <PageLayout.Title>Dynamic Card</PageLayout.Title>
       <PageLayout.Details>
         <PageLayout.Summary>
-          마우스 호버 위치에 따라 회전, 광원 효과 적용 / hologram effect
+          Apply rotation and lighting effects based on mouse hover position /
+          hologram effect
         </PageLayout.Summary>
         <PageLayout.DetailsContent>
-          회전 각: Math.log2(x, y 좌표 거리), 광원 gradient: #ffffff55,
+          Angle: Math.log2(x, y 좌표 거리), Lightening gradient: #ffffff55,
           #0000000f <br />
           <a
             href="https://codepen.io/nycos62/pen/PoaKZjL"
