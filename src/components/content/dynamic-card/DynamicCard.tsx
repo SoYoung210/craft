@@ -236,7 +236,7 @@ export default function DynamicCard() {
           </IllustRoot>
           <PersonalContent>
             <Text color="white" weight={800} size={26}>
-              SoYoung
+              Soyoung
             </Text>
             <Text
               color="white"
@@ -244,7 +244,7 @@ export default function DynamicCard() {
               size={16}
               style={{ letterSpacing: '0.01em', marginTop: 8 }}
             >
-              ethdud1@gmail.com
+              me@so-so.dev
             </Text>
             <Text
               color="white064"
