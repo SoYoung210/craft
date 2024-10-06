@@ -62,22 +62,6 @@ const ParticleMaterial = shaderMaterial(
         return start + factor * (end - start);
     }
 
-    vec4 calculatePosition(vec2 position, float r, float factor) {
-        float normalizedX = normalizeX(position.x);
-        float normalizedY = normalizeY(position.y);
-        float x = interpolateLinear(
-            normalizedX,
-            normalizedX + (random(normalizedY, r) - 0.5),
-            factor
-        );
-        float y = interpolateLinear(
-            normalizedY,
-            normalizedY + (random(normalizedX, r) - 0.25),
-            factor
-        );
-        return vec4(x, y, 0.0, 1.0);
-    }
-
     vec2 getPositionFromIndex(float particleSize, float index) {
         float y = floor(index / u_TextureWidth);
         float x = index - y * u_TextureWidth;
@@ -86,6 +70,29 @@ const ParticleMaterial = shaderMaterial(
             particleSize * (u_TextureHeight - y - 0.5) + u_TextureTop
         );
     }
+
+    vec2 calculateBlowAwayEffect(vec2 position, float r, float factor) {
+        float normalizedX = normalizeX(position.x);
+        float normalizedY = normalizeY(position.y);
+
+        // Adjust these values to control the direction and intensity of the blow-away effect
+        float xOffset = 0.8;  // Positive value moves particles to the right
+        float yOffset = -0.0;  // Positive value moves particles up
+
+        float x = interpolateLinear(
+            normalizedX,
+            normalizedX + xOffset + (random(normalizedY, r) - 0.3),
+            factor * 0.4
+        );
+        float y = interpolateLinear(
+            normalizedY,
+            normalizedY + yOffset + (random(normalizedX, r) - 0.125),
+            factor * 0.2
+        );
+
+        return vec2(x, y);
+    }
+
 
     void main() {
         vec2 position = getPositionFromIndex(u_ParticleSize, a_ParticleIndex);
@@ -97,7 +104,8 @@ const ParticleMaterial = shaderMaterial(
         float particleLifetime = min(u_ElapsedTime / (particleAnimationDelay + particleAnimationTotalTime), 1.0);
         float acceleration = 1.0 + 3.0 * (position.x / u_ViewportWidth);
 
-        gl_Position = calculatePosition(position, r, pow(particleLifetime, acceleration));
+        vec2 blownPosition = calculateBlowAwayEffect(position, r, pow(particleLifetime, acceleration));
+        gl_Position = vec4(blownPosition, 0.0, 1.0);
         gl_PointSize = u_ParticleSize;
 
         v_ParticleLifetime = particleLifetime;
@@ -137,12 +145,11 @@ const ParticleMaterial = shaderMaterial(
           discard;
       }
 
-      float alpha = interpolateLinear(textureColor.a, 0.0, visibilityFactor);
+      float alpha = mix(textureColor.a, 0.0, pow(visibilityFactor, 1.5));
       gl_FragColor = vec4(textureColor.xyz, alpha);
     }
   `
 );
-// ... (shader code remains the same)
 
 extend({ ParticleMaterial });
 
@@ -155,7 +162,7 @@ interface ParticleSystemProps {
     top: number;
   };
 }
-const duration = 6600;
+const duration = 2400;
 const particleSize = 1;
 const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   const mesh = useRef<THREE.Points>(null);
@@ -287,6 +294,8 @@ export default function Scene({ children }: Props) {
         setContentDimensions({
           width: rect.width,
           height: rect.height,
+          // left: 0,
+          // top: rect.height * 0.5,
           left: rect.left,
           top: rect.top,
         });
@@ -359,6 +368,7 @@ export default function Scene({ children }: Props) {
           ) : (
             <ParticleSystem texture={texture} dimensions={contentDimensions} />
           )}
+          {/* <ParticleSystem texture={texture} dimensions={contentDimensions} /> */}
         </Canvas>
       )}
       <button
