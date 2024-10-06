@@ -169,7 +169,7 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   const material = useRef<THREE.ShaderMaterial>(null);
   const animationStartTime = useRef<number | null>(null);
   const { size } = useThree();
-
+  console.log('@@ size', size);
   const [particlesCount, setParticlesCount] = useState(0);
 
   useEffect(() => {
@@ -294,8 +294,8 @@ export default function Scene({ children }: Props) {
         setContentDimensions({
           width: rect.width,
           height: rect.height,
-          // left: 0,
-          // top: rect.height * 0.5,
+          // left: rect.width * 0.5,
+          // top: rect.height * 5 * 0.5,
           left: rect.left,
           top: rect.top,
         });
@@ -331,8 +331,6 @@ export default function Scene({ children }: Props) {
     });
   }, [contentDimensions.height, contentDimensions.width]);
 
-  console.log('contentDimensions', contentDimensions);
-  console.log('texture', texture?.image.height, texture?.image.width);
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div
@@ -351,7 +349,7 @@ export default function Scene({ children }: Props) {
           linear
           style={{
             // width: 600,
-            height: contentDimensions.height * 20,
+            height: contentDimensions.height * 16,
           }}
         >
           <color attach="background" args={['#000000']} />
