@@ -1,10 +1,6 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
-import {
-  OrbitControls,
-  OrthographicCamera,
-  shaderMaterial,
-} from '@react-three/drei';
+import { Canvas, extend, useThree } from '@react-three/fiber';
+import { OrbitControls, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
 
@@ -87,7 +83,7 @@ const ParticleMaterial = shaderMaterial(
         float x = index - y * u_TextureWidth;
         return vec2(
             particleSize * (x + 0.5) + u_TextureLeft,
-            particleSize * (y + 0.5) + u_TextureTop
+            particleSize * (u_TextureHeight - y - 0.5) + u_TextureTop
         );
     }
 
@@ -109,6 +105,7 @@ const ParticleMaterial = shaderMaterial(
         vec2 textureOffset = vec2(u_TextureLeft, u_TextureTop);
         vec2 originalTextureSize = vec2(u_TextureWidth * u_ParticleSize, u_TextureHeight * u_ParticleSize);
         v_ParticleCoord = (position - textureOffset) / originalTextureSize;
+        v_ParticleCoord.y = 1.0 - v_ParticleCoord.y;
     }
   `,
   // Fragment Shader
@@ -227,8 +224,7 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
       }
       // setAnimationProgress(progress);
       if (material.current) {
-        // console.log('@@ elapsedTime', elapsedTime);
-        material.current.uniforms.u_ElapsedTime.value = 11;
+        material.current.uniforms.u_ElapsedTime.value = elapsedTime;
       }
 
       if (progress < 1) {
@@ -321,6 +317,7 @@ export default function Scene({ children }: Props) {
       height: contentDimensions.height,
     }).then(canvas => {
       const newTexture = new THREE.CanvasTexture(canvas);
+
       setTexture(newTexture);
     });
   }, [contentDimensions.height, contentDimensions.width]);
