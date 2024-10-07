@@ -75,19 +75,24 @@ const ParticleMaterial = shaderMaterial(
         float normalizedX = normalizeX(position.x);
         float normalizedY = normalizeY(position.y);
 
-        // Adjust these values to control the direction and intensity of the blow-away effect
-        float xOffset = 0.8;  // Positive value moves particles to the right
-        float yOffset = -0.0;  // Positive value moves particles up
+        float xOffset = 0.8;
+
+        // If the u_ViewportWidth is smaller than 632, should be adjusted like this
+        float baseHeight = 1184.0; // magic number (...)
+        float heightRatio = u_ViewportHeight / baseHeight;
+
+        float xSpread = 0.3 * heightRatio;
+        float ySpread = 0.125 * heightRatio;
 
         float x = interpolateLinear(
             normalizedX,
-            normalizedX + xOffset + (random(normalizedY, r) - 0.3),
+            normalizedX + xOffset + (random(normalizedX, r) - 0.3),
             factor * 0.4
         );
         float y = interpolateLinear(
             normalizedY,
-            normalizedY + yOffset + (random(normalizedX, r) - 0.125),
-            factor * 0.2
+            normalizedY + (random(normalizedY, r) - ySpread),
+            factor * 0.2 * (baseHeight / u_ViewportHeight)
         );
 
         return vec2(x, y);
@@ -163,13 +168,16 @@ interface ParticleSystemProps {
   };
 }
 const duration = 2400;
-const particleSize = 1;
+const particleSize = 0.5;
 const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   const mesh = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
   const animationStartTime = useRef<number | null>(null);
   const { size } = useThree();
-  console.log('@@ size', size);
+  console.log('@@ size', {
+    size,
+    dimensions,
+  });
   const [particlesCount, setParticlesCount] = useState(0);
 
   useEffect(() => {
@@ -182,8 +190,8 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
       material.current.uniforms.u_Texture.value = texture;
       material.current.uniforms.u_AnimationDuration.value = duration;
       material.current.uniforms.u_ParticleSize.value = particleSize;
-      material.current.uniforms.u_ViewportWidth.value = size.width;
       material.current.uniforms.u_ViewportHeight.value = size.height;
+      material.current.uniforms.u_ViewportWidth.value = size.width;
       material.current.uniforms.u_TextureWidth.value = textureWidth;
       material.current.uniforms.u_TextureHeight.value = textureHeight;
       material.current.uniforms.u_TextureLeft.value = rect.left;
@@ -273,6 +281,7 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
 interface Props {
   children: React.ReactNode;
 }
+const canvasMultiple = 2;
 export default function Scene({ children }: Props) {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [startAnimation, setStartAnimation] = useState(false);
@@ -296,8 +305,8 @@ export default function Scene({ children }: Props) {
           height: rect.height,
           // left: rect.width * 0.5,
           // top: rect.height * 5 * 0.5,
-          left: rect.left,
-          top: rect.top,
+          left: rect.width * 1.5,
+          top: rect.height * (canvasMultiple / 2) - rect.height * 0.5,
         });
       }
     };
@@ -349,7 +358,8 @@ export default function Scene({ children }: Props) {
           linear
           style={{
             // width: 600,
-            height: contentDimensions.height * 16,
+            // height: contentDimensions.height * 16,
+            height: contentDimensions.height * canvasMultiple,
           }}
         >
           <color attach="background" args={['#000000']} />
@@ -357,7 +367,7 @@ export default function Scene({ children }: Props) {
           {!startAnimation ? (
             <mesh position={[0, 0, 0]}>
               <planeGeometry
-                args={[1, 1 * (texture.image.height / texture.image.width)]}
+                args={[8, 8 * (texture.image.height / texture.image.width)]}
               />
               <meshBasicMaterial transparent={true} toneMapped={false}>
                 <primitive attach="map" object={texture} />
