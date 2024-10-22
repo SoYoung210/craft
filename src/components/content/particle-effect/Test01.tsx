@@ -1,11 +1,12 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, extend, useThree } from '@react-three/fiber';
+import { Canvas, extend, useThree, Vector3 } from '@react-three/fiber';
 import { OrbitControls, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
+import { Primitive } from '@radix-ui/react-primitive';
 
 import { useIsomorphicLayoutEffect } from '../../../hooks/useIsomorphicLayoutEffect';
-
+// 이제 스타트 눌럿을 때 파티클 퍼지는 mesh위치만 잘 조정하면됨!
 const ParticleMaterial = shaderMaterial(
   {
     u_AnimationDuration: 0,
@@ -168,7 +169,7 @@ interface ParticleSystemProps {
   };
 }
 const duration = 2400;
-const particleSize = 0.5;
+const particleSize = 1;
 const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
   const mesh = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
@@ -196,6 +197,7 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
       material.current.uniforms.u_TextureHeight.value = textureHeight;
       material.current.uniforms.u_TextureLeft.value = rect.left;
       material.current.uniforms.u_TextureTop.value = rect.top;
+      console.log({ left: rect.left });
     }
     console.log('Texture set:', material.current?.uniforms.u_Texture.value);
     console.log('Particle count:', particlesCount);
@@ -280,9 +282,19 @@ const ParticleSystem = ({ texture, dimensions }: ParticleSystemProps) => {
 
 interface Props {
   children: React.ReactNode;
+  style?: React.CSSProperties;
+  componentName?: string;
 }
-const canvasMultiple = 2;
-export default function Scene({ children }: Props) {
+
+const debugLogger = (
+  componentName: string,
+  content: any,
+  ...optionalParams: any[]
+) => {
+  console.log(`[${componentName}]`, content, ...optionalParams);
+};
+const canvasMultiple = 5;
+export default function Scene({ children, style, componentName = '' }: Props) {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [startAnimation, setStartAnimation] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -299,13 +311,13 @@ export default function Scene({ children }: Props) {
     const updateDimensions = () => {
       if (contentRef.current) {
         const rect = contentRef.current.getBoundingClientRect();
-        console.log('Updated dimensions:', rect);
+        debugLogger(componentName, 'Updated dimensions:', rect);
         setContentDimensions({
           width: rect.width,
           height: rect.height,
-          // left: rect.width * 0.5,
-          // top: rect.height * 5 * 0.5,
-          left: rect.width * 1.5,
+          // FIXME: left
+          // left: rect.width * 1.5,
+          left: 0,
           top: rect.height * (canvasMultiple / 2) - rect.height * 0.5,
         });
       }
@@ -340,14 +352,60 @@ export default function Scene({ children }: Props) {
     });
   }, [contentDimensions.height, contentDimensions.width]);
 
+  const Mesh = () => {
+    const { size } = useThree();
+    const [meshPosition, geometryDimensions, meshScale] = useMemo((): [
+      Vector3,
+      [number, number],
+      Vector3,
+    ] => {
+      if (!texture || !contentDimensions.width || !contentDimensions.height) {
+        return [
+          [0, 0, 0],
+          [1, 1],
+          [1, 1, 1],
+        ];
+      }
+
+      const canvasHeight = size.height;
+      const canvasWidth = size.width;
+
+      // Calculate scale based on the content dimensions relative to canvas size
+      const scaleY = contentDimensions.height / canvasHeight;
+      const scaleX = contentDimensions.width / canvasWidth;
+      // Calculate position
+      // Convert from pixel coordinates to Three.js coordinate system (-1 to 1)
+      const x = (contentDimensions.left / canvasWidth) * 2 - 1 + scaleX;
+      const y = -(contentDimensions.top / canvasHeight) * 2 + 1 - scaleY;
+
+      return [
+        [x, y, 0],
+        [contentDimensions.width, contentDimensions.height],
+        [scaleX, 1, 1],
+      ];
+    }, [texture, contentDimensions, size, canvasMultiple]);
+    if (!texture) return null;
+
+    return (
+      <mesh position={meshPosition} scale={meshScale}>
+        <planeGeometry args={geometryDimensions} />
+        <meshBasicMaterial transparent={true} toneMapped={false}>
+          <primitive attach="map" object={texture} />
+        </meshBasicMaterial>
+      </mesh>
+    );
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div
         ref={contentRef}
+        data-debug="canvas-target-content-div"
         style={{
           // visibility: startAnimation ? 'hidden' : 'visible',
-          width: 'fit-content',
+          // width: 'fit-content',
           color: 'white',
+          ...style,
         }}
       >
         {children}
@@ -356,8 +414,10 @@ export default function Scene({ children }: Props) {
         // NOTE: linear: https://github.com/pmndrs/react-three-fiber/discussions/1290#discussioncomment-668649
         <Canvas
           linear
+          orthographic
+          camera={{ zoom: 1, position: [0, 0, 100] }}
           style={{
-            // width: 600,
+            // width: canvasWidth,
             // height: contentDimensions.height * 16,
             height: contentDimensions.height * canvasMultiple,
           }}
@@ -365,25 +425,17 @@ export default function Scene({ children }: Props) {
           <color attach="background" args={['#000000']} />
           <OrbitControls enableRotate={false} />
           {!startAnimation ? (
-            <mesh position={[0, 0, 0]}>
-              <planeGeometry
-                args={[8, 8 * (texture.image.height / texture.image.width)]}
-              />
-              <meshBasicMaterial transparent={true} toneMapped={false}>
-                <primitive attach="map" object={texture} />
-              </meshBasicMaterial>
-            </mesh>
+            <Mesh />
           ) : (
             <ParticleSystem texture={texture} dimensions={contentDimensions} />
           )}
-          {/* <ParticleSystem texture={texture} dimensions={contentDimensions} /> */}
         </Canvas>
       )}
       <button
         onClick={() => setStartAnimation(true)}
         style={{
           position: 'absolute',
-          top: '-20px',
+          bottom: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
         }}
