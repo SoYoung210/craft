@@ -305,6 +305,14 @@ export default function Scene({ children, style, componentName = '' }: Props) {
     top: 0,
   });
 
+  useEffect(() => {
+    return () => {
+      if (texture) {
+        texture.dispose();
+      }
+    };
+  }, [texture]);
+
   useIsomorphicLayoutEffect(() => {
     if (!contentRef.current) return;
 
@@ -345,6 +353,12 @@ export default function Scene({ children, style, componentName = '' }: Props) {
       allowTaint: true,
       width: contentDimensions.width,
       height: contentDimensions.height,
+      // foreignObjectRendering: false,
+      ignoreElements: element => {
+        console.log('@@ element', element);
+        // 특정 요소 무시
+        return element.tagName === 'CANVAS';
+      },
     }).then(canvas => {
       const newTexture = new THREE.CanvasTexture(canvas);
 
@@ -397,14 +411,22 @@ export default function Scene({ children, style, componentName = '' }: Props) {
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div
+      data-debug="canvas-target-content-div"
+      style={{ width: '100%', height: '100%', position: 'relative' }}
+    >
       <div
         ref={contentRef}
         data-debug="canvas-target-content-div"
         style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          color: 'white',
+          pointerEvents: 'none', // P
+          width: '100%',
           // visibility: startAnimation ? 'hidden' : 'visible',
           // width: 'fit-content',
-          color: 'white',
           ...style,
         }}
       >
@@ -419,6 +441,7 @@ export default function Scene({ children, style, componentName = '' }: Props) {
           style={{
             // width: canvasWidth,
             // height: contentDimensions.height * 16,
+
             height: contentDimensions.height * canvasMultiple,
           }}
         >
