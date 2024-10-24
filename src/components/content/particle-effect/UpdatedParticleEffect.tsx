@@ -11,7 +11,6 @@ import { OrbitControls, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
 
-// Context for managing particle effects
 interface ParticleEffectContextType {
   registerItem: (id: string, element: HTMLElement) => void;
   unregisterItem: (id: string) => void;
@@ -33,6 +32,74 @@ interface ParticleItem {
   };
   isAnimating: boolean;
 }
+
+const PreviewMesh: React.FC<{
+  texture: THREE.Texture;
+  dimensions: {
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+  };
+}> = ({ texture, dimensions }) => {
+  const { size, camera } = useThree();
+  console.log('@@@ preview mesh');
+  const meshProps = useMemo((): {
+    position: Vector3;
+    scale: Vector3;
+  } => {
+    if (!(camera instanceof THREE.OrthographicCamera)) {
+      console.error('Expected orthographic camera');
+      return { position: [0, 0, 0], scale: [1, 1, 1] };
+    }
+
+    // Get the camera's vertical field of view in world units
+    // With orthographic camera, this is the height of the visible area
+    const cameraHeight = Math.abs(camera.top - camera.bottom);
+    const cameraWidth = Math.abs(camera.right - camera.left);
+
+    // Calculate world units per pixel
+    const unitsPerPixelY = cameraHeight / size.height;
+    const unitsPerPixelX = cameraWidth / size.width;
+
+    // Convert pixel dimensions to world units
+    const scaleX = dimensions.width * unitsPerPixelX;
+    const scaleY = dimensions.height * unitsPerPixelY;
+
+    // Convert screen coordinates to world coordinates
+    // First get position in pixels from top-left
+    const pixelX = dimensions.left + dimensions.width / 2;
+    const pixelY = dimensions.top + dimensions.height / 2;
+
+    // Convert to world coordinates
+    const worldX = (pixelX - size.width / 2) * unitsPerPixelX;
+    const worldY = -(pixelY - size.height / 2) * unitsPerPixelY;
+
+    console.log('Camera-based calculations:', {
+      dimensions,
+      cameraHeight,
+      cameraWidth,
+      unitsPerPixel: { x: unitsPerPixelX, y: unitsPerPixelY },
+      worldPosition: [worldX, worldY],
+      worldScale: [scaleX, scaleY],
+    });
+
+    return {
+      position: [worldX, worldY, 0],
+      scale: [scaleX, scaleY, 1],
+    };
+  }, [dimensions, size, camera]);
+
+  return (
+    <mesh position={meshProps.position} scale={meshProps.scale}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial transparent={true} toneMapped={false}>
+        <primitive attach="map" object={texture} />
+      </meshBasicMaterial>
+    </mesh>
+  );
+};
+
 // Root component that provides the canvas and context
 export const ParticleEffectRoot: React.FC<{
   children: React.ReactNode;
@@ -46,18 +113,36 @@ export const ParticleEffectRoot: React.FC<{
       registerItem: (id: string, element: HTMLElement | null) => {
         if (!element) return;
 
-        setItems(prev => {
-          // If the element is already registered with the same reference, don't update
-          if (prev.get(id)?.element === element) return prev;
+        html2canvas(element, {
+          backgroundColor: null,
+          allowTaint: true,
+          width: element.offsetWidth,
+          height: element.offsetHeight,
+          ignoreElements: elem => elem.tagName === 'CANVAS',
+        }).then(canvas => {
+          const texture = new THREE.CanvasTexture(canvas);
+          const rect = element.getBoundingClientRect();
 
-          const newMap = new Map(prev);
-          newMap.set(id, {
-            element,
-            texture: null,
-            dimensions: { width: 0, height: 0, left: 0, top: 0 },
-            isAnimating: false,
+          setItems(prev => {
+            const newMap = new Map(prev);
+            const existingItem = newMap.get(id);
+            if (existingItem?.texture) {
+              existingItem.texture.dispose();
+            }
+            newMap.set(id, {
+              element,
+              texture,
+              dimensions: {
+                width: rect.width,
+                height: rect.height,
+                left: rect.left,
+                top: rect.top,
+              },
+              isAnimating: false,
+            });
+            return newMap;
           });
-          return newMap;
+          // element.style.opacity = '0';
         });
       },
       unregisterItem: (id: string) => {
@@ -79,8 +164,9 @@ export const ParticleEffectRoot: React.FC<{
       },
       triggerEffect: (id: string) => {
         const item = itemsRef.current.get(id);
-        if (!item) return;
+        if (!item || item.isAnimating || !item.texture) return;
 
+        // Update dimensions before starting animation
         const rect = item.element.getBoundingClientRect();
         const dimensions = {
           width: rect.width,
@@ -89,35 +175,22 @@ export const ParticleEffectRoot: React.FC<{
           top: rect.top,
         };
 
-        html2canvas(item.element, {
-          backgroundColor: null,
-          allowTaint: true,
-          width: dimensions.width,
-          height: dimensions.height,
-          ignoreElements: element => element.tagName === 'CANVAS',
-        }).then(canvas => {
-          const texture = new THREE.CanvasTexture(canvas);
-          setItems(prev => {
-            const newMap = new Map(prev);
-            const currentItem = newMap.get(id);
-            if (currentItem) {
-              if (currentItem.texture) {
-                currentItem.texture.dispose();
-              }
-              newMap.set(id, {
-                ...currentItem,
-                texture,
-                dimensions,
-                isAnimating: true,
-              });
-            }
-            return newMap;
-          });
+        setItems(prev => {
+          const newMap = new Map(prev);
+          const currentItem = newMap.get(id);
+          if (currentItem) {
+            newMap.set(id, {
+              ...currentItem,
+              dimensions,
+              isAnimating: true,
+            });
+          }
+          return newMap;
         });
       },
     }),
     []
-  ); // Empty dependency array since these functions don't depend on any props or state
+  );
 
   return (
     <ParticleEffectContext.Provider value={contextValue}>
@@ -135,21 +208,27 @@ export const ParticleEffectRoot: React.FC<{
           linear
           orthographic
           camera={{ zoom: 1, position: [0, 0, 100] }}
-          gl={{ alpha: true, antialias: true }}
+          gl={{ alpha: true, antialias: true, preserveDrawingBuffer: true }}
           style={{ width: '100%', height: '100%' }}
         >
           <OrbitControls enableRotate={false} />
-          {Array.from(items.entries()).map(
-            ([id, item]) =>
-              item.isAnimating &&
-              item.texture && (
-                <ParticleSystem
-                  key={id}
-                  texture={item.texture}
-                  dimensions={item.dimensions}
-                />
-              )
-          )}
+          {Array.from(items.entries()).map(([id, item]) => {
+            if (item.texture == null) return null;
+
+            return item.isAnimating ? (
+              <ParticleSystem
+                key={`${id}-particles`}
+                texture={item.texture}
+                dimensions={item.dimensions}
+              />
+            ) : (
+              <PreviewMesh
+                key={`${id}-preview`}
+                texture={item.texture}
+                dimensions={item.dimensions}
+              />
+            );
+          })}
         </Canvas>
       </div>
       {children}
@@ -157,7 +236,6 @@ export const ParticleEffectRoot: React.FC<{
   );
 };
 
-// Item component that wraps content to be animated
 interface ItemProps {
   children: React.ReactNode;
   id: string;
@@ -166,27 +244,30 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ children, id }) => {
   const context = useContext(ParticleEffectContext);
   const ref = useRef<HTMLDivElement>(null);
+  const { isAnimating } = context?.getItemState(id) ?? { isAnimating: false };
 
   useEffect(() => {
     if (!context || ref.current == null) return;
 
-    // Register with the current element
     context.registerItem(id, ref.current);
 
-    // Cleanup on unmount
     return () => {
       context.unregisterItem(id);
     };
   }, [id, context]); // Only re-run if id or context changes
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div
+      ref={ref}
+      data-debug-id="particle-effect-item"
+      // TODO: 진짜 컨텐츠 감추고... 캔버스 렌더링만 보여져야 함
+      style={{ position: 'relative', opacity: isAnimating ? 0 : 1 }}
+    >
       {children}
     </div>
   );
 };
 
-// ParticleSystem component (mostly unchanged from Test01)
 interface ParticleSystemProps {
   texture: THREE.Texture;
   dimensions: {
