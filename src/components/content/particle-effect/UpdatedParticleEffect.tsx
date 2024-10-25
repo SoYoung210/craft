@@ -124,7 +124,11 @@ const PreviewMesh: React.FC<{
   return (
     <mesh position={meshProps.position} scale={meshProps.scale}>
       <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial transparent={true} toneMapped={false}>
+      <meshBasicMaterial
+        transparent={true}
+        toneMapped={false}
+        blending={THREE.AdditiveBlending}
+      >
         <primitive attach="map" object={texture} />
       </meshBasicMaterial>
     </mesh>
@@ -146,10 +150,10 @@ export const ParticleEffectRoot: React.FC<{
 
         html2canvas(element, {
           backgroundColor: null,
-          allowTaint: true,
           width: element.offsetWidth,
           height: element.offsetHeight,
           ignoreElements: elem => elem.tagName === 'CANVAS',
+          scale: 2,
         }).then(canvas => {
           const texture = new THREE.CanvasTexture(canvas);
           const rect = element.getBoundingClientRect();
