@@ -35,14 +35,45 @@ interface ParticleItem {
 
 const PreviewMesh: React.FC<{
   texture: THREE.Texture;
+  itemId: string;
   dimensions: {
     width: number;
     height: number;
     left: number;
     top: number;
   };
-}> = ({ texture, dimensions }) => {
+}> = ({ texture, dimensions: initialDimensions, itemId }) => {
   const { size, camera } = useThree();
+  const [dimensions, setDimensions] = useState(initialDimensions);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      // Find the original element
+      const element = document.querySelector(
+        `[data-debug-id="particle-effect-item"][data-item-id="${itemId}"]`
+      );
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        setDimensions({
+          width: rect.width,
+          height: rect.height,
+          left: rect.left,
+          top: rect.top,
+        });
+      }
+    };
+
+    // Initial update
+    updateDimensions();
+
+    // Add resize listener
+    window.addEventListener('resize', updateDimensions);
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, [itemId]);
+
   console.log('@@@ preview mesh');
   const meshProps = useMemo((): {
     position: Vector3;
@@ -227,6 +258,7 @@ export const ParticleEffectRoot: React.FC<{
                 key={`${id}-preview`}
                 texture={item.texture}
                 dimensions={item.dimensions}
+                itemId={id}
               />
             );
           })}
@@ -272,6 +304,7 @@ const Item: React.FC<ItemProps> = ({ children, id }) => {
     <div
       ref={ref}
       data-debug-id="particle-effect-item"
+      data-item-id={id}
       style={{
         position: 'relative',
         visibility: isVisible ? 'visible' : 'hidden',
