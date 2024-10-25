@@ -142,7 +142,8 @@ export const ParticleEffectRoot: React.FC<{
             });
             return newMap;
           });
-          // element.style.opacity = '0';
+
+          window.dispatchEvent(new CustomEvent(`preview-rendered-${id}`));
         });
       },
       unregisterItem: (id: string) => {
@@ -244,14 +245,25 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ children, id }) => {
   const context = useContext(ParticleEffectContext);
   const ref = useRef<HTMLDivElement>(null);
-  const { isAnimating } = context?.getItemState(id) ?? { isAnimating: false };
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (!context || ref.current == null) return;
 
     context.registerItem(id, ref.current);
 
+    // Handle preview rendered event
+    const handlePreviewRendered = () => {
+      setIsVisible(false);
+    };
+
+    // Add event listener
+    const eventName = `preview-rendered-${id}`;
+    window.addEventListener(eventName, handlePreviewRendered);
+
+    // Cleanup
     return () => {
+      window.removeEventListener(eventName, handlePreviewRendered);
       context.unregisterItem(id);
     };
   }, [id, context]); // Only re-run if id or context changes
@@ -260,8 +272,10 @@ const Item: React.FC<ItemProps> = ({ children, id }) => {
     <div
       ref={ref}
       data-debug-id="particle-effect-item"
-      // TODO: 진짜 컨텐츠 감추고... 캔버스 렌더링만 보여져야 함
-      style={{ position: 'relative', opacity: isAnimating ? 0 : 1 }}
+      style={{
+        position: 'relative',
+        visibility: isVisible ? 'visible' : 'hidden',
+      }}
     >
       {children}
     </div>
@@ -436,7 +450,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
 }) => {
   const mesh = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
-  const animationStartTime = useRef<number | null>(null);
+
   const { size } = useThree();
   console.log('@@ size', {
     size,
