@@ -5,11 +5,15 @@ import React, {
   useState,
   createContext,
   useContext,
+  ComponentPropsWithoutRef,
+  forwardRef,
 } from 'react';
 import { Canvas, extend, useThree, Vector3 } from '@react-three/fiber';
 import { OrbitControls, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
+import { Primitive } from '@radix-ui/react-primitive';
+import { composeEventHandlers } from '@radix-ui/primitive';
 
 interface ParticleEffectContextType {
   registerItem: (id: string, element: HTMLElement) => void;
@@ -42,7 +46,8 @@ const PreviewMesh: React.FC<{
     left: number;
     top: number;
   };
-}> = ({ texture, dimensions: initialDimensions, itemId }) => {
+  zOffset: number;
+}> = ({ texture, dimensions: initialDimensions, itemId, zOffset }) => {
   const { size, camera } = useThree();
   const [dimensions, setDimensions] = useState(initialDimensions);
 
@@ -74,7 +79,6 @@ const PreviewMesh: React.FC<{
     };
   }, [itemId]);
 
-  console.log('@@@ preview mesh');
   const meshProps = useMemo((): {
     position: Vector3;
     scale: Vector3;
@@ -116,10 +120,10 @@ const PreviewMesh: React.FC<{
     });
 
     return {
-      position: [worldX, worldY, 0],
+      position: [worldX, worldY, zOffset],
       scale: [scaleX, scaleY, 1],
     };
-  }, [dimensions, size, camera]);
+  }, [camera, size.height, size.width, dimensions, zOffset]);
 
   return (
     <mesh position={meshProps.position} scale={meshProps.scale}>
@@ -152,8 +156,10 @@ export const ParticleEffectRoot: React.FC<{
           backgroundColor: null,
           width: element.offsetWidth,
           height: element.offsetHeight,
-          ignoreElements: elem => elem.tagName === 'CANVAS',
-          scale: 2,
+          allowTaint: true,
+          ignoreElements: elem => {
+            return elem.tagName === 'CANVAS';
+          },
         }).then(canvas => {
           const texture = new THREE.CanvasTexture(canvas);
           const rect = element.getBoundingClientRect();
@@ -223,6 +229,8 @@ export const ParticleEffectRoot: React.FC<{
           }
           return newMap;
         });
+
+        window.dispatchEvent(new CustomEvent(`preview-animated-${id}`));
       },
     }),
     []
@@ -244,18 +252,26 @@ export const ParticleEffectRoot: React.FC<{
           linear
           orthographic
           camera={{ zoom: 1, position: [0, 0, 100] }}
-          gl={{ alpha: true, antialias: true, preserveDrawingBuffer: true }}
+          gl={{
+            alpha: true,
+            antialias: true,
+            preserveDrawingBuffer: true,
+            depth: true,
+            logarithmicDepthBuffer: true,
+          }}
           style={{ width: '100%', height: '100%' }}
         >
           <OrbitControls enableRotate={false} />
-          {Array.from(items.entries()).map(([id, item]) => {
+          {Array.from(items.entries()).map(([id, item], index) => {
             if (item.texture == null) return null;
+            const zOffset = (index + 1) * -0.3;
 
             return item.isAnimating ? (
               <ParticleSystem
                 key={`${id}-particles`}
                 texture={item.texture}
                 dimensions={item.dimensions}
+                zOffset={zOffset}
               />
             ) : (
               <PreviewMesh
@@ -263,6 +279,7 @@ export const ParticleEffectRoot: React.FC<{
                 texture={item.texture}
                 dimensions={item.dimensions}
                 itemId={id}
+                zOffset={zOffset}
               />
             );
           })}
@@ -281,6 +298,7 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ children, id }) => {
   const context = useContext(ParticleEffectContext);
   const ref = useRef<HTMLDivElement>(null);
+  // TODO: refactor as a hook - because it's a common pattern in Item and Trigger
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -288,26 +306,22 @@ const Item: React.FC<ItemProps> = ({ children, id }) => {
 
     context.registerItem(id, ref.current);
 
-    // Handle preview rendered event
     const handlePreviewRendered = () => {
       setIsVisible(false);
     };
 
-    // Add event listener
     const eventName = `preview-rendered-${id}`;
     window.addEventListener(eventName, handlePreviewRendered);
 
-    // Cleanup
     return () => {
       window.removeEventListener(eventName, handlePreviewRendered);
       context.unregisterItem(id);
     };
-  }, [id, context]); // Only re-run if id or context changes
+  }, [id, context]);
 
   return (
     <div
       ref={ref}
-      data-debug-id="particle-effect-item"
       data-item-id={id}
       style={{
         position: 'relative',
@@ -327,6 +341,7 @@ interface ParticleSystemProps {
     left: number;
     top: number;
   };
+  zOffset: number;
 }
 const ParticleMaterial = shaderMaterial(
   {
@@ -340,6 +355,7 @@ const ParticleMaterial = shaderMaterial(
     u_TextureLeft: 0,
     u_TextureTop: 0,
     u_Texture: null,
+    u_ZOffset: 0.0,
   },
   // Vertex Shader
   `
@@ -354,6 +370,7 @@ const ParticleMaterial = shaderMaterial(
     uniform float u_TextureHeight;
     uniform float u_TextureLeft;
     uniform float u_TextureTop;
+    uniform float u_ZOffset;
 
     attribute float a_ParticleIndex;
 
@@ -432,7 +449,7 @@ const ParticleMaterial = shaderMaterial(
         float acceleration = 1.0 + 3.0 * (position.x / u_ViewportWidth);
 
         vec2 blownPosition = calculateBlowAwayEffect(position, r, pow(particleLifetime, acceleration));
-        gl_Position = vec4(blownPosition, 0.0, 1.0);
+        gl_Position = vec4(blownPosition, u_ZOffset, 1.0);
         gl_PointSize = u_ParticleSize;
 
         v_ParticleLifetime = particleLifetime;
@@ -484,15 +501,12 @@ const particleSize = 1;
 const ParticleSystem: React.FC<ParticleSystemProps> = ({
   texture,
   dimensions,
+  zOffset,
 }) => {
   const mesh = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
 
   const { size } = useThree();
-  console.log('@@ size', {
-    size,
-    dimensions,
-  });
   const [particlesCount, setParticlesCount] = useState(0);
 
   useEffect(() => {
@@ -511,18 +525,10 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       material.current.uniforms.u_TextureHeight.value = textureHeight;
       material.current.uniforms.u_TextureLeft.value = rect.left;
       material.current.uniforms.u_TextureTop.value = rect.top;
-      console.log({ left: rect.left });
+      material.current.uniforms.u_ZOffset.value = zOffset;
+      console.log({ zOffset });
     }
-    console.log('Texture set:', material.current?.uniforms.u_Texture.value);
-    console.log('Particle count:', particlesCount);
-    console.log('Particles setup:', {
-      textureWidth,
-      textureHeight,
-      particlesCount,
-    });
-    // Optionally, remove the original element after capturing
-    // elementRef.current.style.display = 'none';
-  }, [size, particlesCount, dimensions, texture]);
+  }, [size, particlesCount, dimensions, texture, zOffset]);
 
   const { particles, positions } = useMemo(() => {
     const textureWidth = Math.round(dimensions.width / particleSize);
@@ -587,34 +593,45 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       <particleMaterial
         ref={material}
         transparent
-        depthWrite={false}
+        depthWrite={true}
         blending={THREE.NormalBlending}
       />
     </points>
   );
 };
-interface TriggerProps {
+interface TriggerProps
+  extends ComponentPropsWithoutRef<typeof Primitive.button> {
   targetId: string;
-  children?: React.ReactNode;
-  style?: React.CSSProperties;
-  className?: string;
   hideAfterTrigger?: boolean;
 }
 
-const Trigger: React.FC<TriggerProps> = ({
-  targetId,
-  children = 'Start Animation',
-  style,
-  className,
-  hideAfterTrigger = true,
-}) => {
+const Trigger: React.FC<TriggerProps> = forwardRef<
+  HTMLButtonElement,
+  TriggerProps
+>((props, ref) => {
+  const {
+    targetId,
+    children = 'Start Animation',
+    onClick,
+    hideAfterTrigger = true,
+    ...restProps
+  } = props;
   const context = useContext(ParticleEffectContext);
+  const [isVisible, setIsVisible] = useState(true);
+  useEffect(() => {
+    const handlePreviewRendered = () => {
+      setIsVisible(false);
+    };
 
-  const { isAnimating } = context?.getItemState(targetId) ?? {
-    isAnimating: false,
-  };
+    const eventName = `preview-animated-${targetId}`;
+    window.addEventListener(eventName, handlePreviewRendered);
 
-  if (hideAfterTrigger && isAnimating) {
+    return () => {
+      window.removeEventListener(eventName, handlePreviewRendered);
+    };
+  }, [targetId]);
+
+  if (hideAfterTrigger && !isVisible) {
     return null;
   }
 
@@ -622,37 +639,24 @@ const Trigger: React.FC<TriggerProps> = ({
     context?.triggerEffect(targetId);
   };
 
-  const defaultStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    zIndex: 1000,
-    position: 'relative',
-    ...style,
-  };
-
   return (
-    <button
-      onClick={handleClick}
-      style={defaultStyle}
-      className={className}
-      disabled={isAnimating}
+    <Primitive.button
+      ref={ref}
+      data-particle-effect-trigger
+      onClick={composeEventHandlers(onClick, handleClick)}
+      {...restProps}
     >
       {children}
-    </button>
+    </Primitive.button>
   );
-};
-// Export the component with its subcomponents
+});
+
 export const ParticleEffect = {
   Root: ParticleEffectRoot,
   Item,
   Trigger,
 };
 
-// Utility hook to trigger effects
 export const useParticleEffect = (id: string) => {
   const context = useContext(ParticleEffectContext);
 
