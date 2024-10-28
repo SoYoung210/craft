@@ -8,7 +8,8 @@ import React, {
   ComponentPropsWithoutRef,
   forwardRef,
 } from 'react';
-import { Canvas, extend, useThree, Vector3 } from '@react-three/fiber';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas, extend, useThree } from '@react-three/fiber';
 import { OrbitControls, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
@@ -16,9 +17,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { composeEventHandlers } from '@radix-ui/primitive';
 
 interface ParticleEffectContextType {
-  registerItem: (id: string, element: HTMLElement) => void;
-  unregisterItem: (id: string) => void;
-  triggerEffect: (id: string) => void;
+  triggerEffect: (id: string, element: HTMLElement) => void;
   getItemState: (id: string) => { isAnimating: boolean };
 }
 
@@ -26,7 +25,6 @@ const ParticleEffectContext = createContext<ParticleEffectContextType | null>(
   null
 );
 interface ParticleItem {
-  element: HTMLElement;
   texture: THREE.Texture | null;
   dimensions: {
     width: number;
@@ -37,109 +35,6 @@ interface ParticleItem {
   isAnimating: boolean;
 }
 
-const PreviewMesh: React.FC<{
-  texture: THREE.Texture;
-  itemId: string;
-  dimensions: {
-    width: number;
-    height: number;
-    left: number;
-    top: number;
-  };
-  zOffset: number;
-}> = ({ texture, dimensions: initialDimensions, itemId, zOffset }) => {
-  const { size, camera } = useThree();
-  const [dimensions, setDimensions] = useState(initialDimensions);
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      // Find the original element
-      const element = document.querySelector(
-        `[data-debug-id="particle-effect-item"][data-item-id="${itemId}"]`
-      );
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        setDimensions({
-          width: rect.width,
-          height: rect.height,
-          left: rect.left,
-          top: rect.top,
-        });
-      }
-    };
-
-    // Initial update
-    updateDimensions();
-
-    // Add resize listener
-    window.addEventListener('resize', updateDimensions);
-
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-    };
-  }, [itemId]);
-
-  const meshProps = useMemo((): {
-    position: Vector3;
-    scale: Vector3;
-  } => {
-    if (!(camera instanceof THREE.OrthographicCamera)) {
-      console.error('Expected orthographic camera');
-      return { position: [0, 0, 0], scale: [1, 1, 1] };
-    }
-
-    // Get the camera's vertical field of view in world units
-    // With orthographic camera, this is the height of the visible area
-    const cameraHeight = Math.abs(camera.top - camera.bottom);
-    const cameraWidth = Math.abs(camera.right - camera.left);
-
-    // Calculate world units per pixel
-    const unitsPerPixelY = cameraHeight / size.height;
-    const unitsPerPixelX = cameraWidth / size.width;
-
-    // Convert pixel dimensions to world units
-    const scaleX = dimensions.width * unitsPerPixelX;
-    const scaleY = dimensions.height * unitsPerPixelY;
-
-    // Convert screen coordinates to world coordinates
-    // First get position in pixels from top-left
-    const pixelX = dimensions.left + dimensions.width / 2;
-    const pixelY = dimensions.top + dimensions.height / 2;
-
-    // Convert to world coordinates
-    const worldX = (pixelX - size.width / 2) * unitsPerPixelX;
-    const worldY = -(pixelY - size.height / 2) * unitsPerPixelY;
-
-    console.log('Camera-based calculations:', {
-      dimensions,
-      cameraHeight,
-      cameraWidth,
-      unitsPerPixel: { x: unitsPerPixelX, y: unitsPerPixelY },
-      worldPosition: [worldX, worldY],
-      worldScale: [scaleX, scaleY],
-    });
-
-    return {
-      position: [worldX, worldY, zOffset],
-      scale: [scaleX, scaleY, 1],
-    };
-  }, [camera, size.height, size.width, dimensions, zOffset]);
-
-  return (
-    <mesh position={meshProps.position} scale={meshProps.scale}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial
-        transparent={true}
-        toneMapped={false}
-        blending={THREE.AdditiveBlending}
-      >
-        <primitive attach="map" object={texture} />
-      </meshBasicMaterial>
-    </mesh>
-  );
-};
-
-// Root component that provides the canvas and context
 export const ParticleEffectRoot: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -149,18 +44,18 @@ export const ParticleEffectRoot: React.FC<{
 
   const contextValue = useMemo(
     () => ({
-      registerItem: (id: string, element: HTMLElement | null) => {
-        if (!element) return;
+      triggerEffect: async (id: string, element: HTMLElement) => {
+        if (!element || itemsRef.current.get(id)?.isAnimating) return;
 
-        html2canvas(element, {
-          backgroundColor: null,
-          width: element.offsetWidth,
-          height: element.offsetHeight,
-          allowTaint: true,
-          ignoreElements: elem => {
-            return elem.tagName === 'CANVAS';
-          },
-        }).then(canvas => {
+        try {
+          const canvas = await html2canvas(element, {
+            backgroundColor: null,
+            width: element.offsetWidth,
+            height: element.offsetHeight,
+            allowTaint: true,
+            ignoreElements: elem => elem.tagName === 'CANVAS',
+          });
+
           const texture = new THREE.CanvasTexture(canvas);
           const rect = element.getBoundingClientRect();
 
@@ -171,7 +66,6 @@ export const ParticleEffectRoot: React.FC<{
               existingItem.texture.dispose();
             }
             newMap.set(id, {
-              element,
               texture,
               dimensions: {
                 width: rect.width,
@@ -179,15 +73,30 @@ export const ParticleEffectRoot: React.FC<{
                 left: rect.left,
                 top: rect.top,
               },
-              isAnimating: false,
+              isAnimating: true,
             });
             return newMap;
           });
 
-          window.dispatchEvent(new CustomEvent(`preview-rendered-${id}`));
-        });
+          window.dispatchEvent(new CustomEvent(`particle-effect-start-${id}`));
+        } catch (error) {
+          console.error('Failed to create particle effect:', error);
+        }
       },
-      unregisterItem: (id: string) => {
+      getItemState: (id: string) => {
+        const item = itemsRef.current.get(id);
+        return {
+          isAnimating: item?.isAnimating || false,
+        };
+      },
+    }),
+    []
+  );
+
+  // Cleanup function for completed animations
+  useEffect(() => {
+    const cleanup = (id: string) => {
+      setTimeout(() => {
         setItems(prev => {
           const newMap = new Map(prev);
           const item = newMap.get(id);
@@ -197,44 +106,15 @@ export const ParticleEffectRoot: React.FC<{
           newMap.delete(id);
           return newMap;
         });
-      },
-      getItemState: (id: string) => {
-        const item = itemsRef.current.get(id);
-        return {
-          isAnimating: item?.isAnimating || false,
-        };
-      },
-      triggerEffect: (id: string) => {
-        const item = itemsRef.current.get(id);
-        if (!item || item.isAnimating || !item.texture) return;
+      }, 2400); // Match animation duration
+    };
 
-        // Update dimensions before starting animation
-        const rect = item.element.getBoundingClientRect();
-        const dimensions = {
-          width: rect.width,
-          height: rect.height,
-          left: rect.left,
-          top: rect.top,
-        };
-
-        setItems(prev => {
-          const newMap = new Map(prev);
-          const currentItem = newMap.get(id);
-          if (currentItem) {
-            newMap.set(id, {
-              ...currentItem,
-              dimensions,
-              isAnimating: true,
-            });
-          }
-          return newMap;
-        });
-
-        window.dispatchEvent(new CustomEvent(`preview-animated-${id}`));
-      },
-    }),
-    []
-  );
+    items.forEach((_, id) => {
+      if (items.get(id)?.isAnimating) {
+        cleanup(id);
+      }
+    });
+  }, [items]);
 
   return (
     <ParticleEffectContext.Provider value={contextValue}>
@@ -263,22 +143,15 @@ export const ParticleEffectRoot: React.FC<{
         >
           <OrbitControls enableRotate={false} />
           {Array.from(items.entries()).map(([id, item], index) => {
-            if (item.texture == null) return null;
             const zOffset = (index + 1) * -0.3;
-
-            return item.isAnimating ? (
+            if (item.texture == null) {
+              return;
+            }
+            return (
               <ParticleSystem
                 key={`${id}-particles`}
                 texture={item.texture}
                 dimensions={item.dimensions}
-                zOffset={zOffset}
-              />
-            ) : (
-              <PreviewMesh
-                key={`${id}-preview`}
-                texture={item.texture}
-                dimensions={item.dimensions}
-                itemId={id}
                 zOffset={zOffset}
               />
             );
@@ -296,38 +169,27 @@ interface ItemProps {
 }
 
 const Item: React.FC<ItemProps> = ({ children, id }) => {
-  const context = useContext(ParticleEffectContext);
-  const ref = useRef<HTMLDivElement>(null);
-  // TODO: refactor as a hook - because it's a common pattern in Item and Trigger
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (!context || ref.current == null) return;
-
-    context.registerItem(id, ref.current);
-
-    const handlePreviewRendered = () => {
+    const handleAnimationStart = () => {
       setIsVisible(false);
     };
 
-    const eventName = `preview-rendered-${id}`;
-    window.addEventListener(eventName, handlePreviewRendered);
+    const eventName = `particle-effect-start-${id}`;
+    window.addEventListener(eventName, handleAnimationStart);
 
     return () => {
-      window.removeEventListener(eventName, handlePreviewRendered);
-      context.unregisterItem(id);
+      window.removeEventListener(eventName, handleAnimationStart);
     };
-  }, [id, context]);
+  }, [id]);
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
-    <div
-      ref={ref}
-      data-item-id={id}
-      style={{
-        position: 'relative',
-        visibility: isVisible ? 'visible' : 'hidden',
-      }}
-    >
+    <div data-particle-effect-item data-item-id={id}>
       {children}
     </div>
   );
@@ -605,51 +467,61 @@ interface TriggerProps
   hideAfterTrigger?: boolean;
 }
 
-const Trigger: React.FC<TriggerProps> = forwardRef<
-  HTMLButtonElement,
-  TriggerProps
->((props, ref) => {
-  const {
-    targetId,
-    children = 'Start Animation',
-    onClick,
-    hideAfterTrigger = true,
-    ...restProps
-  } = props;
-  const context = useContext(ParticleEffectContext);
-  const [isVisible, setIsVisible] = useState(true);
-  useEffect(() => {
-    const handlePreviewRendered = () => {
-      setIsVisible(false);
+const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
+  (
+    {
+      targetId,
+      children = 'Start Animation',
+      onClick,
+      hideAfterTrigger = true,
+      ...restProps
+    },
+    ref
+  ) => {
+    const context = useContext(ParticleEffectContext);
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+      const handleAnimationStart = () => {
+        if (hideAfterTrigger) {
+          setIsVisible(false);
+        }
+      };
+
+      const eventName = `particle-effect-start-${targetId}`;
+      window.addEventListener(eventName, handleAnimationStart);
+
+      return () => {
+        window.removeEventListener(eventName, handleAnimationStart);
+      };
+    }, [targetId, hideAfterTrigger]);
+
+    if (!isVisible) {
+      return null;
+    }
+
+    const handleClick = () => {
+      const element = document.querySelector(
+        `[data-particle-effect-item][data-item-id="${targetId}"]`
+      ) as HTMLElement;
+
+      if (element) {
+        context?.triggerEffect(targetId, element);
+      }
     };
 
-    const eventName = `preview-animated-${targetId}`;
-    window.addEventListener(eventName, handlePreviewRendered);
-
-    return () => {
-      window.removeEventListener(eventName, handlePreviewRendered);
-    };
-  }, [targetId]);
-
-  if (hideAfterTrigger && !isVisible) {
-    return null;
+    return (
+      <Primitive.button
+        ref={ref}
+        data-particle-effect-trigger
+        onClick={composeEventHandlers(onClick, handleClick)}
+        {...restProps}
+      >
+        {children}
+      </Primitive.button>
+    );
   }
-
-  const handleClick = () => {
-    context?.triggerEffect(targetId);
-  };
-
-  return (
-    <Primitive.button
-      ref={ref}
-      data-particle-effect-trigger
-      onClick={composeEventHandlers(onClick, handleClick)}
-      {...restProps}
-    >
-      {children}
-    </Primitive.button>
-  );
-});
+);
 
 export const ParticleEffect = {
   Root: ParticleEffectRoot,
@@ -661,6 +533,14 @@ export const useParticleEffect = (id: string) => {
   const context = useContext(ParticleEffectContext);
 
   return {
-    triggerEffect: () => context?.triggerEffect(id),
+    triggerEffect: () => {
+      const element = document.querySelector(
+        `[data-particle-effect-item][data-item-id="${id}"]`
+      ) as HTMLElement;
+
+      if (element) {
+        context?.triggerEffect(id, element);
+      }
+    },
   };
 };
