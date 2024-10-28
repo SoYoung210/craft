@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { If } from '../../utility/If';
@@ -11,6 +11,7 @@ const Container = styled('div', {
   margin: '0 auto',
   maxWidth: 600,
   padding: '1rem',
+  width: '100%',
 
   '@media screen and (max-width: 800px)': {
     padding: '0.5rem',
@@ -49,7 +50,7 @@ const MessageBubble = styled('div', {
   variants: {
     from: {
       me: {
-        alignSelf: 'flex-end',
+        marginLeft: 'auto',
         backgroundColor: '#248bf5',
         color: '#fff',
 
@@ -125,6 +126,87 @@ const MessageBubbleTail1 = styled('div', {
   },
 });
 
+const TapbackBubble = styled('div', {
+  position: 'absolute',
+  top: 0,
+
+  border: '2px solid white',
+  visibility: 'visible',
+  borderRadius: 999,
+  height: 36,
+  width: 36,
+  padding: '8px',
+  display: 'flex',
+  alignItems: 'center',
+
+  '&::before': {
+    content: '""',
+    borderRadius: '999px',
+    position: 'absolute',
+    bottom: '-8px',
+    width: '20px',
+    height: '20px',
+    transform: 'scale(0.28)',
+    transformOrigin: 'center',
+  },
+
+  '&::after': {
+    content: '""',
+    borderRadius: '999px',
+    position: 'absolute',
+    bottom: '-5px',
+    width: '12px',
+    height: '12px',
+    transform: 'scale(0.84)',
+    transformOrigin: 'center',
+  },
+
+  variants: {
+    from: {
+      me: {
+        left: 0,
+        transform: 'translateX(-20px) translateY(-65%)',
+        backgroundColor: '#e5e5ea',
+        color: '#808080',
+        '&::before': {
+          left: '-10px',
+          bottom: '-16px',
+          backgroundColor: '#e5e5ea',
+        },
+        '&::after': {
+          left: 0,
+          backgroundColor: '#e5e5ea',
+        },
+      },
+      them: {
+        right: '0',
+        transform: 'translateX(20px) translateY(-65%)',
+        color: 'white',
+        backgroundColor: '#2D9BFD',
+        '&::before': {
+          right: '-13px',
+          bottom: '-12px',
+          backgroundColor: '#2D9BFD',
+        },
+        '&::after': {
+          right: '-2px',
+          bottom: '-2px',
+          backgroundColor: '#2D9BFD',
+        },
+      },
+    },
+    isVisible: {
+      true: {
+        opacity: 1,
+      },
+    },
+  },
+});
+const TapbackOption = styled('div', {
+  fontSize: '14px',
+  lineHeight: 0,
+});
+
 const MessageBubbleTail2 = styled('div', {
   bottom: '-0.1rem',
   height: '1rem',
@@ -147,7 +229,16 @@ const MessageBubbleTail2 = styled('div', {
     },
   },
 });
+const MessageBubbleWrapper = styled('div', {
+  position: 'relative',
+  padding: '0.5rem',
 
+  '&:hover': {
+    [`& ${TapbackBubble}`]: {
+      opacity: 1,
+    },
+  },
+});
 interface MessageBubbleImplProps {
   from: 'me' | 'them';
   children: React.ReactNode;
@@ -161,7 +252,7 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
   const { from, children, emoji, noTail, marginBottom, marginTop } = props;
 
   return (
-    <div style={{ padding: '0.5rem' }}>
+    <MessageBubbleWrapper style={{ paddingTop: '28px' }}>
       <MessageBubble
         from={from}
         emoji={emoji}
@@ -184,11 +275,13 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
           <MessageBubbleTail2 from="them" />
         </If>
       </MessageBubble>
-    </div>
+    </MessageBubbleWrapper>
   );
 };
 
 IMessageComponent.Container = IMessage;
 IMessageComponent.MessageBubble = MessageBubbleImpl;
+IMessageComponent.TapbackBubble = TapbackBubble;
+IMessageComponent.TapbackOption = TapbackOption;
 
 export default IMessageComponent;
