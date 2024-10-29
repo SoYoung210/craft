@@ -1,5 +1,4 @@
-import { forwardRef, ReactNode, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { forwardRef, ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { If } from '../../utility/If';
@@ -19,7 +18,7 @@ const Container = styled('div', {
   },
 });
 
-const IMessageStyled = styled(motion.div, {
+const IMessage = styled('div', {
   backgroundColor: '#fff',
   border: '1px solid #e5e5ea',
   borderRadius: '0.25rem',
@@ -28,6 +27,7 @@ const IMessageStyled = styled(motion.div, {
   fontFamily: '"SanFrancisco", sans-serif',
   fontSize: '1.25rem',
   maxWidth: 600,
+  padding: '0.5rem 1.5rem',
 
   '@media screen and (max-width: 800px)': {
     fontSize: '1.05rem',
@@ -35,44 +35,6 @@ const IMessageStyled = styled(motion.div, {
     padding: '0.25rem 0.875rem',
   },
 });
-
-const IMessage = forwardRef<HTMLDivElement, { children: ReactNode }>(
-  ({ children, ...props }, ref) => {
-    const [height, setHeight] = useState<number | 'auto'>('auto');
-    const innerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const observer = new ResizeObserver(entries => {
-        for (const entry of entries) {
-          const rect = entry.target.getBoundingClientRect();
-          setHeight(rect.height);
-        }
-      });
-
-      if (innerRef.current) {
-        observer.observe(innerRef.current);
-      }
-
-      return () => observer.disconnect();
-    }, []);
-
-    return (
-      <IMessageStyled
-        ref={ref}
-        animate={{ height }}
-        transition={{
-          ease: [0.22, 1, 0.36, 1],
-          duration: 1.2,
-        }}
-        {...props}
-      >
-        <div ref={innerRef} style={{ padding: '0.5rem 1.5rem' }}>
-          {children}
-        </div>
-      </IMessageStyled>
-    );
-  }
-);
 
 const MessageBubble = styled('div', {
   borderRadius: '1.15rem',
