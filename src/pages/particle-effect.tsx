@@ -15,23 +15,29 @@ interface Message {
 }
 const MESSAGES: Message[] = [
   {
-    id: 'first chat bubble',
+    id: '1',
     from: 'them',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid dignissimos ut cumque quibusdam sint repudiandae et officia officiis eos pariatur enim excepturi praesentium, aliquam mollitia nam voluptas debitis porro! Quisquam.',
+    message: `How did you make this particle effect? It looks amazing!`,
   },
   {
-    id: 'second chat bubble',
+    id: '2',
     from: 'me',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid uam.',
+    message: `I render a canvas over the whole page, and when you click the ParticleEffect.Trigger—basically the trash can icon—I use html2canvas to render the HTML content as a mesh.`,
   },
   {
-    id: 'third bubble',
+    id: '3',
     from: 'me',
-    message: '👍🏻',
-    emoji: true,
-    noTail: true,
+    message: 'Then, I applied a shader to create a kind of Thanos snap effect.',
+  },
+  {
+    id: '4',
+    from: 'them',
+    message: `That sounds so cool 👍`,
+  },
+  {
+    id: '5',
+    from: 'me',
+    message: `Yeah, there were a lot of trial and error moments... it was my first shader project. But you know, working with Claude AI made it doable. I’m a big fan of Claude.`,
   },
 ];
 export default function ParticleEffectPage() {
