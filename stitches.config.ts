@@ -47,8 +47,8 @@ export const colors = {
 
 const interactivityIntensity = {
   medium: {
-    hover: 0.1,
-    active: 0.15,
+    hover: 0.025,
+    active: 0.05,
   },
   strong: {
     hover: 0.15,
