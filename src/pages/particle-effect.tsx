@@ -63,7 +63,14 @@ export default function ParticleEffectPage() {
       <div style={{ marginTop: 40 }}>
         <ParticleEffect.Root>
           <IMessageComponent>
-            <IMessageComponent.Container style={{ height: HEIGHT }}>
+            <IMessageComponent.Container
+              style={{
+                height: HEIGHT,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <AnimatePresence>
                 {hasContent ? (
                   <motion.div
@@ -108,6 +115,7 @@ export default function ParticleEffectPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       minHeight: HEIGHT,
+                      width: '100%',
                     }}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -118,7 +126,7 @@ export default function ParticleEffectPage() {
                       aria-label="Regenerate Items"
                       style={{
                         position: 'absolute',
-                        top: 0,
+                        top: 10,
                         right: -10,
                       }}
                     >
