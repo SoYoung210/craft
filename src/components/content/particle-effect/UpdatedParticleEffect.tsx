@@ -3,11 +3,8 @@ import React, {
   useMemo,
   useEffect,
   useState,
-  createContext,
-  useContext,
   ComponentPropsWithoutRef,
   forwardRef,
-  ReactNode,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, extend, useThree } from '@react-three/fiber';
@@ -17,14 +14,25 @@ import html2canvas from 'html2canvas';
 import { Primitive } from '@radix-ui/react-primitive';
 import { composeEventHandlers } from '@radix-ui/primitive';
 
-interface ParticleEffectContextType {
+import { createContext } from '../../utility/createContext';
+
+interface ParticleEffectContextValue {
   triggerEffect: (id: string, element: HTMLElement) => void;
   getItemState: (id: string) => { isAnimating: boolean };
 }
 
-const ParticleEffectContext = createContext<ParticleEffectContextType | null>(
-  null
-);
+const [ParticleEffectProvider, useParticleEffectContext] =
+  createContext<ParticleEffectContextValue>('ParticleEffectContext');
+
+interface ParticleItemContextValue {
+  id: string | undefined;
+}
+
+const [ParticleItemProvider, useParticleItemContext] =
+  createContext<ParticleItemContextValue>('ParticleItemContext', {
+    id: undefined,
+  });
+
 interface ParticleItem {
   texture: THREE.Texture | null;
   dimensions: {
@@ -94,7 +102,6 @@ export const ParticleEffectRoot: React.FC<{
     []
   );
 
-  // Cleanup function for completed animations
   useEffect(() => {
     const cleanup = (id: string) => {
       setTimeout(() => {
@@ -107,7 +114,7 @@ export const ParticleEffectRoot: React.FC<{
           newMap.delete(id);
           return newMap;
         });
-      }, 2400); // Match animation duration
+      }, 2400);
     };
 
     items.forEach((_, id) => {
@@ -118,7 +125,7 @@ export const ParticleEffectRoot: React.FC<{
   }, [items]);
 
   return (
-    <ParticleEffectContext.Provider value={contextValue}>
+    <ParticleEffectProvider {...contextValue}>
       <div
         style={{
           position: 'fixed',
@@ -160,7 +167,7 @@ export const ParticleEffectRoot: React.FC<{
         </Canvas>
       </div>
       {children}
-    </ParticleEffectContext.Provider>
+    </ParticleEffectProvider>
   );
 };
 
@@ -188,29 +195,27 @@ const Item = forwardRef<HTMLDivElement, ItemProps>(
     }, [id]);
 
     return (
-      <AnimatePresence onExitComplete={onExitComplete}>
-        {!shouldExit ? (
-          <motion.div
-            ref={ref}
-            layout
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.65 }}
-            data-particle-effect-item
-            data-item-id={id}
-            {...restProps}
-          >
-            {children}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <ParticleItemProvider id={id}>
+        <AnimatePresence onExitComplete={onExitComplete}>
+          {!shouldExit ? (
+            <motion.div
+              ref={ref}
+              layout
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.65 }}
+              data-particle-effect-item
+              data-item-id={id}
+              {...restProps}
+            >
+              {children}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </ParticleItemProvider>
     );
   }
 );
-
-export function Container({ children }: { children: ReactNode }) {
-  return <AnimatePresence mode="popLayout">{children}</AnimatePresence>;
-}
 
 interface ParticleSystemProps {
   texture: THREE.Texture;
@@ -438,7 +443,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
         // animationStartTime = -1;
         return;
       }
-      // setAnimationProgress(progress);
+
       if (material.current) {
         material.current.uniforms.u_ElapsedTime.value = elapsedTime;
       }
@@ -480,22 +485,18 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
 };
 interface TriggerProps
   extends ComponentPropsWithoutRef<typeof Primitive.button> {
-  targetId: string;
+  targetId?: string;
   hideAfterTrigger?: boolean;
 }
 
 const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
   (
-    {
-      targetId,
-      children = 'Start Animation',
-      onClick,
-      hideAfterTrigger = true,
-      ...restProps
-    },
+    { targetId, children, onClick, hideAfterTrigger = true, ...restProps },
     ref
   ) => {
-    const context = useContext(ParticleEffectContext);
+    const context = useParticleEffectContext('ParticleEffect.Trigger');
+    const { id: itemId } = useParticleItemContext('ParticleEffect.Trigger');
+    const id = targetId ?? itemId ?? '';
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
@@ -505,13 +506,13 @@ const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
         }
       };
 
-      const eventName = `particle-effect-start-${targetId}`;
+      const eventName = `particle-effect-start-${id}`;
       window.addEventListener(eventName, handleAnimationStart);
 
       return () => {
         window.removeEventListener(eventName, handleAnimationStart);
       };
-    }, [targetId, hideAfterTrigger]);
+    }, [hideAfterTrigger, id]);
 
     if (!isVisible) {
       return null;
@@ -519,11 +520,11 @@ const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
 
     const handleClick = () => {
       const element = document.querySelector(
-        `[data-particle-effect-item][data-item-id="${targetId}"]`
+        `[data-particle-effect-item][data-item-id="${id}"]`
       ) as HTMLElement;
 
       if (element) {
-        context?.triggerEffect(targetId, element);
+        context?.triggerEffect(id, element);
       }
     };
 
@@ -544,21 +545,4 @@ export const ParticleEffect = {
   Root: ParticleEffectRoot,
   Item,
   Trigger,
-  Container,
-};
-
-export const useParticleEffect = (id: string) => {
-  const context = useContext(ParticleEffectContext);
-
-  return {
-    triggerEffect: () => {
-      const element = document.querySelector(
-        `[data-particle-effect-item][data-item-id="${id}"]`
-      ) as HTMLElement;
-
-      if (element) {
-        context?.triggerEffect(id, element);
-      }
-    },
-  };
 };

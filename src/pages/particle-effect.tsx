@@ -52,9 +52,9 @@ export default function ParticleEffectPage() {
                 {messages.map(({ id, from, message, emoji, noTail }) => {
                   return (
                     <ParticleEffect.Item
-                      onExitComplete={() => handleExitComplete(id)}
-                      id={id}
                       key={id}
+                      id={id}
+                      onExitComplete={() => handleExitComplete(id)}
                     >
                       <IMessageComponent.MessageBubble
                         from={from}
@@ -62,7 +62,7 @@ export default function ParticleEffectPage() {
                         noTail={noTail}
                       >
                         {message}
-                        <ParticleEffect.Trigger targetId={id} asChild>
+                        <ParticleEffect.Trigger asChild>
                           <IMessageComponent.TapbackBubble from={from}>
                             <IMessageComponent.TapbackOption>
                               <TrashIcon size={17} />
