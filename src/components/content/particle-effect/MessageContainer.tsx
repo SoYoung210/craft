@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { forwardRef, ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { If } from '../../utility/If';
@@ -126,7 +126,7 @@ const MessageBubbleTail1 = styled('div', {
   },
 });
 
-const TapbackBubble = styled('div', {
+const TapbackBubbleImpl = styled('div', {
   position: 'absolute',
   top: 0,
 
@@ -138,6 +138,9 @@ const TapbackBubble = styled('div', {
   padding: '8px',
   display: 'flex',
   alignItems: 'center',
+
+  opacity: 0,
+  transition: 'opacity 200ms ease, transform 200ms ease',
 
   '&::before': {
     content: '""',
@@ -165,7 +168,8 @@ const TapbackBubble = styled('div', {
     from: {
       me: {
         left: 0,
-        transform: 'translateX(-20px) translateY(-65%)',
+        // transform: 'translateX(-20px) translateY(-65%)',
+        transform: 'translateX(-20px) translateY(-50%)',
         backgroundColor: '#e5e5ea',
         color: '#808080',
         '&::before': {
@@ -180,7 +184,8 @@ const TapbackBubble = styled('div', {
       },
       them: {
         right: '0',
-        transform: 'translateX(20px) translateY(-65%)',
+        // transform: 'translateX(20px) translateY(-65%)',
+        transform: 'translateX(20px) translateY(-50%)',
         color: 'white',
         backgroundColor: '#2D9BFD',
         '&::before': {
@@ -234,8 +239,15 @@ const MessageBubbleWrapper = styled('div', {
   padding: '0.5rem',
 
   '&:hover': {
-    [`& ${TapbackBubble}`]: {
+    [`& ${TapbackBubbleImpl}`]: {
       opacity: 1,
+    },
+
+    [`& ${TapbackBubbleImpl}[data-variant="me"]`]: {
+      transform: 'translateX(-20px) translateY(-65%)',
+    },
+    [`& ${TapbackBubbleImpl}[data-variant="them"]`]: {
+      transform: 'translateX(20px) translateY(-65%)',
     },
   },
 });
@@ -278,6 +290,20 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
     </MessageBubbleWrapper>
   );
 };
+
+const TapbackBubble = forwardRef<
+  HTMLDivElement,
+  { from: 'me' | 'them'; children: ReactNode }
+>(({ from, ...restProps }, ref) => {
+  return (
+    <TapbackBubbleImpl
+      ref={ref}
+      from={from}
+      data-variant={from}
+      {...restProps}
+    />
+  );
+});
 
 IMessageComponent.Container = IMessage;
 IMessageComponent.MessageBubble = MessageBubbleImpl;
