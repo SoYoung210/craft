@@ -27,7 +27,7 @@ const IMessage = styled('div', {
   fontFamily: '"SanFrancisco", sans-serif',
   fontSize: '1.25rem',
   maxWidth: 600,
-  padding: '0.5rem 1.5rem',
+  padding: '1.5rem',
 
   '@media screen and (max-width: 800px)': {
     fontSize: '1.05rem',
@@ -261,7 +261,7 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
   const { from, children, emoji, noTail, marginBottom, marginTop } = props;
 
   return (
-    <MessageBubbleWrapper style={{ paddingTop: '28px' }}>
+    <MessageBubbleWrapper>
       <MessageBubble
         from={from}
         emoji={emoji}
