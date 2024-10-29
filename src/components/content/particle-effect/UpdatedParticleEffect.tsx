@@ -16,6 +16,8 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 
 import { createContext } from '../../utility/createContext';
 
+import { DATA_ATTRIBUTES, eventNames, selectors } from './utils';
+
 interface ParticleEffectContextValue {
   triggerEffect: (id: string, element: HTMLElement) => void;
   getItemState: (id: string) => { isAnimating: boolean };
@@ -87,7 +89,7 @@ export const ParticleEffectRoot: React.FC<{
             return newMap;
           });
 
-          window.dispatchEvent(new CustomEvent(`particle-effect-start-${id}`));
+          window.dispatchEvent(new CustomEvent(eventNames.particleStart(id)));
         } catch (error) {
           console.error('Failed to create particle effect:', error);
         }
@@ -186,7 +188,7 @@ const Item = forwardRef<HTMLDivElement, ItemProps>(
         setShouldExit(true);
       };
 
-      const eventName = `particle-effect-start-${id}`;
+      const eventName = eventNames.particleStart(id);
       window.addEventListener(eventName, handleAnimationStart);
 
       return () => {
@@ -204,8 +206,7 @@ const Item = forwardRef<HTMLDivElement, ItemProps>(
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.65 }}
-              data-particle-effect-item
-              data-item-id={id}
+              {...{ [DATA_ATTRIBUTES.ITEM_ID]: id }}
               {...restProps}
             >
               {children}
@@ -520,7 +521,7 @@ const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
 
     const handleClick = () => {
       const element = document.querySelector(
-        `[data-particle-effect-item][data-item-id="${id}"]`
+        selectors.getItemById(id)
       ) as HTMLElement;
 
       if (element) {
@@ -531,7 +532,6 @@ const Trigger = forwardRef<HTMLButtonElement, TriggerProps>(
     return (
       <Primitive.button
         ref={ref}
-        data-particle-effect-trigger
         onClick={composeEventHandlers(onClick, handleClick)}
         {...restProps}
       >
