@@ -271,7 +271,7 @@ const ParticleMaterial = shaderMaterial(
     }
 
     float random(vec2 st) {
-        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+        return fract(sin(dot(st.xy, vec2(13.0,78.2))) * 43758.5);
     }
 
     float random(float v, float mult) {
@@ -385,8 +385,7 @@ const ParticleMaterial = shaderMaterial(
 );
 
 extend({ ParticleMaterial });
-const duration = 2400;
-const particleSize = 1;
+const duration = 2000;
 const ParticleSystem: React.FC<ParticleSystemProps> = ({
   texture,
   dimensions,
@@ -394,15 +393,19 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
 }) => {
   const mesh = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
+  const [particleSize, setParticleSize] = useState(0.5);
 
   const { size } = useThree();
-  const [particlesCount, setParticlesCount] = useState(0);
+
+  useEffect(() => {
+    const dpr = window.devicePixelRatio;
+    setParticleSize(-0.5 * dpr + 1.5);
+  }, []);
 
   useEffect(() => {
     const rect = dimensions;
     const textureWidth = Math.round(rect.width / particleSize);
     const textureHeight = Math.round(rect.height / particleSize);
-    setParticlesCount(textureWidth * textureHeight);
 
     if (material.current) {
       material.current.uniforms.u_Texture.value = texture;
@@ -416,7 +419,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       material.current.uniforms.u_TextureTop.value = rect.top;
       material.current.uniforms.u_ZOffset.value = zOffset;
     }
-  }, [size, particlesCount, dimensions, texture, zOffset]);
+  }, [size, dimensions, texture, zOffset, particleSize]);
 
   const { particles, positions } = useMemo(() => {
     const textureWidth = Math.round(dimensions.width / particleSize);
@@ -433,7 +436,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       particlePositions[i * 3 + 2] = 0;
     }
     return { particles: particleIndices, positions: particlePositions };
-  }, [dimensions.width, dimensions.height]);
+  }, [dimensions.width, dimensions.height, particleSize]);
 
   useEffect(() => {
     const animationDuration = duration;
@@ -444,7 +447,6 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       const elapsedTime = currentTime - startTime;
       const progress = Math.min(1, elapsedTime / animationDuration);
       if (elapsedTime > animationDuration) {
-        // animationStartTime = -1;
         return;
       }
 
