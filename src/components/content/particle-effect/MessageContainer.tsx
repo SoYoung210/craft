@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { If } from '../../utility/If';

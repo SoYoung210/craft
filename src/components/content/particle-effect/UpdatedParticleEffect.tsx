@@ -7,6 +7,7 @@ import React, {
   useContext,
   ComponentPropsWithoutRef,
   forwardRef,
+  ReactNode,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, extend, useThree } from '@react-three/fiber';
@@ -141,7 +142,7 @@ export const ParticleEffectRoot: React.FC<{
           }}
           style={{ width: '100%', height: '100%' }}
         >
-          <OrbitControls enableRotate={false} />
+          <OrbitControls enableRotate={false} enableZoom={false} />
           {Array.from(items.entries()).map(([id, item], index) => {
             const zOffset = (index + 1) * -0.3;
             if (item.texture == null) {
@@ -166,34 +167,50 @@ export const ParticleEffectRoot: React.FC<{
 interface ItemProps {
   children: React.ReactNode;
   id: string;
+  onExitComplete?: () => void;
 }
 
-const Item: React.FC<ItemProps> = ({ children, id }) => {
-  const [isVisible, setIsVisible] = useState(true);
+const Item = forwardRef<HTMLDivElement, ItemProps>(
+  ({ children, id, onExitComplete, ...restProps }, ref) => {
+    const [shouldExit, setShouldExit] = useState(false);
 
-  useEffect(() => {
-    const handleAnimationStart = () => {
-      setIsVisible(false);
-    };
+    useEffect(() => {
+      const handleAnimationStart = () => {
+        setShouldExit(true);
+      };
 
-    const eventName = `particle-effect-start-${id}`;
-    window.addEventListener(eventName, handleAnimationStart);
+      const eventName = `particle-effect-start-${id}`;
+      window.addEventListener(eventName, handleAnimationStart);
 
-    return () => {
-      window.removeEventListener(eventName, handleAnimationStart);
-    };
-  }, [id]);
+      return () => {
+        window.removeEventListener(eventName, handleAnimationStart);
+      };
+    }, [id]);
 
-  if (!isVisible) {
-    return null;
+    return (
+      <AnimatePresence onExitComplete={onExitComplete}>
+        {!shouldExit ? (
+          <motion.div
+            ref={ref}
+            layout
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.65 }}
+            data-particle-effect-item
+            data-item-id={id}
+            {...restProps}
+          >
+            {children}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    );
   }
+);
 
-  return (
-    <div data-particle-effect-item data-item-id={id}>
-      {children}
-    </div>
-  );
-};
+export function Container({ children }: { children: ReactNode }) {
+  return <AnimatePresence mode="popLayout">{children}</AnimatePresence>;
+}
 
 interface ParticleSystemProps {
   texture: THREE.Texture;
@@ -527,6 +544,7 @@ export const ParticleEffect = {
   Root: ParticleEffectRoot,
   Item,
   Trigger,
+  Container,
 };
 
 export const useParticleEffect = (id: string) => {
