@@ -203,9 +203,13 @@ const Item = forwardRef<HTMLDivElement, ItemProps>(
             <motion.div
               ref={ref}
               layout
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.65 }}
+              initial={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{
+                ease: [0.22, 1, 0.36, 1],
+                duration: 1.2,
+                opacity: { duration: 0.4 },
+              }}
               {...{ [DATA_ATTRIBUTES.ITEM_ID]: id }}
               {...restProps}
             >
@@ -411,7 +415,6 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       material.current.uniforms.u_TextureLeft.value = rect.left;
       material.current.uniforms.u_TextureTop.value = rect.top;
       material.current.uniforms.u_ZOffset.value = zOffset;
-      console.log({ zOffset });
     }
   }, [size, particlesCount, dimensions, texture, zOffset]);
 
