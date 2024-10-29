@@ -6,6 +6,9 @@ export const globalStyles = globalCss({
     margin: 0,
     WebkitFontSmoothing: 'antialiased',
   },
+  '*::selection': {
+    background: '#95a5ac40',
+  },
   'html, body': {
     height: `100%`,
     fontSize: `14px`,
