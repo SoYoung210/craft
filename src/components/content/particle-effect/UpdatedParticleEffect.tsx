@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, extend, useThree } from '@react-three/fiber';
-import { OrbitControls, shaderMaterial } from '@react-three/drei';
+import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import html2canvas from 'html2canvas';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -128,6 +128,7 @@ export const ParticleEffectRoot: React.FC<{
 
   return (
     <ParticleEffectProvider {...contextValue}>
+      {children}
       <div
         style={{
           position: 'fixed',
@@ -149,9 +150,8 @@ export const ParticleEffectRoot: React.FC<{
             depth: true,
             logarithmicDepthBuffer: true,
           }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
         >
-          <OrbitControls enableRotate={false} enableZoom={false} />
           {Array.from(items.entries()).map(([id, item], index) => {
             const zOffset = (index + 1) * -0.3;
             if (item.texture == null) {
@@ -168,7 +168,6 @@ export const ParticleEffectRoot: React.FC<{
           })}
         </Canvas>
       </div>
-      {children}
     </ParticleEffectProvider>
   );
 };
