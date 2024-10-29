@@ -12,6 +12,22 @@ const IndexPage = () => {
       <PageLayout.Title>Craft</PageLayout.Title>
       <ContentList>
         <ContentList.Item active>
+          <Link to="/particle-effect">
+            <ContentBox title="Particle Effect">
+              <StaticImage
+                src="../images/thumbnails/particle-effect.webp"
+                alt="Radial Menu with Content"
+                placeholder="none"
+                style={{
+                  width: '60%',
+                }}
+                quality={70}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/radial-menu">
             <ContentBox title="Radial Menu">
               <StaticImage
