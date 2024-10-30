@@ -102,6 +102,7 @@ export default function ParticleEffectPage() {
 
     const { top, left } = firstBubbleEl.getBoundingClientRect();
 
+    helperRef.current.style.opacity = '1';
     helperRef.current.style.top = `${top - 54}px`;
     helperRef.current.style.left = `${left + 37.5}px`;
   }, [firstBubbleEl]);
@@ -228,9 +229,16 @@ export default function ParticleEffectPage() {
 
 const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
   return (
-    <div ref={ref} style={{ position: 'fixed', transform: 'rotate(10deg)' }}>
+    <div
+      ref={ref}
+      style={{ position: 'fixed', opacity: 0, transform: 'rotate(10deg)' }}
+    >
       <div
-        style={{ fontFamily: '"Nanum Pen Script"', transform: 'scale(1.45)' }}
+        style={{
+          fontFamily: '"Nanum Pen Script"',
+          paddingBottom: 4,
+          transform: 'scale(1.45)',
+        }}
       >
         Click the trash can icon!
       </div>
