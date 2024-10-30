@@ -28,4 +28,9 @@ export const globalStyles = globalCss({
     border: 0,
     padding: 0,
   },
+
+  '@font-face': {
+    fontFamily: 'Nanum Pen Script',
+    fontDisplay: 'block',
+  },
 });

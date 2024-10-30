@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { forwardRef, ReactNode, useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
-
 import '@fontsource/nanum-pen-script/400.css';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import NanumPenFont from '@fontsource/nanum-pen-script/files/nanum-pen-script-latin-400-normal.woff2';
 
 import IMessageComponent from '../components/content/particle-effect/MessageContainer';
 import { ParticleEffect } from '../components/content/particle-effect/UpdatedParticleEffect';
@@ -10,7 +12,7 @@ import ArrowIcon from '../images/icons/script-arrow.svg';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import { TrashIcon } from '../components/material/icon/TranshIcon';
 import Button from '../components/material/Button';
-import { keyframes, styled } from '../../stitches.config';
+import { styled } from '../../stitches.config';
 import { RotateRightIcon } from '../components/material/icon/RotateRightIcon';
 import { If } from '../components/utility/If';
 import SEO from '../components/layout/SEO';
@@ -207,14 +209,7 @@ export default function ParticleEffectPage() {
 const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
   return (
     <HelperTextRoot ref={ref}>
-      <div
-        style={{
-          fontFamily: '"Nanum Pen Script"',
-          paddingBottom: 4,
-        }}
-      >
-        Click the trash can icon!
-      </div>
+      <NanumPenScript>Click the trash can icon!</NanumPenScript>
       <div
         style={{
           transform: 'rotate(320deg)',
@@ -229,25 +224,19 @@ const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
   );
 });
 
+const NanumPenScript = styled('div', {
+  fontFamily: '$nanumBlock',
+  paddingBottom: 4,
+});
 const StyledText = styled('div', {
   color: '$gray6',
   fontSize: 24,
   fontWeight: 500,
 });
 
-const fadeIn = keyframes({
-  from: {
-    opacity: 0,
-  },
-  to: {
-    opacity: 1,
-  },
-});
-
 const HelperTextRoot = styled('div', {
   position: 'absolute',
   transform: 'rotate(10deg)',
-  animation: `0.8s ease ${fadeIn} `,
   color: '$gray10',
   minWidth: 180,
   display: 'flex',
@@ -259,14 +248,23 @@ const HelperTextRoot = styled('div', {
 
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
-    <SEO
-      title="Particle Effect"
-      description="October 2024"
-      thumbnailSrc={
-        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
-          .fallback?.src
-      }
-    />
+    <>
+      <SEO
+        title="Particle Effect"
+        description="October 2024"
+        thumbnailSrc={
+          props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+            .fallback?.src
+        }
+      />
+      <link
+        rel="preload"
+        as="font"
+        type="font/woff2"
+        href={NanumPenFont}
+        crossOrigin="anonymous"
+      />
+    </>
   );
 };
 

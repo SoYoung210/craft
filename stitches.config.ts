@@ -74,7 +74,11 @@ export const {
       large: '0 30px 60px rgba(0,0,0,0.12)',
     },
     colors,
+    fonts: {
+      nanumBlock: '"Nanum Pen Script"',
+    },
   },
+
   utils: {
     size: (value: string | number) => ({
       width: value,
