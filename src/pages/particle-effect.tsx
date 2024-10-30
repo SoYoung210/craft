@@ -1,12 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  forwardRef,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { forwardRef, ReactNode, useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
 
 import '@fontsource/nanum-pen-script/400.css';
@@ -19,7 +12,6 @@ import { TrashIcon } from '../components/material/icon/TranshIcon';
 import Button from '../components/material/Button';
 import { keyframes, styled } from '../../stitches.config';
 import { RotateRightIcon } from '../components/material/icon/RotateRightIcon';
-import useWindowEvent from '../hooks/useWindowEvent';
 import { If } from '../components/utility/If';
 import SEO from '../components/layout/SEO';
 
@@ -94,24 +86,7 @@ const MESSAGES: Message[] = [
 
 const HEIGHT = 860;
 export default function ParticleEffectPage() {
-  const [firstBubbleEl, setFirstBubbleEl] = useState<HTMLElement | null>(null);
   const [needHelper, setNeedHelper] = useState(true);
-  const needHelperRender = needHelper && firstBubbleEl != null;
-  const helperRef = useRef<HTMLDivElement>(null);
-  const setHelperPosition = useCallback(() => {
-    if (firstBubbleEl == null || helperRef.current == null) {
-      return;
-    }
-
-    const { top, left } = firstBubbleEl.getBoundingClientRect();
-
-    helperRef.current.style.top = `${top - 54}px`;
-    helperRef.current.style.left = `${left + 37.5}px`;
-  }, [firstBubbleEl]);
-  useWindowEvent('resize', setHelperPosition);
-  useEffect(() => {
-    setHelperPosition();
-  }, [setHelperPosition]);
 
   const [messages, setMessages] = useState(MESSAGES);
   const handleExitComplete = (id: string) => {
@@ -125,9 +100,7 @@ export default function ParticleEffectPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Particle Effect</PageLayout.Title>
-      <If condition={needHelperRender}>
-        <HelperArrow ref={helperRef} />
-      </If>
+
       <ParticleEffect.Root>
         <IMessageComponent>
           <IMessageComponent.Container
@@ -161,11 +134,6 @@ export default function ParticleEffectPage() {
                               {message}
                               <ParticleEffect.Trigger asChild>
                                 <IMessageComponent.TapbackBubble
-                                  ref={
-                                    isFirstElement
-                                      ? setFirstBubbleEl
-                                      : undefined
-                                  }
                                   isVisible={isFirstElement}
                                   from={from}
                                   onClick={
@@ -174,9 +142,16 @@ export default function ParticleEffectPage() {
                                       : undefined
                                   }
                                 >
-                                  <IMessageComponent.TapbackOption>
-                                    <TrashIcon size={17} />
-                                  </IMessageComponent.TapbackOption>
+                                  <div style={{ position: 'relative' }}>
+                                    <IMessageComponent.TapbackOption>
+                                      <TrashIcon size={17} />
+                                    </IMessageComponent.TapbackOption>
+                                    <If
+                                      condition={needHelper && isFirstElement}
+                                    >
+                                      <HelperArrow />
+                                    </If>
+                                  </div>
                                 </IMessageComponent.TapbackBubble>
                               </ParticleEffect.Trigger>
                             </IMessageComponent.MessageBubble>
@@ -236,7 +211,6 @@ const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
         style={{
           fontFamily: '"Nanum Pen Script"',
           paddingBottom: 4,
-          transform: 'scale(1.45)',
         }}
       >
         Click the trash can icon!
@@ -244,6 +218,9 @@ const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
       <div
         style={{
           transform: 'rotate(320deg)',
+          transformOrigin: 'left',
+          paddingTop: 60,
+          paddingLeft: 35,
         }}
       >
         <ArrowIcon />
@@ -268,9 +245,16 @@ const fadeIn = keyframes({
 });
 
 const HelperTextRoot = styled('div', {
-  position: 'fixed',
+  position: 'absolute',
   transform: 'rotate(10deg)',
   animation: `0.8s ease ${fadeIn} `,
+  color: '$gray10',
+  minWidth: 180,
+  display: 'flex',
+  flexDirection: 'column',
+  fontSize: 20,
+  top: -62,
+  left: 5,
 });
 
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
