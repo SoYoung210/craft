@@ -6,6 +6,9 @@ export const globalStyles = globalCss({
     margin: 0,
     WebkitFontSmoothing: 'antialiased',
   },
+  '*::selection': {
+    background: '#95a5ac40',
+  },
   'html, body': {
     height: `100%`,
     fontSize: `14px`,
@@ -24,5 +27,10 @@ export const globalStyles = globalCss({
   button: {
     border: 0,
     padding: 0,
+  },
+
+  '@font-face': {
+    fontFamily: 'Nanum Pen Script',
+    fontDisplay: 'block',
   },
 });

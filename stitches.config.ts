@@ -47,8 +47,8 @@ export const colors = {
 
 const interactivityIntensity = {
   medium: {
-    hover: 0.1,
-    active: 0.15,
+    hover: 0.025,
+    active: 0.05,
   },
   strong: {
     hover: 0.15,
@@ -74,7 +74,11 @@ export const {
       large: '0 30px 60px rgba(0,0,0,0.12)',
     },
     colors,
+    fonts: {
+      nanumBlock: '"Nanum Pen Script"',
+    },
   },
+
   utils: {
     size: (value: string | number) => ({
       width: value,
