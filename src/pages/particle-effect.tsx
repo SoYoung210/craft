@@ -17,7 +17,7 @@ import ArrowIcon from '../images/icons/script-arrow.svg';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import { TrashIcon } from '../components/material/icon/TranshIcon';
 import Button from '../components/material/Button';
-import { styled } from '../../stitches.config';
+import { keyframes, styled } from '../../stitches.config';
 import { RotateRightIcon } from '../components/material/icon/RotateRightIcon';
 import useWindowEvent from '../hooks/useWindowEvent';
 import { If } from '../components/utility/If';
@@ -96,6 +96,7 @@ const HEIGHT = 860;
 export default function ParticleEffectPage() {
   const [firstBubbleEl, setFirstBubbleEl] = useState<HTMLElement | null>(null);
   const [needHelper, setNeedHelper] = useState(true);
+  const needHelperRender = needHelper && firstBubbleEl != null;
   const helperRef = useRef<HTMLDivElement>(null);
   const setHelperPosition = useCallback(() => {
     if (firstBubbleEl == null || helperRef.current == null) {
@@ -104,7 +105,6 @@ export default function ParticleEffectPage() {
 
     const { top, left } = firstBubbleEl.getBoundingClientRect();
 
-    helperRef.current.style.opacity = '1';
     helperRef.current.style.top = `${top - 54}px`;
     helperRef.current.style.left = `${left + 37.5}px`;
   }, [firstBubbleEl]);
@@ -125,7 +125,7 @@ export default function ParticleEffectPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Particle Effect</PageLayout.Title>
-      <If condition={needHelper}>
+      <If condition={needHelperRender}>
         <HelperArrow ref={helperRef} />
       </If>
       <ParticleEffect.Root>
@@ -231,10 +231,7 @@ export default function ParticleEffectPage() {
 
 const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
   return (
-    <div
-      ref={ref}
-      style={{ position: 'fixed', opacity: 0, transform: 'rotate(10deg)' }}
-    >
+    <HelperTextRoot ref={ref}>
       <div
         style={{
           fontFamily: '"Nanum Pen Script"',
@@ -251,7 +248,7 @@ const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
       >
         <ArrowIcon />
       </div>
-    </div>
+    </HelperTextRoot>
   );
 });
 
@@ -259,6 +256,21 @@ const StyledText = styled('div', {
   color: '$gray6',
   fontSize: 24,
   fontWeight: 500,
+});
+
+const fadeIn = keyframes({
+  from: {
+    opacity: 0,
+  },
+  to: {
+    opacity: 1,
+  },
+});
+
+const HelperTextRoot = styled('div', {
+  position: 'fixed',
+  transform: 'rotate(10deg)',
+  animation: `0.8s ease ${fadeIn} `,
 });
 
 export const Head = (props: PageProps<Queries.PageDataQuery>) => {
