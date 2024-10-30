@@ -21,6 +21,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.20",
     "@fontsource/inter": "^5.0.20",
+    "@fontsource/nanum-pen-script": "^5.1.0",
     "@gatsbyjs/reach-router": "^2.0.1",
     "@radix-ui/primitive": "^1.0.1",
     "@radix-ui/react-collection": "^1.1.0",
