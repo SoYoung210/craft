@@ -55,7 +55,7 @@ const MESSAGES: Message[] = [
   {
     id: '6',
     from: 'me',
-    message: `Yeah, there was a lot of trial. It was my first shader project. But working with Claude AI made it doable`,
+    message: `Yeah, there was a lot of trial. It was my first shader project`,
   },
   {
     id: '7',
