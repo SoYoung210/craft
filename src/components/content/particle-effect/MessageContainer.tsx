@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
 import { styled } from '../../../../stitches.config';
 import { If } from '../../utility/If';
@@ -65,7 +65,7 @@ const MessageBubble = styled('div', {
     emoji: {
       true: {
         background: 'none',
-        fontSize: '2.5rem',
+        fontSize: '3.5rem',
 
         '&::before': {
           content: 'none',
@@ -180,16 +180,16 @@ const TapbackBubbleImpl = styled('div', {
         // transform: 'translateX(20px) translateY(-65%)',
         transform: 'translateX(20px) translateY(-58%)',
         color: 'white',
-        backgroundColor: '#2D9BFD',
+        backgroundColor: '#44B2FB',
         '&::before': {
           right: '-13px',
           bottom: '-12px',
-          backgroundColor: '#2D9BFD',
+          backgroundColor: '#44B2FB',
         },
         '&::after': {
           right: '-2px',
           bottom: '-2px',
-          backgroundColor: '#2D9BFD',
+          backgroundColor: '#44B2FB',
         },
       },
     },
@@ -286,7 +286,7 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
 
 const TapbackBubble = forwardRef<
   HTMLDivElement,
-  { from: 'me' | 'them'; children: ReactNode }
+  ComponentPropsWithoutRef<typeof TapbackBubbleImpl>
 >(({ from, ...restProps }, ref) => {
   return (
     <TapbackBubbleImpl
