@@ -257,7 +257,7 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
   const { from, children, emoji, noTail, marginBottom, marginTop } = props;
 
   return (
-    <MessageBubbleWrapper>
+    <MessageBubbleWrapper style={{ paddingTop: 28 }}>
       <MessageBubble
         from={from}
         emoji={emoji}

@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { graphql, PageProps } from 'gatsby';
 
 import IMessageComponent from '../components/content/particle-effect/MessageContainer';
 import { ParticleEffect } from '../components/content/particle-effect/UpdatedParticleEffect';
@@ -17,6 +18,8 @@ import Button from '../components/material/Button';
 import { styled } from '../../stitches.config';
 import { RotateRightIcon } from '../components/material/icon/RotateRightIcon';
 import useWindowEvent from '../hooks/useWindowEvent';
+import { If } from '../components/utility/If';
+import SEO from '../components/layout/SEO';
 
 interface Message {
   id: string;
@@ -87,9 +90,10 @@ const MESSAGES: Message[] = [
   },
 ];
 
-const HEIGHT = 662;
+const HEIGHT = 860;
 export default function ParticleEffectPage() {
   const [firstBubbleEl, setFirstBubbleEl] = useState<HTMLElement | null>(null);
+  const [needHelper, setNeedHelper] = useState(true);
   const helperRef = useRef<HTMLDivElement>(null);
   const setHelperPosition = useCallback(() => {
     if (firstBubbleEl == null || helperRef.current == null) {
@@ -118,7 +122,9 @@ export default function ParticleEffectPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Particle Effect</PageLayout.Title>
-      <HelperArrow ref={helperRef} />
+      <If condition={needHelper}>
+        <HelperArrow ref={helperRef} />
+      </If>
       <ParticleEffect.Root>
         <IMessageComponent>
           <IMessageComponent.Container
@@ -137,6 +143,7 @@ export default function ParticleEffectPage() {
                   <AnimatePresence mode="popLayout">
                     {messages.map(
                       ({ id, from, message, emoji, noTail }, index) => {
+                        const isFirstElement = index === 0;
                         return (
                           <ParticleEffect.Item
                             key={id}
@@ -152,10 +159,17 @@ export default function ParticleEffectPage() {
                               <ParticleEffect.Trigger asChild>
                                 <IMessageComponent.TapbackBubble
                                   ref={
-                                    index === 0 ? setFirstBubbleEl : undefined
+                                    isFirstElement
+                                      ? setFirstBubbleEl
+                                      : undefined
                                   }
-                                  isVisible={index === 0}
+                                  isVisible={isFirstElement}
                                   from={from}
+                                  onClick={
+                                    isFirstElement
+                                      ? () => setNeedHelper(false)
+                                      : undefined
+                                  }
                                 >
                                   <IMessageComponent.TapbackOption>
                                     <TrashIcon size={17} />
@@ -182,6 +196,12 @@ export default function ParticleEffectPage() {
                   }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
+                  exit={{
+                    opacity: 0,
+                    transition: {
+                      duration: 0,
+                    },
+                  }}
                   transition={{ ease: 'easeIn', duration: 0.34 }}
                 >
                   <Button
@@ -189,7 +209,7 @@ export default function ParticleEffectPage() {
                     aria-label="Regenerate Items"
                     style={{
                       position: 'absolute',
-                      top: 10,
+                      top: -10,
                       right: -10,
                     }}
                   >
@@ -230,3 +250,28 @@ const StyledText = styled('div', {
   fontSize: 24,
   fontWeight: 500,
 });
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Particle Effect"
+      description="October 2024"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/particle-effect.webp" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
