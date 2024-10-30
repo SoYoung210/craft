@@ -9,6 +9,8 @@ import {
 } from 'react';
 import { graphql, PageProps } from 'gatsby';
 
+import '@fontsource/nanum-pen-script/400.css';
+
 import IMessageComponent from '../components/content/particle-effect/MessageContainer';
 import { ParticleEffect } from '../components/content/particle-effect/UpdatedParticleEffect';
 import ArrowIcon from '../images/icons/script-arrow.svg';
