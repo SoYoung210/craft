@@ -9,8 +9,6 @@ const IMessageComponent = ({ children }: { children: ReactNode }) => {
 
 const Container = styled('div', {
   margin: '0 auto',
-  maxWidth: 600,
-  padding: '1rem',
   width: '100%',
 
   '@media screen and (max-width: 800px)': {
@@ -26,12 +24,10 @@ const IMessage = styled('div', {
   flexDirection: 'column',
   fontFamily: '"SanFrancisco", sans-serif',
   fontSize: '1.25rem',
-  maxWidth: 600,
   padding: '1.5rem',
 
   '@media screen and (max-width: 800px)': {
     fontSize: '1.05rem',
-    maxWidth: 600,
     padding: '0.25rem 0.875rem',
   },
 });
@@ -166,7 +162,7 @@ const TapbackBubbleImpl = styled('div', {
       me: {
         left: 0,
         // transform: 'translateX(-20px) translateY(-65%)',
-        transform: 'translateX(-20px) translateY(-50%)',
+        transform: 'translateX(-20px) translateY(-58%)',
         backgroundColor: '#e5e5ea',
         color: '#808080',
         '&::before': {
@@ -182,7 +178,7 @@ const TapbackBubbleImpl = styled('div', {
       them: {
         right: '0',
         // transform: 'translateX(20px) translateY(-65%)',
-        transform: 'translateX(20px) translateY(-50%)',
+        transform: 'translateX(20px) translateY(-58%)',
         color: 'white',
         backgroundColor: '#2D9BFD',
         '&::before': {

@@ -116,7 +116,7 @@ export const ParticleEffectRoot: React.FC<{
           newMap.delete(id);
           return newMap;
         });
-      }, 2400);
+      }, duration + 400);
     };
 
     items.forEach((_, id) => {
@@ -205,9 +205,8 @@ const Item = forwardRef<HTMLDivElement, ItemProps>(
               initial={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{
-                ease: [0.22, 1, 0.36, 1],
-                duration: 1.2,
-                opacity: { duration: 0.4 },
+                duration: 0.5,
+                opacity: { duration: 0.24 },
               }}
               {...{ [DATA_ATTRIBUTES.ITEM_ID]: id }}
               {...restProps}
@@ -384,7 +383,7 @@ const ParticleMaterial = shaderMaterial(
 );
 
 extend({ ParticleMaterial });
-const duration = 2000;
+const duration = 1200;
 const ParticleSystem: React.FC<ParticleSystemProps> = ({
   texture,
   dimensions,
