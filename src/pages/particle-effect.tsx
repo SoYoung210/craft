@@ -66,9 +66,6 @@ export default function ParticleEffectPage() {
             <IMessageComponent.Container
               style={{
                 height: HEIGHT,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <AnimatePresence>

@@ -16,12 +16,11 @@ const IndexPage = () => {
             <ContentBox title="Particle Effect">
               <StaticImage
                 src="../images/thumbnails/particle-effect.webp"
-                alt="Radial Menu with Content"
+                alt="Particle Effect"
                 placeholder="none"
                 style={{
-                  width: '60%',
+                  maxWidth: 460,
                 }}
-                quality={70}
               />
             </ContentBox>
           </Link>
