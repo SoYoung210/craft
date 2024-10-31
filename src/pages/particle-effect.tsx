@@ -110,95 +110,103 @@ export default function ParticleEffectPage() {
               height: HEIGHT,
             }}
           >
-            <AnimatePresence>
-              {hasContent ? (
-                <motion.div
-                  key="content"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ ease: 'easeIn', duration: 0.3 }}
-                >
-                  <AnimatePresence mode="popLayout">
-                    {messages.map(
-                      ({ id, from, message, emoji, noTail }, index) => {
-                        const isFirstElement = index === 0;
-                        return (
-                          <ParticleEffect.Item
-                            key={id}
-                            id={id}
-                            onExitComplete={() => handleExitComplete(id)}
-                          >
-                            <IMessageComponent.MessageBubble
-                              from={from}
-                              emoji={emoji}
-                              noTail={noTail}
-                            >
-                              {message}
-                              <ParticleEffect.Trigger asChild>
-                                <IMessageComponent.TapbackBubble
-                                  isVisible={isFirstElement}
-                                  from={from}
-                                  onClick={
-                                    isFirstElement
-                                      ? () => setNeedHelper(false)
-                                      : undefined
-                                  }
-                                >
-                                  <div style={{ position: 'relative' }}>
-                                    <IMessageComponent.TapbackOption>
-                                      <TrashIcon size={17} />
-                                    </IMessageComponent.TapbackOption>
-                                    <If
-                                      condition={needHelper && isFirstElement}
-                                    >
-                                      <HelperArrow />
-                                    </If>
-                                  </div>
-                                </IMessageComponent.TapbackBubble>
-                              </ParticleEffect.Trigger>
-                            </IMessageComponent.MessageBubble>
-                          </ParticleEffect.Item>
-                        );
-                      }
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty-view"
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: HEIGHT,
-                    width: '100%',
-                  }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{
-                    opacity: 0,
-                    transition: {
-                      duration: 0,
-                    },
-                  }}
-                  transition={{ ease: 'easeIn', duration: 0.34 }}
-                >
-                  <Button
-                    onClick={fillMessages}
-                    aria-label="Regenerate Items"
-                    style={{
-                      position: 'absolute',
-                      top: -10,
-                      right: -10,
-                    }}
+            <OnlyDesktop>
+              <AnimatePresence>
+                {hasContent ? (
+                  <motion.div
+                    key="content"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ ease: 'easeIn', duration: 0.3 }}
                   >
-                    <RotateRightIcon size={14} color="#82827c" />
-                  </Button>
-                  <StyledText>No Messages</StyledText>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <AnimatePresence mode="popLayout">
+                      {messages.map(
+                        ({ id, from, message, emoji, noTail }, index) => {
+                          const isFirstElement = index === 0;
+                          return (
+                            <ParticleEffect.Item
+                              key={id}
+                              id={id}
+                              onExitComplete={() => handleExitComplete(id)}
+                            >
+                              <IMessageComponent.MessageBubble
+                                from={from}
+                                emoji={emoji}
+                                noTail={noTail}
+                              >
+                                {message}
+                                <ParticleEffect.Trigger asChild>
+                                  <IMessageComponent.TapbackBubble
+                                    isVisible={isFirstElement}
+                                    from={from}
+                                    onClick={
+                                      isFirstElement
+                                        ? () => setNeedHelper(false)
+                                        : undefined
+                                    }
+                                  >
+                                    <div style={{ position: 'relative' }}>
+                                      <IMessageComponent.TapbackOption>
+                                        <TrashIcon size={17} />
+                                      </IMessageComponent.TapbackOption>
+                                      <If
+                                        condition={needHelper && isFirstElement}
+                                      >
+                                        <HelperArrow />
+                                      </If>
+                                    </div>
+                                  </IMessageComponent.TapbackBubble>
+                                </ParticleEffect.Trigger>
+                              </IMessageComponent.MessageBubble>
+                            </ParticleEffect.Item>
+                          );
+                        }
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="empty-view"
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: HEIGHT,
+                      width: '100%',
+                    }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{
+                      opacity: 0,
+                      transition: {
+                        duration: 0,
+                      },
+                    }}
+                    transition={{ ease: 'easeIn', duration: 0.34 }}
+                  >
+                    <Button
+                      onClick={fillMessages}
+                      aria-label="Regenerate Items"
+                      style={{
+                        position: 'absolute',
+                        top: -10,
+                        right: -10,
+                      }}
+                    >
+                      <RotateRightIcon size={14} color="#82827c" />
+                    </Button>
+                    <StyledText>No Messages</StyledText>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </OnlyDesktop>
+            <OnlyMobile>
+              <IMessageComponent.MessageBubble from="me">
+                For the best experience, please visit on a desktop. Mobile
+                support is currently unavailable
+              </IMessageComponent.MessageBubble>
+            </OnlyMobile>
           </IMessageComponent.Container>
         </IMessageComponent>
       </ParticleEffect.Root>
@@ -222,6 +230,20 @@ const HelperArrow = forwardRef<HTMLDivElement>((props, ref) => {
       </div>
     </HelperTextRoot>
   );
+});
+
+const OnlyDesktop = styled('div', {
+  display: 'none',
+  '@media (hover: hover) and (pointer: fine)': {
+    display: 'block',
+  },
+});
+
+const OnlyMobile = styled('div', {
+  display: 'none',
+  '@media (hover: none) and (pointer: coarse)': {
+    display: 'block',
+  },
 });
 
 const NanumPenScript = styled('div', {
