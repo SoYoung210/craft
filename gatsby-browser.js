@@ -1,3 +1,5 @@
+import './src/styles/global.css';
+
 import '@fontsource-variable/inter';
 import '@fontsource/inter/300.css';
 import '@fontsource/inter/400.css';
