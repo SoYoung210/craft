@@ -1,3 +1,6 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 import { CSSUnit } from './type';
 
 export const withUnit = (value: number | string, unit: CSSUnit = 'px') => {
@@ -16,4 +19,8 @@ export const getVar = (variable: VariableType, defaultValue?: string) => {
 export function getBase64Url(data: string, type: 'svg' | 'png' | 'jpeg') {
   const t = type === 'svg' ? 'svg+xml' : type;
   return `url(data:image/${t};base64,${data})`;
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
