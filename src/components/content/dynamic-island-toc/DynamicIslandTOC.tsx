@@ -14,6 +14,8 @@ import { BookOpen, ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';
 
+import { CircleProgress } from './CircleProgress';
+
 // Context for the DynamicIslandTOC
 type DynamicIslandTOCContextType = {
   registerHeading: (id: string, text: string, element: HTMLElement) => void;
@@ -351,15 +353,11 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
 
       setIsDragging(true);
       setDragPosition({ x: info.point.x, y: info.point.y });
-
-      // Add a class to the body to indicate dragging
-      document.body.classList.add('dragging');
     } catch (error) {
       console.error('Error in drag start:', error);
       // Ensure we still set dragging state even if there's an error
       setIsDragging(true);
       setDragPosition({ x: info.point.x, y: info.point.y });
-      document.body.classList.add('dragging');
     }
   };
 
@@ -453,9 +451,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     } else {
       setPositionCoords({ x: edge === 'left' ? 0 : 1, y: normalizedCoord });
     }
-
-    // Remove the dragging class from the body
-    document.body.classList.remove('dragging');
   };
 
   const getPositionStyles = (): React.CSSProperties => {
@@ -580,22 +575,13 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             ref={motionDivRef}
             layout
             className={cn(
-              'bg-black shadow-lg cursor-grab overflow-hidden',
+              'bg-black shadow-lg cursor-grab overflow-hidden rounded-3xl',
               isDragging
                 ? 'opacity-90 cursor-grabbing rounded-full'
                 : 'opacity-100',
               isVertical && !isDragging ? 'dynamic-island-vertical' : ''
             )}
             style={{
-              width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 120,
-              height: isDragging
-                ? 30
-                : isExpanded
-                ? 240
-                : isVertical
-                ? 120
-                : 32,
-              borderRadius: isDragging ? '50%' : '24px',
               transition: isDragging
                 ? 'none'
                 : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
@@ -610,13 +596,12 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 : isVertical
                 ? 120
                 : 32,
-              borderRadius: isDragging ? 9999 : 24,
             }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-            }}
+            // transition={{
+            //   type: 'spring',
+            //   stiffness: 300,
+            //   damping: 30,
+            // }}
             onClick={toggleIsland}
             drag={true}
             dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
@@ -629,10 +614,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
               cursor: 'grabbing',
             }}
-            dragTransition={{
-              bounceStiffness: 600,
-              bounceDamping: 20,
-            }}
+            // dragTransition={{
+            //   bounceStiffness: 600,
+            //   bounceDamping: 20,
+            // }}
           >
             {/* Only show content when not dragging */}
             {!isDragging && (
@@ -674,15 +659,14 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                     )}
                   </motion.div>
 
-                  <motion.div
-                    layout="position"
-                    className={cn(
-                      'bg-gray-700 rounded-full px-2 py-0.5 text-xs text-white',
-                      isVertical ? 'rotate-90' : ''
-                    )}
-                  >
-                    {readingProgress}%
-                  </motion.div>
+                  <CircleProgress
+                    percentage={readingProgress}
+                    size={20}
+                    strokeWidth={4}
+                    trackColor="#e5e7eb"
+                    indicatorColor="#c1c1c1"
+                    showPercentage={false}
+                  />
                 </motion.div>
 
                 {/* Expanded Content */}
