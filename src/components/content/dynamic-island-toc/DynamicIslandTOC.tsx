@@ -613,7 +613,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                   className={cn(
                     'flex items-center',
                     isVertical
-                      ? 'flex-col justify-center h-full'
+                      ? 'flex-col justify-center'
                       : 'justify-between h-[32px]',
                     isExpanded && !isVertical && 'pt-4'
                   )}
@@ -629,7 +629,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                     className={cn(
                       'flex items-center min-w-0',
                       isVertical
-                        ? 'flex-col-reverse h-full justify-between'
+                        ? 'flex-col-reverse justify-between'
                         : 'space-x-2'
                     )}
                   >
