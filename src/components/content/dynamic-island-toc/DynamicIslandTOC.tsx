@@ -581,10 +581,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 : 'opacity-100',
               isVertical && !isDragging ? 'dynamic-island-vertical' : ''
             )}
-            style={{
-              transition: isDragging
-                ? 'none'
-                : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+            transition={{
+              type: 'spring',
+              stiffness: 270,
+              damping: 26,
             }}
             initial={false}
             animate={{
@@ -611,12 +611,18 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 <motion.div
                   layout="position"
                   className={cn(
-                    'flex items-center px-4',
+                    'flex items-center',
                     isVertical
-                      ? 'flex-col justify-center h-full py-4'
-                      : 'justify-between h-[32px] pl-2',
-                    isExpanded && !isVertical && 'pl-4 pt-4'
+                      ? 'flex-col justify-center h-full'
+                      : 'justify-between h-[32px]',
+                    isExpanded && !isVertical && 'pt-4'
                   )}
+                  animate={{
+                    paddingLeft: isVertical ? 16 : isExpanded ? 16 : 8,
+                    paddingRight: 16,
+                    paddingTop: isVertical ? 16 : isExpanded ? 16 : 0,
+                    paddingBottom: isVertical ? 16 : 0,
+                  }}
                 >
                   <motion.div
                     layout="position"
@@ -656,76 +662,74 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 <AnimatePresence mode="popLayout">
                   {isExpanded && (
                     <motion.div
-                      layout
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{
-                        delay: 0.1,
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30,
+                      initial={{
+                        opacity: 0,
+                        x: 10,
+                        backdropFilter: 'blur(10px)',
                       }}
-                      className="p-4 text-white"
+                      animate={{
+                        opacity: 1,
+                        x: 0,
+                        backdropFilter: 'blur(0px)',
+                      }}
+                      exit={{
+                        opacity: 0,
+                        x: 10,
+                        backdropFilter: 'blur(10px)',
+                        overflowY: 'hidden',
+                        transition: { delay: 0, duration: 0.18 },
+                      }}
+                      transition={{
+                        delay: 0.08,
+                        type: 'spring',
+                        stiffness: 270,
+                        damping: 25,
+                      }}
+                      className="p-4 text-white space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-thin"
                     >
                       {/* Content Area */}
-                      <motion.div layout className="h-[180px]">
-                        <motion.div
-                          key="toc-content"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          transition={{
-                            type: 'spring',
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                          className="space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-thin"
-                        >
-                          {headings.length > 0 ? (
-                            headings.map(heading => (
-                              <motion.button
-                                key={heading.id}
-                                initial={{ opacity: 0, x: -5 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className={cn(
-                                  'block text-left w-full truncate py-1 text-sm transition-colors',
+                      {headings.length > 0 ? (
+                        headings.map(heading => (
+                          <motion.button
+                            key={heading.id}
+                            initial={{ opacity: 0, x: -5 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className={cn(
+                              'block text-left w-full truncate py-1 text-sm transition-colors',
+                              activeHeadingId === heading.id
+                                ? 'text-white'
+                                : 'text-white/70 hover:text-white'
+                            )}
+                            onClick={e => {
+                              e.stopPropagation();
+                              scrollToHeading(heading.id);
+                            }}
+                          >
+                            <div className="flex items-center">
+                              {activeHeadingId === heading.id && (
+                                <motion.div
+                                  layoutId="activeIndicator"
+                                  className="w-1 h-1 bg-white rounded-full mr-2"
+                                />
+                              )}
+                              <span
+                                className={
                                   activeHeadingId === heading.id
-                                    ? 'text-white'
-                                    : 'text-white/70 hover:text-white'
-                                )}
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  scrollToHeading(heading.id);
-                                }}
+                                    ? 'ml-0'
+                                    : 'ml-3'
+                                }
                               >
-                                <div className="flex items-center">
-                                  {activeHeadingId === heading.id && (
-                                    <motion.div
-                                      layoutId="activeIndicator"
-                                      className="w-1 h-1 bg-white rounded-full mr-2"
-                                    />
-                                  )}
-                                  <span
-                                    className={
-                                      activeHeadingId === heading.id
-                                        ? 'ml-0'
-                                        : 'ml-3'
-                                    }
-                                  >
-                                    {heading.text}
-                                  </span>
-                                </div>
-                              </motion.button>
-                            ))
-                          ) : (
-                            <div className="text-white/50 text-center py-4 text-sm">
-                              No headings found on this page
+                                {heading.text}
+                              </span>
                             </div>
-                          )}
-                        </motion.div>
-                      </motion.div>
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div className="text-white/50 text-center py-4 text-sm">
+                          No headings found on this page
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
