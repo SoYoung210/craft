@@ -631,8 +631,8 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       percentage={readingProgress}
                       size={20}
                       strokeWidth={4}
-                      trackColor="#e5e7eb"
-                      indicatorColor="#c1c1c1"
+                      trackColor="#8A8990"
+                      indicatorColor="#ebebeb"
                       showPercentage={false}
                     />
 
