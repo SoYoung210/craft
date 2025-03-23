@@ -1,6 +1,12 @@
 import { DynamicIslandTOC } from '../components/content/dynamic-island-toc/DynamicIslandTOC';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
+const Heading = ({ children }: { children: string }) => (
+  <DynamicIslandTOC.Heading>
+    <h2 className="text-[32px]">{children}</h2>
+  </DynamicIslandTOC.Heading>
+);
+
 export default function DynamicIslandTOCPage() {
   return (
     <PageLayout>
@@ -12,9 +18,7 @@ export default function DynamicIslandTOCPage() {
         </PageLayout.DetailsContent>
       </PageLayout.Details>
       <DynamicIslandTOC>
-        <DynamicIslandTOC.Heading>
-          <h2>What is Interaction Design?</h2>
-        </DynamicIslandTOC.Heading>
+        <Heading>What is Interaction Design?</Heading>
         <p className="mb-6">
           Interaction Design (IxD) is the design of interactive products and
           services in which a designer's focus goes beyond the item being
@@ -23,9 +27,7 @@ export default function DynamicIslandTOCPage() {
           achieve their objective(s) in the best way possible.
         </p>
 
-        <DynamicIslandTOC.Heading>
-          <h2>Enhancing User Experience</h2>
-        </DynamicIslandTOC.Heading>
+        <Heading>Enhancing User Experience</Heading>
         <p className="mb-6">
           The practice of designing interactive digital products, environments,
           systems, and services. Beyond the digital aspect, interaction design
@@ -33,18 +35,14 @@ export default function DynamicIslandTOCPage() {
           might interact with it.
         </p>
 
-        <DynamicIslandTOC.Heading>
-          <h2>The Role of Interaction Design</h2>
-        </DynamicIslandTOC.Heading>
+        <Heading>The Role of Interaction Design</Heading>
         <p className="mb-6">
           Interaction design is a field of design that focuses on the design of
           interactive products and services. It is a multidisciplinary field
           that combines elements of design, psychology, and computer science.
         </p>
 
-        <DynamicIslandTOC.Heading>
-          <h2>Reducing Cognitive Load</h2>
-        </DynamicIslandTOC.Heading>
+        <Heading>Reducing Cognitive Load</Heading>
         <p className="mb-6">
           Cognitive load refers to the mental effort required to learn and use a
           system. Good interaction design aims to reduce this load by making
@@ -52,15 +50,22 @@ export default function DynamicIslandTOCPage() {
           on their tasks rather than on figuring out how to use the system.
         </p>
 
-        <DynamicIslandTOC.Heading>
-          <h2>Improving Usability</h2>
-        </DynamicIslandTOC.Heading>
+        <Heading>Improving Usability</Heading>
         <p className="mb-6">
           Usability is the ease with which a user can navigate and accomplish
           their goals using a product. Interaction design aims to improve
           usability by making products more intuitive and efficient, reducing
           the number of steps required to complete tasks and minimizing the
           amount of time users need to spend learning how to use a product.
+        </p>
+
+        <Heading>Conclusion</Heading>
+        <p className="mb-6">
+          Interaction design is a crucial field in the design industry,
+          influencing the design of digital products, physical products, and
+          services. By focusing on the user's experience and goals, interaction
+          designers create products that are both functional and enjoyable to
+          use.
         </p>
       </DynamicIslandTOC>
     </PageLayout>
