@@ -588,7 +588,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             }}
             initial={false}
             animate={{
-              width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 120,
+              width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 160,
               height: isDragging ? 30 : isExpanded ? 240 : isVertical ? 80 : 32,
             }}
             onClick={toggleIsland}
@@ -627,7 +627,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                   <motion.div
                     layout="position"
                     className={cn(
-                      'flex items-center',
+                      'flex items-center min-w-0',
                       isVertical
                         ? 'flex-col-reverse h-full justify-between'
                         : 'space-x-2'
@@ -645,14 +645,21 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                     {!isVertical && (
                       <motion.div
                         layout="position"
-                        className="text-white text-xs font-medium flex items-center justify-center"
+                        className="text-white min-w-0 text-xs font-medium flex items-center justify-center space-x-1 w-full"
                       >
-                        <div>Contents</div>
-                        {isExpanded ? (
-                          <ChevronUp className="w-3 h-3 text-white" />
-                        ) : (
-                          <ChevronDown className="w-3 h-3 text-white" />
-                        )}
+                        <div className="truncate flex-1">
+                          {activeHeadingId
+                            ? headings.find(h => h.id === activeHeadingId)
+                                ?.text || 'Contents'
+                            : 'Contents'}
+                        </div>
+                        <div className="flex-shrink-0">
+                          {isExpanded ? (
+                            <ChevronUp className="w-3 h-3 text-white" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-white" />
+                          )}
+                        </div>
                       </motion.div>
                     )}
                   </motion.div>
