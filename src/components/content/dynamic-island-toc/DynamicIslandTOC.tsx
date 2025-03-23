@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';
 
@@ -50,17 +50,46 @@ type HeadingProps = {
   children: ReactNode;
   id?: string;
 };
-
+type Position = 'top' | 'right' | 'bottom' | 'left';
 // Main component
 function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState<Position>('top');
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [positionCoords, setPositionCoords] = useState({ x: 0.5, y: 0 });
   const observerRef = useRef<IntersectionObserver | null>(null);
   const headingsMapRef = useRef<Map<string, Heading>>(new Map());
   const isInitialRenderRef = useRef(true);
   const contentRef = useRef<HTMLDivElement>(null);
+  const islandRef = useRef<HTMLDivElement>(null);
+  const windowSizeRef = useRef({ width: 0, height: 0 });
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  // Add a new state variable to track orientation
+  const [isVertical, setIsVertical] = useState(false);
+  const motionDivRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateWindowSize = () => {
+      windowSizeRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    };
+
+    // Initialize on mount
+    updateWindowSize();
+
+    // Update on resize
+    window.addEventListener('resize', updateWindowSize);
+
+    return () => {
+      window.removeEventListener('resize', updateWindowSize);
+    };
+  }, []);
 
   // Function to calculate scroll offset based on screen size and preferences
   const getScrollOffset = useCallback(() => {
@@ -244,7 +273,9 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   }, []);
 
   const toggleIsland = () => {
-    setIsExpanded(!isExpanded);
+    if (!isDragging) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   const scrollToHeading = (id: string) => {
@@ -295,6 +326,232 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     });
   };
 
+  // Function to handle drag start
+  const handleDragStart = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: { point: { x: number; y: number } }
+  ) => {
+    try {
+      // Try to get the element from the event or from our ref
+      const element = (event.currentTarget ||
+        motionDivRef.current) as HTMLElement | null;
+
+      if (element) {
+        // If we have an element, get its bounding rect
+        const rect = element.getBoundingClientRect();
+        const offsetX = info.point.x - rect.left;
+        const offsetY = info.point.y - rect.top;
+
+        // Store these offsets for use during dragging
+        dragOffsetRef.current = { x: offsetX, y: offsetY };
+      } else {
+        // Fallback: use center point offsets
+        dragOffsetRef.current = { x: 15, y: 15 };
+      }
+
+      setIsDragging(true);
+      setDragPosition({ x: info.point.x, y: info.point.y });
+
+      // Add a class to the body to indicate dragging
+      document.body.classList.add('dragging');
+    } catch (error) {
+      console.error('Error in drag start:', error);
+      // Ensure we still set dragging state even if there's an error
+      setIsDragging(true);
+      setDragPosition({ x: info.point.x, y: info.point.y });
+      document.body.classList.add('dragging');
+    }
+  };
+
+  // Function to handle drag
+  const handleDrag = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: { point: { x: number; y: number } }
+  ) => {
+    console.log('handleDrag', info);
+    setDragPosition({ x: info.point.x, y: info.point.y });
+  };
+
+  // Refined function to determine which edge to snap to
+  const determineSnapPosition = (
+    x: number,
+    y: number
+  ): { edge: Position; normalizedCoord: number } => {
+    const windowWidth = windowSizeRef.current.width;
+    const windowHeight = windowSizeRef.current.height;
+
+    // Calculate distances to each edge
+    const distanceToTop = y;
+    const distanceToBottom = windowHeight - y;
+    const distanceToLeft = x;
+    const distanceToRight = windowWidth - x;
+
+    // Find the minimum distance to determine the closest edge
+    const minDistance = Math.min(
+      distanceToTop,
+      distanceToBottom,
+      distanceToLeft,
+      distanceToRight
+    );
+
+    // Determine which edge is closest and calculate the normalized coordinate along that edge
+    if (minDistance === distanceToTop) {
+      // Top edge - normalize x coordinate (0 = left, 1 = right)
+      return {
+        edge: 'top',
+        normalizedCoord: Math.max(0, Math.min(1, x / windowWidth)),
+      };
+    }
+
+    if (minDistance === distanceToBottom) {
+      // Bottom edge - normalize x coordinate (0 = left, 1 = right)
+      return {
+        edge: 'bottom',
+        normalizedCoord: Math.max(0, Math.min(1, x / windowWidth)),
+      };
+    }
+
+    if (minDistance === distanceToLeft) {
+      // Left edge - normalize y coordinate (0 = top, 1 = bottom)
+      return {
+        edge: 'left',
+        normalizedCoord: Math.max(0, Math.min(1, y / windowHeight)),
+      };
+    }
+
+    // Right edge - normalize y coordinate (0 = top, 1 = bottom)
+    return {
+      edge: 'right',
+      normalizedCoord: Math.max(0, Math.min(1, y / windowHeight)),
+    };
+  };
+
+  // Handle drag end - snap to nearest edge
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: { point: { x: number; y: number } }
+  ) => {
+    setIsDragging(false);
+
+    // Get current position from the drag event info
+    const currentX = info.point.x;
+    const currentY = info.point.y;
+
+    // Determine which edge to snap to and the position along that edge
+    const { edge, normalizedCoord } = determineSnapPosition(currentX, currentY);
+
+    // Update the position state
+    setPosition(edge);
+
+    // Set orientation based on the edge
+    setIsVertical(edge === 'left' || edge === 'right');
+
+    // Update the normalized coordinate along the edge
+    if (edge === 'top' || edge === 'bottom') {
+      setPositionCoords({ x: normalizedCoord, y: edge === 'top' ? 0 : 1 });
+    } else {
+      setPositionCoords({ x: edge === 'left' ? 0 : 1, y: normalizedCoord });
+    }
+
+    // Remove the dragging class from the body
+    document.body.classList.remove('dragging');
+  };
+
+  const getPositionStyles = (): React.CSSProperties => {
+    const styles: React.CSSProperties = {
+      position: 'fixed',
+      zIndex: 50,
+      transition: isDragging
+        ? 'none'
+        : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+    };
+
+    if (isDragging) {
+      // During drag, position exactly at cursor position, accounting for the grab point
+      return {
+        ...styles,
+        position: 'fixed',
+        left: dragPosition.x - 15, // Center the 30x30 circle on cursor
+        top: dragPosition.y - 15,
+        transform: 'none',
+        transition: 'none',
+      };
+    }
+
+    // Calculate the component dimensions based on orientation and expanded state
+    const width = isExpanded ? 340 : isVertical ? 32 : 120;
+    const height = isExpanded ? 240 : isVertical ? 120 : 32;
+
+    // Calculate the safe area padding (distance from edge)
+    const edgePadding = 16;
+
+    // Calculate window dimensions
+    const windowWidth = windowSizeRef.current.width;
+    const windowHeight = windowSizeRef.current.height;
+
+    // Calculate the maximum x and y positions to keep the component within the viewport
+    const maxX = windowWidth - width - edgePadding;
+    const maxY = windowHeight - height - edgePadding;
+
+    // When not dragging, position based on the edge and normalized coordinate
+    switch (position) {
+      case 'top': {
+        // Position along the top edge
+        const topX = Math.max(
+          edgePadding,
+          Math.min(maxX, positionCoords.x * windowWidth - width / 2)
+        );
+        return { ...styles, top: edgePadding, left: topX, transform: 'none' };
+      }
+
+      case 'bottom': {
+        // Position along the bottom edge
+        const bottomX = Math.max(
+          edgePadding,
+          Math.min(maxX, positionCoords.x * windowWidth - width / 2)
+        );
+        return {
+          ...styles,
+          bottom: edgePadding,
+          left: bottomX,
+          transform: 'none',
+        };
+      }
+
+      case 'left': {
+        // Position along the left edge
+        const leftY = Math.max(
+          edgePadding,
+          Math.min(maxY, positionCoords.y * windowHeight - height / 2)
+        );
+        return { ...styles, left: edgePadding, top: leftY, transform: 'none' };
+      }
+
+      case 'right': {
+        // Position along the right edge
+        const rightY = Math.max(
+          edgePadding,
+          Math.min(maxY, positionCoords.y * windowHeight - height / 2)
+        );
+        return {
+          ...styles,
+          right: edgePadding,
+          top: rightY,
+          transform: 'none',
+        };
+      }
+
+      default:
+        // Default to top center
+        return {
+          ...styles,
+          top: edgePadding,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        };
+    }
+  };
+
   // Memoized context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
     () => ({
@@ -313,22 +570,46 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       </div>
 
       <div
-        className={cn(
-          'fixed top-0 left-0 right-0 flex justify-center pt-2 z-50',
-          className
-        )}
+        ref={islandRef}
+        className={cn('fixed z-50', className)}
+        style={getPositionStyles()}
       >
         <LayoutGroup>
           <motion.div
+            ref={motionDivRef}
             layout
             className={cn(
-              'bg-black rounded-[24px] shadow-lg cursor-pointer overflow-hidden',
-              isExpanded ? 'w-[340px]' : 'w-[120px]'
+              'bg-black shadow-lg cursor-grab overflow-hidden',
+              isDragging
+                ? 'opacity-90 cursor-grabbing rounded-full'
+                : 'opacity-100',
+              isVertical && !isDragging ? 'dynamic-island-vertical' : ''
             )}
+            style={{
+              width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 120,
+              height: isDragging
+                ? 30
+                : isExpanded
+                ? 240
+                : isVertical
+                ? 120
+                : 32,
+              borderRadius: isDragging ? '50%' : '24px',
+              transition: isDragging
+                ? 'none'
+                : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+            }}
             initial={false}
             animate={{
-              width: isExpanded ? 340 : 120,
-              height: isExpanded ? 240 : 32,
+              width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 120,
+              height: isDragging
+                ? 30
+                : isExpanded
+                ? 240
+                : isVertical
+                ? 120
+                : 32,
+              borderRadius: isDragging ? 9999 : 24,
             }}
             transition={{
               type: 'spring',
@@ -336,135 +617,172 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
               damping: 30,
             }}
             onClick={toggleIsland}
+            drag={true}
+            dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            dragElastic={0}
+            dragMomentum={false}
+            onDragStart={handleDragStart}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            whileDrag={{
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              cursor: 'grabbing',
+            }}
+            dragTransition={{
+              bounceStiffness: 600,
+              bounceDamping: 20,
+            }}
           >
-            {/* Notch Content (Always Visible) */}
-            <motion.div
-              layout="position"
-              className="flex items-center justify-between h-8 px-4"
-            >
-              <motion.div
-                layout="position"
-                className="flex items-center space-x-2"
-              >
+            {/* Only show content when not dragging */}
+            {!isDragging && (
+              <>
+                {/* Notch Content (Always Visible) */}
                 <motion.div
                   layout="position"
-                  className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center"
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="w-3 h-3 text-white" />
-                  ) : (
-                    <ChevronDown className="w-3 h-3 text-white" />
+                  className={cn(
+                    'flex items-center px-4',
+                    isVertical
+                      ? 'flex-col h-full justify-center py-4 space-y-2'
+                      : 'justify-between h-8'
                   )}
-                </motion.div>
-                <motion.div
-                  layout="position"
-                  className="text-white text-xs font-medium"
                 >
-                  Index
-                </motion.div>
-              </motion.div>
-
-              <motion.div
-                layout="position"
-                className="bg-gray-700 rounded-full px-2 py-0.5 text-xs text-white"
-              >
-                {readingProgress}%
-              </motion.div>
-            </motion.div>
-
-            {/* Expanded Content */}
-            <AnimatePresence mode="popLayout">
-              {isExpanded && (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{
-                    delay: 0.1,
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                  className="p-4 text-white"
-                >
-                  {/* TOC Header */}
                   <motion.div
-                    layout
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15 }}
-                    className="flex justify-center mb-4"
+                    layout="position"
+                    className={cn(
+                      'flex items-center',
+                      isVertical ? 'flex-col space-y-2' : 'space-x-2'
+                    )}
                   >
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="w-4 h-4" />
-                      <span className="text-sm font-medium">
-                        Table of Contents
-                      </span>
-                    </div>
+                    <motion.div
+                      layout="position"
+                      className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center"
+                    >
+                      {isExpanded ? (
+                        <ChevronUp className="w-3 h-3 text-white" />
+                      ) : (
+                        <ChevronDown className="w-3 h-3 text-white" />
+                      )}
+                    </motion.div>
+                    {!isVertical && (
+                      <motion.div
+                        layout="position"
+                        className="text-white text-xs font-medium"
+                      >
+                        Contents
+                      </motion.div>
+                    )}
                   </motion.div>
 
-                  {/* TOC Content */}
-                  <motion.div layout className="h-[152px]">
+                  <motion.div
+                    layout="position"
+                    className={cn(
+                      'bg-gray-700 rounded-full px-2 py-0.5 text-xs text-white',
+                      isVertical ? 'rotate-90' : ''
+                    )}
+                  >
+                    {readingProgress}%
+                  </motion.div>
+                </motion.div>
+
+                {/* Expanded Content */}
+                <AnimatePresence mode="popLayout">
+                  {isExpanded && (
                     <motion.div
-                      key="toc-content"
-                      initial={{ opacity: 0, y: 10 }}
+                      layout
+                      initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
+                      exit={{ opacity: 0, y: -10 }}
                       transition={{
+                        delay: 0.1,
                         type: 'spring',
                         stiffness: 300,
                         damping: 30,
                       }}
-                      className="space-y-1 overflow-y-auto max-h-[152px] pr-2 scrollbar-thin"
+                      className="p-4 text-white"
                     >
-                      {headings.length > 0 ? (
-                        headings.map(heading => (
-                          <motion.button
-                            key={heading.id}
-                            initial={{ opacity: 0, x: -5 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className={cn(
-                              'block text-left w-full truncate py-1 text-sm transition-colors',
-                              activeHeadingId === heading.id
-                                ? 'text-white'
-                                : 'text-white/70 hover:text-white'
-                            )}
-                            onClick={e => {
-                              e.stopPropagation();
-                              scrollToHeading(heading.id);
-                            }}
-                          >
-                            <div className="flex items-center">
-                              {activeHeadingId === heading.id && (
-                                <motion.div
-                                  layoutId="activeIndicator"
-                                  className="w-1 h-1 bg-white rounded-full mr-2"
-                                />
-                              )}
-                              <span
-                                className={
+                      {/* Table of Contents Header */}
+                      <div className="flex items-center justify-center mb-4">
+                        <BookOpen className="w-5 h-5 mr-2" />
+                        <h3 className="text-sm font-medium">
+                          Table of Contents
+                        </h3>
+                      </div>
+
+                      {/* Content Area */}
+                      <motion.div layout className="h-[180px]">
+                        <motion.div
+                          key="toc-content"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 300,
+                            damping: 30,
+                          }}
+                          className="space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-thin"
+                        >
+                          {headings.length > 0 ? (
+                            headings.map(heading => (
+                              <motion.button
+                                key={heading.id}
+                                initial={{ opacity: 0, x: -5 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className={cn(
+                                  'block text-left w-full truncate py-1 text-sm transition-colors',
                                   activeHeadingId === heading.id
-                                    ? 'ml-0'
-                                    : 'ml-3'
-                                }
+                                    ? 'text-white'
+                                    : 'text-white/70 hover:text-white'
+                                )}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  scrollToHeading(heading.id);
+                                }}
                               >
-                                {heading.text}
-                              </span>
+                                <div className="flex items-center">
+                                  {activeHeadingId === heading.id && (
+                                    <motion.div
+                                      layoutId="activeIndicator"
+                                      className="w-1 h-1 bg-white rounded-full mr-2"
+                                    />
+                                  )}
+                                  <span
+                                    className={
+                                      activeHeadingId === heading.id
+                                        ? 'ml-0'
+                                        : 'ml-3'
+                                    }
+                                  >
+                                    {heading.text}
+                                  </span>
+                                </div>
+                              </motion.button>
+                            ))
+                          ) : (
+                            <div className="text-white/50 text-center py-4 text-sm">
+                              No headings found on this page
                             </div>
-                          </motion.button>
-                        ))
-                      ) : (
-                        <div className="text-white/50 text-center py-4 text-sm">
-                          No headings found on this page
-                        </div>
-                      )}
+                          )}
+                        </motion.div>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+
+            {/* Show drag indicator when dragging */}
+            {isDragging && (
+              <motion.div
+                className="w-full h-full flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Move className="w-4 h-4 text-white" />
+              </motion.div>
+            )}
           </motion.div>
         </LayoutGroup>
       </div>
