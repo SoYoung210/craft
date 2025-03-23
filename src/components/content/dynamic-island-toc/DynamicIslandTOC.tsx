@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { BookOpen, ChevronDown, ChevronUp, Move } from 'lucide-react';
+import { ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';
 
@@ -589,19 +589,8 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             initial={false}
             animate={{
               width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 120,
-              height: isDragging
-                ? 30
-                : isExpanded
-                ? 240
-                : isVertical
-                ? 120
-                : 32,
+              height: isDragging ? 30 : isExpanded ? 240 : isVertical ? 80 : 32,
             }}
-            // transition={{
-            //   type: 'spring',
-            //   stiffness: 300,
-            //   damping: 30,
-            // }}
             onClick={toggleIsland}
             drag={true}
             dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
@@ -614,10 +603,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
               cursor: 'grabbing',
             }}
-            // dragTransition={{
-            //   bounceStiffness: 600,
-            //   bounceDamping: 20,
-            // }}
           >
             {/* Only show content when not dragging */}
             {!isDragging && (
@@ -628,45 +613,43 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                   className={cn(
                     'flex items-center px-4',
                     isVertical
-                      ? 'flex-col h-full justify-center py-4 space-y-2'
-                      : 'justify-between h-8'
+                      ? 'flex-col justify-center h-full py-4'
+                      : 'justify-between h-[32px] pl-2',
+                    isExpanded && !isVertical && 'pl-4 pt-4'
                   )}
                 >
                   <motion.div
                     layout="position"
                     className={cn(
                       'flex items-center',
-                      isVertical ? 'flex-col space-y-2' : 'space-x-2'
+                      isVertical
+                        ? 'flex-col-reverse h-full justify-between'
+                        : 'space-x-2'
                     )}
                   >
-                    <motion.div
-                      layout="position"
-                      className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center"
-                    >
-                      {isExpanded ? (
-                        <ChevronUp className="w-3 h-3 text-white" />
-                      ) : (
-                        <ChevronDown className="w-3 h-3 text-white" />
-                      )}
-                    </motion.div>
+                    <CircleProgress
+                      percentage={readingProgress}
+                      size={20}
+                      strokeWidth={4}
+                      trackColor="#e5e7eb"
+                      indicatorColor="#c1c1c1"
+                      showPercentage={false}
+                    />
+
                     {!isVertical && (
                       <motion.div
                         layout="position"
-                        className="text-white text-xs font-medium"
+                        className="text-white text-xs font-medium flex items-center justify-center"
                       >
-                        Contents
+                        <div>Contents</div>
+                        {isExpanded ? (
+                          <ChevronUp className="w-3 h-3 text-white" />
+                        ) : (
+                          <ChevronDown className="w-3 h-3 text-white" />
+                        )}
                       </motion.div>
                     )}
                   </motion.div>
-
-                  <CircleProgress
-                    percentage={readingProgress}
-                    size={20}
-                    strokeWidth={4}
-                    trackColor="#e5e7eb"
-                    indicatorColor="#c1c1c1"
-                    showPercentage={false}
-                  />
                 </motion.div>
 
                 {/* Expanded Content */}
@@ -685,14 +668,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       }}
                       className="p-4 text-white"
                     >
-                      {/* Table of Contents Header */}
-                      <div className="flex items-center justify-center mb-4">
-                        <BookOpen className="w-5 h-5 mr-2" />
-                        <h3 className="text-sm font-medium">
-                          Table of Contents
-                        </h3>
-                      </div>
-
                       {/* Content Area */}
                       <motion.div layout className="h-[180px]">
                         <motion.div
@@ -789,7 +764,7 @@ function Heading({ children, id: propId }: HeadingProps) {
     if (headingRef.current && !registeredRef.current) {
       registerHeading(
         headingId,
-        typeof children === 'string' ? children : headingId,
+        headingRef.current?.textContent || '',
         headingRef.current
       );
       registeredRef.current = true;
