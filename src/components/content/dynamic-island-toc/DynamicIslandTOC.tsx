@@ -548,6 +548,30 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     }
   };
 
+  // Helper function to calculate padding based on orientation and state
+  const getPadding = (side: 'left' | 'right' | 'top' | 'bottom'): number => {
+    if (side === 'left') {
+      if (isVertical && !isExpanded) return 6;
+      if (isExpanded) return 16;
+      return 8;
+    }
+
+    if (side === 'right') {
+      if (isVertical && !isExpanded) return 6;
+      return 16;
+    }
+
+    if (side === 'top') {
+      if (isVertical && !isExpanded) return 6;
+      if (isExpanded) return 16;
+      return 0;
+    }
+
+    // bottom padding
+    return isVertical ? 16 : 0;
+  };
+
+  const showHeadingText = (isVertical && isExpanded) || !isVertical;
   // Memoized context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
     () => ({
@@ -612,26 +636,19 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                   layout="position"
                   className={cn(
                     'flex items-center',
-                    isVertical
-                      ? 'flex-col justify-center'
-                      : 'justify-between h-[32px]',
+                    isVertical ? '' : 'h-[32px]',
                     isExpanded && !isVertical && 'pt-4'
                   )}
                   animate={{
-                    paddingLeft: isVertical ? 16 : isExpanded ? 16 : 8,
-                    paddingRight: 16,
-                    paddingTop: isVertical ? 16 : isExpanded ? 16 : 0,
-                    paddingBottom: isVertical ? 16 : 0,
+                    paddingLeft: getPadding('left'),
+                    paddingRight: getPadding('right'),
+                    paddingTop: getPadding('top'),
+                    paddingBottom: getPadding('bottom'),
                   }}
                 >
                   <motion.div
                     layout="position"
-                    className={cn(
-                      'flex items-center min-w-0',
-                      isVertical
-                        ? 'flex-col-reverse justify-between'
-                        : 'space-x-2'
-                    )}
+                    className={cn('flex items-center min-w-0 space-x-2')}
                   >
                     <CircleProgress
                       percentage={readingProgress}
@@ -642,7 +659,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       showPercentage={false}
                     />
 
-                    {!isVertical && (
+                    {showHeadingText && (
                       <motion.div
                         layout="position"
                         className="text-white min-w-0 text-xs font-medium flex items-center justify-center space-x-1 w-full"
