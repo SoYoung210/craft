@@ -368,8 +368,9 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     event: MouseEvent | TouchEvent | PointerEvent,
     info: { point: { x: number; y: number } }
   ) => {
-    console.log('handleDrag', info);
-    setDragPosition({ x: info.point.x, y: info.point.y });
+    requestAnimationFrame(() => {
+      setDragPosition({ x: info.point.x, y: info.point.y });
+    });
   };
 
   // Refined function to determine which edge to snap to
