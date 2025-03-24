@@ -166,58 +166,65 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   );
 
   // Set up intersection observer to track which heading is currently visible
-  useEffect(() => {
-    // Disconnect any existing observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+  // useEffect(() => {
+  //   // Disconnect any existing observer
+  //   if (observerRef.current) {
+  //     observerRef.current.disconnect();
+  //   }
 
-    // Calculate rootMargin based on the header height
-    const headerHeight = getScrollOffset();
-    const rootMargin = `-${headerHeight}px 0px -66%`;
+  //   // Calculate rootMargin based on the header height
+  //   const headerHeight = getScrollOffset();
+  //   const rootMargin = `-${headerHeight}px 0px -66%`;
 
-    const options = {
-      rootMargin,
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-    };
+  //   const options = {
+  //     rootMargin,
+  //     threshold: [0, 0.25, 0.5, 0.75, 1],
+  //   };
 
-    // Create a map to track intersection ratios
-    const intersectionRatios = new Map();
+  //   // Create a map to track intersection ratios
+  //   const intersectionRatios = new Map();
 
-    observerRef.current = new IntersectionObserver(entries => {
-      // Update intersection ratios for each entry
-      entries.forEach(entry => {
-        intersectionRatios.set(entry.target.id, entry.intersectionRatio);
-      });
+  //   // Create a debounced version of setActiveHeadingId to prevent rapid updates
+  //   const debouncedSetActiveHeading = debounce((id: string | null) => {
+  //     if (id !== activeHeadingId) {
+  //       setActiveHeadingId(id);
+  //     }
+  //   }, 50);
 
-      // Find the heading with the highest intersection ratio
-      let highestRatio = 0;
-      let mostVisibleHeadingId = null;
+  //   observerRef.current = new IntersectionObserver(entries => {
+  //     // Update intersection ratios for each entry
+  //     entries.forEach(entry => {
+  //       intersectionRatios.set(entry.target.id, entry.intersectionRatio);
+  //     });
 
-      intersectionRatios.forEach((ratio, id) => {
-        if (ratio > highestRatio) {
-          highestRatio = ratio;
-          mostVisibleHeadingId = id;
-        }
-      });
+  //     // Find the heading with the highest intersection ratio
+  //     let highestRatio = 0;
+  //     let mostVisibleHeadingId = null;
 
-      // Only update if we found a visible heading
-      if (mostVisibleHeadingId && highestRatio > 0) {
-        setActiveHeadingId(mostVisibleHeadingId);
-      }
-    }, options);
+  //     intersectionRatios.forEach((ratio, id) => {
+  //       if (ratio > highestRatio) {
+  //         highestRatio = ratio;
+  //         mostVisibleHeadingId = id;
+  //       }
+  //     });
 
-    // Observe all existing headings
-    headings.forEach(heading => {
-      observerRef.current?.observe(heading.element);
-    });
+  //     // Only update if we found a visible heading and it's different from current
+  //     if (mostVisibleHeadingId && highestRatio > 0) {
+  //       debouncedSetActiveHeading(mostVisibleHeadingId);
+  //     }
+  //   }, options);
 
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [headings, getScrollOffset]);
+  //   // Observe all existing headings
+  //   headings.forEach(heading => {
+  //     observerRef.current?.observe(heading.element);
+  //   });
+
+  //   return () => {
+  //     if (observerRef.current) {
+  //       observerRef.current.disconnect();
+  //     }
+  //   };
+  // }, [headings, getScrollOffset, activeHeadingId]);
 
   // Set up scroll tracking for reading progress
   useEffect(() => {
@@ -287,7 +294,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     }
 
     // Prevent the default hash change behavior
-    window.history.pushState(null, '', `#${id}`);
+    // window.history.pushState(null, '', `#${id}`);
 
     // Set active heading immediately for visual feedback
     setActiveHeadingId(id);
@@ -729,18 +736,29 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                         stiffness: 270,
                         damping: 25,
                       }}
-                      className="p-4 text-white space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-thin"
+                      className="p-4 text-white space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-dark"
                     >
                       {/* Content Area */}
-                      {headings.length > 0 ? (
-                        headings.map(heading => (
+                      {headings.map(heading => (
+                        <div key={heading.id} className="relative">
+                          {activeHeadingId === heading.id && (
+                            <motion.div
+                              layoutId="activeIndicator"
+                              layout="position"
+                              className="w-1 h-1 bg-white rounded-full absolute left-0 top-[10px]"
+                              transition={{
+                                type: 'spring',
+                                stiffness: 300,
+                                damping: 30,
+                              }}
+                            />
+                          )}
                           <motion.button
-                            key={heading.id}
                             initial={{ opacity: 0, x: -5 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 }}
                             className={cn(
-                              'block text-left w-full truncate py-1 text-sm transition-colors',
+                              'block text-left w-full truncate relative py-1 pl-3 text-sm transition-colors',
                               activeHeadingId === heading.id
                                 ? 'text-white'
                                 : 'text-white/70 hover:text-white'
@@ -750,30 +768,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                               scrollToHeading(heading.id);
                             }}
                           >
-                            <div className="flex items-center">
-                              {activeHeadingId === heading.id && (
-                                <motion.div
-                                  layoutId="activeIndicator"
-                                  className="w-1 h-1 bg-white rounded-full mr-2"
-                                />
-                              )}
-                              <span
-                                className={
-                                  activeHeadingId === heading.id
-                                    ? 'ml-0'
-                                    : 'ml-3'
-                                }
-                              >
-                                {heading.text}
-                              </span>
-                            </div>
+                            <span>{heading.text}</span>
                           </motion.button>
-                        ))
-                      ) : (
-                        <div className="text-white/50 text-center py-4 text-sm">
-                          No headings found on this page
                         </div>
-                      )}
+                      ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -837,3 +835,16 @@ const DynamicIslandTOC = Object.assign(DynamicIslandTOCRoot, {
 });
 
 export { DynamicIslandTOC };
+
+// Add this debounce utility function at the top of your file with other imports
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  return function (...args: Parameters<T>) {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
