@@ -571,8 +571,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     return isVertical ? 16 : 0;
   };
 
-  // const showHeadingText = (isVertical && isExpanded) || !isVertical;
-  const showHeadingText = true;
   // Memoized context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
     () => ({
@@ -582,7 +580,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     }),
     [registerHeading, activeHeadingId, setActiveHeadingId]
   );
-  console.log(isVertical);
 
   return (
     <DynamicIslandTOCContext.Provider value={contextValue}>
@@ -659,7 +656,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                   <motion.div
                     layout="position"
                     data-debug-id="dynamic-island-toc-notch-content"
-                    className={cn('flex items-center min-w-0 min-h-0')}
+                    className={cn(
+                      'flex items-center min-w-0 min-h-0',
+                      isVertical && !isExpanded ? 'space-y-2' : 'space-x-2'
+                    )}
                     style={{
                       writingMode:
                         isVertical && !isExpanded
@@ -679,28 +679,26 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       showPercentage={false}
                     />
 
-                    {showHeadingText && (
-                      <motion.div
-                        layout="position"
-                        className={cn(
-                          'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
+                    <motion.div
+                      layout="position"
+                      className={cn(
+                        'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
+                      )}
+                    >
+                      <div className="truncate flex-1">
+                        {activeHeadingId
+                          ? headings.find(h => h.id === activeHeadingId)
+                              ?.text || 'Contents'
+                          : 'Contents'}
+                      </div>
+                      <div className="flex-shrink-0">
+                        {isExpanded ? (
+                          <ChevronUp className="w-3 h-3 text-white" />
+                        ) : (
+                          <ChevronDown className="w-3 h-3 text-white" />
                         )}
-                      >
-                        <div className="truncate flex-1">
-                          {activeHeadingId
-                            ? headings.find(h => h.id === activeHeadingId)
-                                ?.text || 'Contents'
-                            : 'Contents'}
-                        </div>
-                        <div className="flex-shrink-0">
-                          {isExpanded ? (
-                            <ChevronUp className="w-3 h-3 text-white" />
-                          ) : (
-                            <ChevronDown className="w-3 h-3 text-white" />
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
+                      </div>
+                    </motion.div>
                   </motion.div>
                 </motion.div>
 
