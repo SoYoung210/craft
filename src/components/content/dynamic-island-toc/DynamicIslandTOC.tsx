@@ -67,6 +67,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const headingsMapRef = useRef<Map<string, Heading>>(new Map());
   const isInitialRenderRef = useRef(true);
   const contentRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   const windowSizeRef = useRef({ width: 0, height: 0 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
@@ -305,6 +306,22 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const toggleIsland = () => {
     if (!isDragging) {
       setIsExpanded(!isExpanded);
+    }
+  };
+
+  // Function to get gradient direction based on position
+  const getGradientDirection = (position: Position): string => {
+    switch (position) {
+      case 'top':
+        return '180deg'; // top to bottom
+      case 'right':
+        return '270deg'; // right to left
+      case 'bottom':
+        return '0deg'; // bottom to top
+      case 'left':
+        return '90deg'; // left to right
+      default:
+        return '0deg';
     }
   };
 
@@ -617,6 +634,19 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
 
   return (
     <DynamicIslandTOCContext.Provider value={contextValue}>
+      <div
+        ref={overlayRef}
+        className={cn(
+          'fixed inset-0 w-full h-full z-40 pointer-events-none transition-all',
+          isExpanded ? 'opacity-100' : 'opacity-0'
+        )}
+        style={{
+          backdropFilter: 'blur(1px)',
+          background: `linear-gradient(${getGradientDirection(
+            position
+          )}, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0))`,
+        }}
+      />
       {/* Render content in the main document flow */}
       <div ref={contentRef} className="dynamic-island-content">
         {children}
@@ -628,7 +658,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             ref={motionDivRef}
             layout
             className={cn(
-              'bg-black shadow-lg cursor-grab overflow-hidden rounded-3xl',
+              'bg-black shadow-xl cursor-grab overflow-hidden rounded-3xl',
               isDragging
                 ? 'opacity-90 cursor-grabbing rounded-full'
                 : 'opacity-100',
