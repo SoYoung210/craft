@@ -747,9 +747,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                               layout="position"
                               className="w-1 h-1 bg-white rounded-full absolute left-0 top-[10px]"
                               transition={{
-                                type: 'spring',
-                                stiffness: 300,
-                                damping: 30,
+                                layout: {
+                                  duration: 0.2,
+                                  ease: 'easeOut',
+                                },
                               }}
                             />
                           )}
