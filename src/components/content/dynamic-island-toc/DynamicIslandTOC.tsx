@@ -67,7 +67,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const headingsMapRef = useRef<Map<string, Heading>>(new Map());
   const isInitialRenderRef = useRef(true);
   const contentRef = useRef<HTMLDivElement>(null);
-  const islandRef = useRef<HTMLDivElement>(null);
+
   const windowSizeRef = useRef({ width: 0, height: 0 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
@@ -622,11 +622,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         {children}
       </div>
 
-      <div
-        ref={islandRef}
-        className={cn('fixed z-50', className)}
-        style={getPositionStyles()}
-      >
+      <div className={cn('fixed z-50', className)} style={getPositionStyles()}>
         <LayoutGroup>
           <motion.div
             ref={motionDivRef}
