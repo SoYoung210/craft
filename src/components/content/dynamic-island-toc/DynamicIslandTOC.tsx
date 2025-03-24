@@ -72,6 +72,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   const motionDivRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollingRef = useRef(false);
 
   useEffect(() => {
     const updateWindowSize = () => {
@@ -166,65 +167,86 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   );
 
   // Set up intersection observer to track which heading is currently visible
-  // useEffect(() => {
-  //   // Disconnect any existing observer
-  //   if (observerRef.current) {
-  //     observerRef.current.disconnect();
-  //   }
+  useEffect(() => {
+    // Disconnect any existing observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
 
-  //   // Calculate rootMargin based on the header height
-  //   const headerHeight = getScrollOffset();
-  //   const rootMargin = `-${headerHeight}px 0px -66%`;
+    // Calculate rootMargin based on the header height
+    const headerHeight = getScrollOffset();
+    const rootMargin = `-${headerHeight}px 0px -66%`;
 
-  //   const options = {
-  //     rootMargin,
-  //     threshold: [0, 0.25, 0.5, 0.75, 1],
-  //   };
+    const options = {
+      rootMargin,
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    };
 
-  //   // Create a map to track intersection ratios
-  //   const intersectionRatios = new Map();
+    // Create a map to track intersection ratios
+    const intersectionRatios = new Map();
 
-  //   // Create a debounced version of setActiveHeadingId to prevent rapid updates
-  //   const debouncedSetActiveHeading = debounce((id: string | null) => {
-  //     if (id !== activeHeadingId) {
-  //       setActiveHeadingId(id);
-  //     }
-  //   }, 50);
+    // Create a debounced version of setActiveHeadingId to prevent rapid updates
+    const debouncedSetActiveHeading = debounce((id: string | null) => {
+      if (id !== activeHeadingId) {
+        setActiveHeadingId(id);
+      }
+    }, 50);
 
-  //   observerRef.current = new IntersectionObserver(entries => {
-  //     // Update intersection ratios for each entry
-  //     entries.forEach(entry => {
-  //       intersectionRatios.set(entry.target.id, entry.intersectionRatio);
-  //     });
+    observerRef.current = new IntersectionObserver(entries => {
+      // Skip updates if we're programmatically scrolling
+      if (isProgrammaticScrollingRef.current) return;
 
-  //     // Find the heading with the highest intersection ratio
-  //     let highestRatio = 0;
-  //     let mostVisibleHeadingId = null;
+      // Update intersection ratios for each entry
+      entries.forEach(entry => {
+        intersectionRatios.set(entry.target.id, entry.intersectionRatio);
+      });
 
-  //     intersectionRatios.forEach((ratio, id) => {
-  //       if (ratio > highestRatio) {
-  //         highestRatio = ratio;
-  //         mostVisibleHeadingId = id;
-  //       }
-  //     });
+      // Find the heading with the highest intersection ratio
+      let highestRatio = 0;
+      let mostVisibleHeadingId = null;
 
-  //     // Only update if we found a visible heading and it's different from current
-  //     if (mostVisibleHeadingId && highestRatio > 0) {
-  //       debouncedSetActiveHeading(mostVisibleHeadingId);
-  //     }
-  //   }, options);
+      intersectionRatios.forEach((ratio, id) => {
+        if (ratio > highestRatio) {
+          highestRatio = ratio;
+          mostVisibleHeadingId = id;
+        }
+      });
 
-  //   // Observe all existing headings
-  //   headings.forEach(heading => {
-  //     observerRef.current?.observe(heading.element);
-  //   });
+      // Only update if we found a visible heading and it's different from current
+      if (mostVisibleHeadingId && highestRatio > 0) {
+        debouncedSetActiveHeading(mostVisibleHeadingId);
+      } else if (intersectionRatios.size > 0 && highestRatio === 0) {
+        // Find the heading closest to the top of the viewport
+        let closestHeading: Heading | null = null;
+        let closestDistance = Infinity;
 
-  //   return () => {
-  //     if (observerRef.current) {
-  //       observerRef.current.disconnect();
-  //     }
-  //   };
-  // }, [headings, getScrollOffset, activeHeadingId]);
+        headings.forEach(heading => {
+          const rect = heading.element.getBoundingClientRect();
+          const distance = Math.abs(rect.top);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestHeading = heading;
+          }
+        });
+
+        if (closestHeading != null) {
+          debouncedSetActiveHeading(closestHeading.id);
+        }
+      }
+    }, options);
+
+    // Observe all existing headings
+    headings.forEach(heading => {
+      observerRef.current?.observe(heading.element);
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [headings, getScrollOffset, activeHeadingId]);
 
   // Set up scroll tracking for reading progress
   useEffect(() => {
@@ -293,11 +315,11 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       return;
     }
 
-    // Prevent the default hash change behavior
-    // window.history.pushState(null, '', `#${id}`);
-
     // Set active heading immediately for visual feedback
     setActiveHeadingId(id);
+
+    // Set programmatic scrolling flag
+    isProgrammaticScrollingRef.current = true;
 
     // Get the height of the fixed header
     const headerHeight = getScrollOffset();
@@ -332,6 +354,11 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
+
+    // Reset the flag after scrolling is complete
+    setTimeout(() => {
+      isProgrammaticScrollingRef.current = false;
+    }, 1000); // Adjust timing as needed to cover the scroll animation
   };
 
   // Function to handle drag start
