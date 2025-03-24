@@ -417,7 +417,18 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     info: { point: { x: number; y: number } }
   ) => {
     requestAnimationFrame(() => {
-      setDragPosition({ x: info.point.x, y: info.point.y });
+      // Constrain position within window boundaries
+      // Considering component dimensions (using 30px as minimum width/height when dragging)
+      const constrainedX = Math.max(
+        5,
+        Math.min(windowSizeRef.current.width + 5, info.point.x)
+      );
+      const constrainedY = Math.max(
+        5,
+        Math.min(windowSizeRef.current.height + 5, info.point.y)
+      );
+
+      setDragPosition({ x: constrainedX, y: constrainedY });
     });
   };
 
