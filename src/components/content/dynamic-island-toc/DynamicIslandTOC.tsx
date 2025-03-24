@@ -70,8 +70,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const islandRef = useRef<HTMLDivElement>(null);
   const windowSizeRef = useRef({ width: 0, height: 0 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
-  // Add a new state variable to track orientation
-  const [isVertical, setIsVertical] = useState(false);
+
   const motionDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -443,7 +442,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     setPosition(edge);
 
     // Set orientation based on the edge
-    setIsVertical(edge === 'left' || edge === 'right');
+    // setIsVertical(edge === 'left' || edge === 'right');
 
     // Update the normalized coordinate along the edge
     if (edge === 'top' || edge === 'bottom') {
@@ -452,6 +451,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       setPositionCoords({ x: edge === 'left' ? 0 : 1, y: normalizedCoord });
     }
   };
+  const isVertical = position === 'left' || position === 'right';
 
   const getPositionStyles = (): React.CSSProperties => {
     const styles: React.CSSProperties = {
@@ -571,7 +571,8 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     return isVertical ? 16 : 0;
   };
 
-  const showHeadingText = (isVertical && isExpanded) || !isVertical;
+  // const showHeadingText = (isVertical && isExpanded) || !isVertical;
+  const showHeadingText = true;
   // Memoized context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
     () => ({
@@ -581,6 +582,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     }),
     [registerHeading, activeHeadingId, setActiveHeadingId]
   );
+  console.log(isVertical);
 
   return (
     <DynamicIslandTOCContext.Provider value={contextValue}>
@@ -613,7 +615,13 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             initial={false}
             animate={{
               width: isDragging ? 30 : isExpanded ? 340 : isVertical ? 32 : 160,
-              height: isDragging ? 30 : isExpanded ? 240 : isVertical ? 80 : 32,
+              height: isDragging
+                ? 30
+                : isExpanded
+                ? 240
+                : isVertical
+                ? 160
+                : 32,
             }}
             onClick={toggleIsland}
             drag={true}
@@ -635,8 +643,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 <motion.div
                   layout="position"
                   className={cn(
-                    'flex items-center',
-                    isVertical ? '' : 'h-[32px]',
+                    'flex',
+                    isVertical
+                      ? 'flex-col max-h-full justify-center'
+                      : 'h-[32px]',
                     isExpanded && !isVertical && 'pt-4'
                   )}
                   animate={{
@@ -648,7 +658,17 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                 >
                   <motion.div
                     layout="position"
-                    className={cn('flex items-center min-w-0 space-x-2')}
+                    data-debug-id="dynamic-island-toc-notch-content"
+                    className={cn('flex items-center min-w-0 min-h-0')}
+                    style={{
+                      writingMode:
+                        isVertical && !isExpanded
+                          ? 'vertical-rl'
+                          : 'horizontal-tb',
+                      textOrientation: 'mixed',
+                      backfaceVisibility: 'hidden',
+                      WebkitFontSmoothing: 'antialiased',
+                    }}
                   >
                     <CircleProgress
                       percentage={readingProgress}
@@ -662,7 +682,9 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                     {showHeadingText && (
                       <motion.div
                         layout="position"
-                        className="text-white min-w-0 text-xs font-medium flex items-center justify-center space-x-1 w-full"
+                        className={cn(
+                          'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
+                        )}
                       >
                         <div className="truncate flex-1">
                           {activeHeadingId
