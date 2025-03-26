@@ -5,7 +5,7 @@ import PageLayout from '../components/layout/page-layout/PageLayout';
 
 const Heading = ({ children }: { children: string }) => (
   <DynamicIslandTOC.Heading>
-    <h2 className="mt-6 mb-4 text-gray-950 font-medium leading-5">
+    <h2 className="py-[6px] px-2 mt-3 -ml-2 rounded-[4px] text-gray-950 text-lg font-medium leading-5">
       {children}
     </h2>
   </DynamicIslandTOC.Heading>
