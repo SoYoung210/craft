@@ -283,7 +283,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       }
       .target-heading {
         position: relative;
-        animation: highlight-pulse 2s ease-out;
+        animation: highlight-pulse 3.4s ease-out;
       }
       @keyframes highlight-pulse {
         0% {
@@ -364,7 +364,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         element.classList.add('target-heading');
         setTimeout(() => {
           element.classList.remove('target-heading');
-        }, 2000);
+        }, 4000);
       } catch (error) {
         console.error('Error scrolling to heading:', error);
 
