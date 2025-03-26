@@ -678,8 +678,8 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             )}
             transition={{
               type: 'spring',
-              stiffness: 270,
-              damping: 26,
+              stiffness: 250,
+              damping: 25,
             }}
             initial={false}
             animate={{
