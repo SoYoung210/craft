@@ -7,6 +7,7 @@ import React, {
   type ReactNode,
   useCallback,
   useId,
+  useLayoutEffect,
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
@@ -69,18 +70,25 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const windowSizeRef = useRef({ width: 0, height: 0 });
+  // Initialize windowSizeRef with default values
+  const windowSizeRef = useRef({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   const motionDivRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollingRef = useRef(false);
+  const [windowSizeLoaded, setWindowSizeLoaded] = useState(false);
 
-  useEffect(() => {
+  // Use useLayoutEffect to get window size before rendering
+  useLayoutEffect(() => {
     const updateWindowSize = () => {
       windowSizeRef.current = {
         width: window.innerWidth,
         height: window.innerHeight,
       };
+      setWindowSizeLoaded(true);
     };
 
     // Initialize on mount
@@ -517,27 +525,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const isVertical = position === 'left' || position === 'right';
 
   const getPositionStyles = (): React.CSSProperties => {
-    const styles: React.CSSProperties = {
-      position: 'fixed',
-      zIndex: 50,
-      transition: isDragging
-        ? 'none'
-        : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-    };
-
-    if (isDragging) {
-      // During drag, position exactly at cursor position, accounting for the grab point
-      return {
-        ...styles,
-        position: 'fixed',
-        left: dragPosition.x - 15, // Center the 30x30 circle on cursor
-        top: dragPosition.y - 15,
-        transform: 'none',
-        transition: 'none',
-      };
-    }
-
-    // Calculate the component dimensions based on orientation and expanded state
     const width = isExpanded ? 340 : isVertical ? 32 : 120;
     const height = isExpanded ? 240 : isVertical ? 120 : 32;
 
@@ -551,6 +538,33 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     // Calculate the maximum x and y positions to keep the component within the viewport
     const maxX = windowWidth - width - edgePadding;
     const maxY = windowHeight - height - edgePadding;
+
+    const initialTopX = Math.max(
+      edgePadding,
+      Math.min(maxX, positionCoords.x * windowWidth - width / 2)
+    );
+    // return { ...styles, top: edgePadding, left: topX, transform: 'none' };
+    const styles: React.CSSProperties = {
+      position: 'fixed',
+      zIndex: 50,
+      top: edgePadding,
+      left: initialTopX,
+      // transition: isDragging
+      //   ? 'none'
+      //   : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+    };
+
+    if (isDragging) {
+      // During drag, position exactly at cursor position, accounting for the grab point
+      return {
+        ...styles,
+        position: 'fixed',
+        left: dragPosition.x - 15, // Center the 30x30 circle on cursor
+        top: dragPosition.y - 15,
+        transform: 'none',
+        transition: 'none',
+      };
+    }
 
     // When not dragging, position based on the edge and normalized coordinate
     switch (position) {
@@ -664,7 +678,14 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         {children}
       </div>
 
-      <div className={cn('fixed z-50', className)} style={getPositionStyles()}>
+      <div
+        className={cn(
+          'fixed z-50',
+          className,
+          !windowSizeLoaded && 'opacity-0'
+        )}
+        style={getPositionStyles()}
+      >
         <LayoutGroup>
           <motion.div
             ref={motionDivRef}
@@ -718,6 +739,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       : 'h-[32px]',
                     isExpanded && !isVertical && 'pt-4'
                   )}
+                  initial={false}
                   animate={{
                     paddingLeft: getPadding('left'),
                     paddingRight: getPadding('right'),
