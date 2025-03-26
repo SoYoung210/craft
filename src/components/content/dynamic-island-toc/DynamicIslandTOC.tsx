@@ -230,8 +230,9 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
             closestHeading = heading;
           }
         });
-
         if (closestHeading != null) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           debouncedSetActiveHeading(closestHeading.id);
         }
       }
@@ -764,9 +765,18 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       </div>
                       <div className="flex-shrink-0">
                         {isExpanded ? (
-                          <ChevronUp className="w-3 h-3 text-white" />
+                          <ChevronUp className={cn('w-3 h-3 text-white')} />
                         ) : (
-                          <ChevronDown className="w-3 h-3 text-white" />
+                          <ChevronDown
+                            className={cn(
+                              'w-3 h-3 text-white',
+                              position === 'left'
+                                ? '-rotate-90'
+                                : position === 'right'
+                                ? 'rotate-90'
+                                : ''
+                            )}
+                          />
                         )}
                       </div>
                     </motion.div>
@@ -831,6 +841,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                             onClick={e => {
                               e.stopPropagation();
                               scrollToHeading(heading.id);
+                              setIsExpanded(false);
                             }}
                           >
                             <span>{heading.text}</span>
