@@ -780,6 +780,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
                       trackColor="#8A8990"
                       indicatorColor="#ebebeb"
                       showPercentage={false}
+                      animationDuration={0.4}
                     />
 
                     <motion.div
