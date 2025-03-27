@@ -19,12 +19,6 @@ export default function DynamicIslandTOCPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Dynamic Island TOC</PageLayout.Title>
-      <PageLayout.Details>
-        <PageLayout.Summary>Dynamic Island TOC</PageLayout.Summary>
-        <PageLayout.DetailsContent>
-          Dynamic Island TOC
-        </PageLayout.DetailsContent>
-      </PageLayout.Details>
       <DynamicIslandTOC>
         <Heading>Design System, Beyond Code</Heading>
         <Paragraph>
