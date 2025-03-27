@@ -525,8 +525,13 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const isVertical = position === 'left' || position === 'right';
 
   const getPositionStyles = (): React.CSSProperties => {
-    const width = isExpanded ? 340 : isVertical ? 32 : 120;
-    const height = isExpanded ? 240 : isVertical ? 120 : 32;
+    // Calculate current and expanded dimensions
+    const currentWidth = isExpanded ? 340 : isVertical ? 32 : 160;
+    const currentHeight = isExpanded ? 240 : isVertical ? 160 : 32;
+
+    // For dragging state
+    const dragWidth = 30;
+    const dragHeight = 30;
 
     // Calculate the safe area padding (distance from edge)
     const edgePadding = 16;
@@ -536,31 +541,26 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     const windowHeight = windowSizeRef.current.height;
 
     // Calculate the maximum x and y positions to keep the component within the viewport
-    const maxX = windowWidth - width - edgePadding;
-    const maxY = windowHeight - height - edgePadding;
+    const maxX =
+      windowWidth - (isDragging ? dragWidth : currentWidth) - edgePadding;
+    const maxY =
+      windowHeight - (isDragging ? dragHeight : currentHeight) - edgePadding;
 
-    const initialTopX = Math.max(
-      edgePadding,
-      Math.min(maxX, positionCoords.x * windowWidth - width / 2)
-    );
-    // return { ...styles, top: edgePadding, left: topX, transform: 'none' };
     const styles: React.CSSProperties = {
       position: 'fixed',
       zIndex: 50,
-      top: edgePadding,
-      left: initialTopX,
-      // transition: isDragging
-      //   ? 'none'
-      //   : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+      transition: isDragging
+        ? 'none'
+        : 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+      transformOrigin: 'center top',
     };
 
     if (isDragging) {
       // During drag, position exactly at cursor position, accounting for the grab point
       return {
         ...styles,
-        position: 'fixed',
-        left: dragPosition.x - 15, // Center the 30x30 circle on cursor
-        top: dragPosition.y - 15,
+        left: dragPosition.x - dragWidth / 2, // Center the circle on cursor
+        top: dragPosition.y - dragHeight / 2,
         transform: 'none',
         transition: 'none',
       };
@@ -569,24 +569,33 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     // When not dragging, position based on the edge and normalized coordinate
     switch (position) {
       case 'top': {
-        // Position along the top edge
-        const topX = Math.max(
+        // Calculate center position and adjust for width changes to maintain center alignment
+        const centerX = positionCoords.x * windowWidth;
+        const leftPos = Math.max(
           edgePadding,
-          Math.min(maxX, positionCoords.x * windowWidth - width / 2)
+          Math.min(maxX, centerX - currentWidth / 2)
         );
-        return { ...styles, top: edgePadding, left: topX, transform: 'none' };
+
+        return {
+          ...styles,
+          top: edgePadding,
+          left: leftPos,
+          transform: 'none',
+        };
       }
 
       case 'bottom': {
-        // Position along the bottom edge
-        const bottomX = Math.max(
+        // Calculate center position and adjust for width changes to maintain center alignment
+        const centerX = positionCoords.x * windowWidth;
+        const leftPos = Math.max(
           edgePadding,
-          Math.min(maxX, positionCoords.x * windowWidth - width / 2)
+          Math.min(maxX, centerX - currentWidth / 2)
         );
+
         return {
           ...styles,
           bottom: edgePadding,
-          left: bottomX,
+          left: leftPos,
           transform: 'none',
         };
       }
@@ -595,7 +604,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         // Position along the left edge
         const leftY = Math.max(
           edgePadding,
-          Math.min(maxY, positionCoords.y * windowHeight - height / 2)
+          Math.min(maxY, positionCoords.y * windowHeight - currentHeight / 2)
         );
         return { ...styles, left: edgePadding, top: leftY, transform: 'none' };
       }
@@ -604,7 +613,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         // Position along the right edge
         const rightY = Math.max(
           edgePadding,
-          Math.min(maxY, positionCoords.y * windowHeight - height / 2)
+          Math.min(maxY, positionCoords.y * windowHeight - currentHeight / 2)
         );
         return {
           ...styles,
@@ -682,7 +691,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         className={cn(
           'fixed z-50',
           className,
-          !windowSizeLoaded && 'opacity-0'
+          !windowSizeLoaded ? 'opacity-0' : 'opacity-100'
         )}
         style={getPositionStyles()}
       >
