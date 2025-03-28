@@ -7,13 +7,13 @@ import React, {
   type ReactNode,
   useCallback,
   useId,
-  useLayoutEffect,
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';
+import { useIsomorphicLayoutEffect } from '../../../hooks/useIsomorphicLayoutEffect';
 
 import { CircleProgress } from './CircleProgress';
 
@@ -81,8 +81,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const isProgrammaticScrollingRef = useRef(false);
   const [windowSizeLoaded, setWindowSizeLoaded] = useState(false);
 
-  // Use useLayoutEffect to get window size before rendering
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const updateWindowSize = () => {
       windowSizeRef.current = {
         width: window.innerWidth,
