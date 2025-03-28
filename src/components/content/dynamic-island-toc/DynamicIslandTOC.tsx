@@ -91,13 +91,18 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     };
 
     // Initialize on mount
-    updateWindowSize();
+
+    if (typeof window !== 'undefined') {
+      updateWindowSize();
+      window.addEventListener('resize', updateWindowSize);
+    }
 
     // Update on resize
-    window.addEventListener('resize', updateWindowSize);
 
     return () => {
-      window.removeEventListener('resize', updateWindowSize);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateWindowSize);
+      }
     };
   }, []);
 
