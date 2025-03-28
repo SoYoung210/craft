@@ -671,7 +671,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         className={cn(
           'fixed z-50',
           className,
-          !windowWidth ? 'opacity-0' : 'opacity-100'
+          windowWidth === 0 ? 'opacity-0' : 'opacity-100'
         )}
         style={getPositionStyles()}
       >
