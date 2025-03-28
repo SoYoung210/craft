@@ -13,7 +13,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';
-import { useIsomorphicLayoutEffect } from '../../../hooks/useIsomorphicLayoutEffect';
+import { useWindowSize } from '../../../hooks/useWindowSize';
 
 import { CircleProgress } from './CircleProgress';
 
@@ -56,6 +56,8 @@ type HeadingProps = {
 type Position = 'top' | 'right' | 'bottom' | 'left';
 // Main component
 function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
@@ -70,41 +72,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Initialize windowSizeRef with default values
-  const windowSizeRef = useRef({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
-  });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   const motionDivRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollingRef = useRef(false);
-  const [windowSizeLoaded, setWindowSizeLoaded] = useState(false);
-
-  useIsomorphicLayoutEffect(() => {
-    const updateWindowSize = () => {
-      windowSizeRef.current = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
-      setWindowSizeLoaded(true);
-    };
-
-    // Initialize on mount
-
-    if (typeof window !== 'undefined') {
-      updateWindowSize();
-      window.addEventListener('resize', updateWindowSize);
-    }
-
-    // Update on resize
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', updateWindowSize);
-      }
-    };
-  }, []);
 
   // Function to calculate scroll offset based on screen size and preferences
   const getScrollOffset = useCallback(() => {
@@ -444,13 +415,10 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     requestAnimationFrame(() => {
       // Constrain position within window boundaries
       // Considering component dimensions (using 30px as minimum width/height when dragging)
-      const constrainedX = Math.max(
-        5,
-        Math.min(windowSizeRef.current.width + 5, info.point.x)
-      );
+      const constrainedX = Math.max(5, Math.min(windowWidth + 5, info.point.x));
       const constrainedY = Math.max(
         5,
-        Math.min(windowSizeRef.current.height + 5, info.point.y)
+        Math.min(windowHeight + 5, info.point.y)
       );
 
       setDragPosition({ x: constrainedX, y: constrainedY });
@@ -462,9 +430,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     x: number,
     y: number
   ): { edge: Position; normalizedCoord: number } => {
-    const windowWidth = windowSizeRef.current.width;
-    const windowHeight = windowSizeRef.current.height;
-
     // Calculate distances to each edge
     const distanceToTop = y;
     const distanceToBottom = windowHeight - y;
@@ -553,8 +518,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
     const edgePadding = 16;
 
     // Calculate window dimensions
-    const windowWidth = windowSizeRef.current.width;
-    const windowHeight = windowSizeRef.current.height;
 
     // Calculate the maximum x and y positions to keep the component within the viewport
     const maxX =
@@ -707,7 +670,7 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         className={cn(
           'fixed z-50',
           className,
-          !windowSizeLoaded ? 'opacity-0' : 'opacity-100'
+          !windowWidth ? 'opacity-0' : 'opacity-100'
         )}
         style={getPositionStyles()}
       >
