@@ -105,13 +105,13 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   // Function to calculate scroll offset based on screen size and preferences
   const getScrollOffset = useCallback(() => {
     // Base offset for the fixed header
-    let offset = 60;
+    let offset = 140;
 
     // Adjust for smaller screens
     if (typeof window !== 'undefined') {
       if (window.innerWidth < 640) {
         // sm breakpoint
-        offset = 50;
+        offset = 100;
       }
 
       // Check if the user prefers reduced motion
@@ -357,11 +357,11 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
         const rect = element.getBoundingClientRect();
 
         // Calculate the absolute position on the page
-        const absoluteTop = rect.top + window.pageYOffset;
+        const absoluteTop = rect.top + window.scrollY;
 
         // Subtract the header height to account for the fixed header
         const scrollPosition = absoluteTop - headerHeight;
-
+        console.log('scrollPosition', scrollPosition);
         // Scroll with smooth behavior
         window.scrollTo({
           top: scrollPosition,
