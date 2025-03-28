@@ -57,6 +57,7 @@ type Position = 'top' | 'right' | 'bottom' | 'left';
 // Main component
 function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
   const { width: windowWidth, height: windowHeight } = useWindowSize();
+  console.log('windowWidth', windowWidth, 'windowHeight', windowHeight);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [headings, setHeadings] = useState<Heading[]>([]);
