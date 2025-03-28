@@ -291,17 +291,30 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       }
       .target-heading {
         position: relative;
-        animation: highlight-pulse 3.4s ease-out;
+        overflow: hidden;
       }
-      @keyframes highlight-pulse {
+      .target-heading::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent,  rgba(59, 130, 246, 0.15), transparent);
+        background-size: 200% 100%;
+        background-position: 100% 0;
+        animation: highlight-sweep 3s ease-out forwards;
+        animation-delay: 250ms;
+        z-index: -1;
+      }
+      @keyframes highlight-sweep {
         0% {
-          background-color: rgba(255, 255, 255, 0);
-        }
-        20% {
-          background-color: rgba(59, 130, 246, 0.1);
+          background-position: 100% 0;
+          opacity: 1;
         }
         100% {
-          background-color: rgba(255, 255, 255, 0);
+          background-position: 0 0;
+          opacity: 0;
         }
       }
     `;
@@ -361,7 +374,6 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
 
         // Subtract the header height to account for the fixed header
         const scrollPosition = absoluteTop - headerHeight;
-        console.log('scrollPosition', scrollPosition);
         // Scroll with smooth behavior
         window.scrollTo({
           top: scrollPosition,
