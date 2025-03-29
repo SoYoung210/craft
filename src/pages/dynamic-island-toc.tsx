@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import { DynamicIslandTOC } from '../components/content/dynamic-island-toc/DynamicIslandTOC';
 import PageLayout from '../components/layout/page-layout/PageLayout';
@@ -16,10 +16,16 @@ const Paragraph = ({ children }: { children: ReactNode }) => (
 );
 
 export default function DynamicIslandTOCPage() {
+  const [isClientSide, setIsClientSide] = useState(false);
+
+  useEffect(() => {
+    setIsClientSide(true);
+  }, []);
+
   return (
     <PageLayout>
       <PageLayout.Title>Dynamic Island TOC</PageLayout.Title>
-      <DynamicIslandTOC>
+      <DynamicIslandTOC key={isClientSide ? 'client' : 'server'}>
         <Heading>Design System, Beyond Code</Heading>
         <Paragraph>
           The very first stage, the "pre-creation" stage, is the most important

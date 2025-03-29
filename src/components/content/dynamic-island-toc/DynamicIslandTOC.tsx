@@ -55,9 +55,11 @@ type HeadingProps = {
 };
 type Position = 'top' | 'right' | 'bottom' | 'left';
 // Main component
-function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
+export function DynamicIslandTOCRoot({
+  className,
+  children,
+}: DynamicIslandTOCProps) {
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-  console.log('windowWidth', windowWidth, 'windowHeight', windowHeight);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [headings, setHeadings] = useState<Heading[]>([]);
@@ -670,8 +672,8 @@ function DynamicIslandTOCRoot({ className, children }: DynamicIslandTOCProps) {
       <div
         className={cn(
           'fixed z-50',
-          className,
-          windowWidth === 0 ? 'opacity-0' : 'opacity-100'
+          windowWidth === 0 ? 'opacity-0' : 'opacity-100',
+          className
         )}
         style={getPositionStyles()}
       >
