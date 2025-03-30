@@ -1,7 +1,9 @@
 import { ReactNode, useEffect, useState } from 'react';
+import { graphql, PageProps } from 'gatsby';
 
 import { DynamicIslandTOC } from '../components/content/dynamic-island-toc/DynamicIslandTOC';
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import SEO from '../components/layout/SEO';
 
 const Heading = ({ children }: { children: string }) => (
   <DynamicIslandTOC.Heading>
@@ -210,3 +212,28 @@ export default function DynamicIslandTOCPage() {
     </PageLayout>
   );
 }
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Dynamic Island TOC"
+      description="April 2025"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/dynamic-island-toc.webp" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
