@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { DownloadIcon } from '@radix-ui/react-icons';
-import html2Canvas from 'html2canvas-pro';
+import html2Canvas from 'html2canvas';
 import { gsap } from 'gsap';
 
 import { keys } from '../../../utils/object';
