@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 
 /**
  * On the server, React emits a warning when calling `useLayoutEffect`.
@@ -7,7 +7,5 @@ import { useLayoutEffect } from 'react';
  *
  * See: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
  */
-export const useIsomorphicLayoutEffect = globalThis?.document
-  ? useLayoutEffect
-  : // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {};
+export const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;

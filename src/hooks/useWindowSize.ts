@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import useWindowEvent from './useWindowEvent';
 
@@ -20,6 +20,11 @@ export function useWindowSize() {
       height: window.innerHeight || 0,
     });
   }, []);
+
+  // Call setSize in useEffect to ensure it runs after component mount
+  useEffect(() => {
+    setSize();
+  }, [setSize]);
 
   useWindowEvent('resize', setSize, eventListerOptions);
   useWindowEvent('orientationchange', setSize, eventListerOptions);

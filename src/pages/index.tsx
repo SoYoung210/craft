@@ -10,8 +10,20 @@ const IndexPage = () => {
   return (
     <PageLayout theme="gradient">
       <PageLayout.Title>Craft</PageLayout.Title>
-      <ContentList>
+      <ContentList className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
         <ContentList.Item active>
+          <Link to="/dynamic-island-toc">
+            <ContentBox title="Dynamic Island TOC">
+              <StaticImage
+                src="../images/thumbnails/dynamic-island-toc.webp"
+                alt="Dynamic Island TOC"
+                placeholder="none"
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/particle-effect">
             <ContentBox title="Particle Effect">
               <StaticImage
