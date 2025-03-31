@@ -75,8 +75,6 @@ export function DynamicIslandTOCRoot({
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
-
   const motionDivRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollingRef = useRef(false);
 
@@ -378,36 +376,8 @@ export function DynamicIslandTOCRoot({
   };
 
   // Function to handle drag start
-  const handleDragStart = (
-    event: MouseEvent | TouchEvent | PointerEvent,
-    info: { point: { x: number; y: number } }
-  ) => {
-    try {
-      // Try to get the element from the event or from our ref
-      const element = (event.currentTarget ||
-        motionDivRef.current) as HTMLElement | null;
-
-      if (element) {
-        // If we have an element, get its bounding rect
-        const rect = element.getBoundingClientRect();
-        const offsetX = info.point.x - rect.left;
-        const offsetY = info.point.y - rect.top;
-
-        // Store these offsets for use during dragging
-        dragOffsetRef.current = { x: offsetX, y: offsetY };
-      } else {
-        // Fallback: use center point offsets
-        dragOffsetRef.current = { x: 15, y: 15 };
-      }
-
-      setIsDragging(true);
-      setDragPosition({ x: info.point.x, y: info.point.y });
-    } catch (error) {
-      console.error('Error in drag start:', error);
-      // Ensure we still set dragging state even if there's an error
-      setIsDragging(true);
-      setDragPosition({ x: info.point.x, y: info.point.y });
-    }
+  const handleDragStart = () => {
+    setIsDragging(true);
   };
 
   // Function to handle drag
@@ -416,15 +386,16 @@ export function DynamicIslandTOCRoot({
     info: { point: { x: number; y: number } }
   ) => {
     requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
       // Constrain position within window boundaries
       // Considering component dimensions (using 30px as minimum width/height when dragging)
       const constrainedX = Math.max(5, Math.min(windowWidth + 5, info.point.x));
       const constrainedY = Math.max(
         5,
-        Math.min(windowHeight + 5, info.point.y)
+        Math.min(windowHeight + scrollY, info.point.y)
       );
 
-      setDragPosition({ x: constrainedX, y: constrainedY });
+      setDragPosition({ x: constrainedX, y: constrainedY - scrollY });
     });
   };
 
@@ -480,15 +451,12 @@ export function DynamicIslandTOCRoot({
   };
 
   // Handle drag end - snap to nearest edge
-  const handleDragEnd = (
-    event: MouseEvent | TouchEvent | PointerEvent,
-    info: { point: { x: number; y: number } }
-  ) => {
+  const handleDragEnd = () => {
     setIsDragging(false);
 
     // Get current position from the drag event info
-    const currentX = info.point.x;
-    const currentY = info.point.y;
+    const currentX = dragPosition.x;
+    const currentY = dragPosition.y;
 
     // Determine which edge to snap to and the position along that edge
     const { edge, normalizedCoord } = determineSnapPosition(currentX, currentY);
@@ -753,6 +721,7 @@ export function DynamicIslandTOCRoot({
                       textOrientation: 'mixed',
                       backfaceVisibility: 'hidden',
                       WebkitFontSmoothing: 'antialiased',
+                      transform: 'none',
                     }}
                   >
                     <CircleProgress
@@ -770,6 +739,10 @@ export function DynamicIslandTOCRoot({
                       className={cn(
                         'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
                       )}
+                      style={{
+                        // Explicitly reset transform to prevent scale issues
+                        transform: 'none',
+                      }}
                     >
                       <div className="truncate flex-1">
                         {activeHeadingId
