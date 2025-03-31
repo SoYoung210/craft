@@ -33,7 +33,7 @@ const MESSAGES: Message[] = [
   {
     id: '2',
     from: 'me',
-    message: `I render a full-page canvas, and when you click the ParticleEffect.Trigger (basically, the trash can icon), I use html2canvas to capture the HTML content as a mesh`,
+    message: `I render a full-page canvas, and when you click the ParticleEffect.Trigger (basically, the trash can icon), I use html2canvas-pro to capture the HTML content as a mesh`,
   },
   {
     id: '3',
