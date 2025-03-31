@@ -217,7 +217,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
   return (
     <SEO
       title="Dynamic Island TOC"
-      description="April 2025"
+      description="March 2025"
       thumbnailSrc={
         props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
           .fallback?.src
