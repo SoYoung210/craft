@@ -709,10 +709,7 @@ export function DynamicIslandTOCRoot({
                   <motion.div
                     layout="position"
                     data-debug-id="dynamic-island-toc-notch-content"
-                    className={cn(
-                      'flex items-center min-w-0 min-h-0',
-                      isVertical && !isExpanded ? 'space-y-2' : 'space-x-2'
-                    )}
+                    className={cn('flex items-center min-w-0 min-h-0')}
                     style={{
                       writingMode:
                         isVertical && !isExpanded
@@ -730,6 +727,7 @@ export function DynamicIslandTOCRoot({
                       strokeWidth={4}
                       trackColor="#8A8990"
                       indicatorColor="#ebebeb"
+                      className={isVertical && !isExpanded ? 'mb-2' : 'mr-2'}
                       showPercentage={false}
                       animationDuration={0.4}
                     />
@@ -737,7 +735,7 @@ export function DynamicIslandTOCRoot({
                     <motion.div
                       layout="position"
                       className={cn(
-                        'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
+                        'text-white min-w-0 min-h-0 text-xs gap-x-1 font-medium flex items-center justify-center w-full'
                       )}
                       style={{
                         // Explicitly reset transform to prevent scale issues
@@ -750,7 +748,7 @@ export function DynamicIslandTOCRoot({
                               ?.text || 'Contents'
                           : 'Contents'}
                       </div>
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {isExpanded ? (
                           <ChevronUp className={cn('w-3 h-3 text-white')} />
                         ) : (
@@ -797,7 +795,7 @@ export function DynamicIslandTOCRoot({
                         stiffness: 270,
                         damping: 25,
                       }}
-                      className="p-4 text-white space-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-dark"
+                      className="p-4 text-white gap-y-1 overflow-y-auto max-h-[180px] pr-2 scrollbar-dark"
                     >
                       {/* Content Area */}
                       {headings.map(heading => (
