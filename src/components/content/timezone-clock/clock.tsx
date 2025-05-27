@@ -206,11 +206,7 @@ export function Clock({
   const labelTextColor =
     colorScheme === 'light-blue' ? 'text-[#002C56]' : 'text-[#331400]';
 
-  // Enhanced 3D effect with proper shadows
-  const outerShadowClass =
-    colorScheme === 'light-blue'
-      ? 'shadow-[5px_5px_15px_rgba(176,220,227,0.7),_-5px_-5px_15px_rgba(255,255,255,0.8),_inset_1px_1px_2px_rgba(255,255,255,0.6)]'
-      : 'shadow-[5px_5px_15px_rgba(179,69,21,0.7),_-5px_-5px_15px_rgba(255,128,77,0.8),_inset_1px_1px_2px_rgba(255,255,255,0.3)]';
+  // Shape classes
   const containerShapeClass = 'rounded-xl';
 
   return (
@@ -235,12 +231,12 @@ export function Clock({
         {amPm}
       </div>
       <div
-        className={`w-60 h-60 md:w-72 md:h-72 p-2 ${caseBgColor} ${containerShapeClass} ${outerShadowClass} relative transition-all duration-300 overflow-hidden`}
+        className={`w-60 h-60 md:w-72 md:h-72 p-2 ${caseBgColor} ${containerShapeClass} relative transition-all duration-300 overflow-hidden`}
         style={{
           boxShadow:
             colorScheme === 'light-blue'
-              ? '0 10px 25px rgba(176,220,227,0.4), 0 5px 10px rgba(176,220,227,0.2), inset 0 -1px 1px rgba(0,0,0,0.1)'
-              : '0 10px 25px rgba(179,69,21,0.4), 0 5px 10px rgba(179,69,21,0.2), inset 0 -1px 1px rgba(0,0,0,0.1)',
+              ? '0 10px 25px rgba(176,220,227,0.4), 0 5px 10px rgba(176,220,227,0.2), inset 0 -2px 3px rgba(0,0,0,0.07), inset -2px 0 3px rgba(0,0,0,0.04), inset 2px 0 3px rgba(0,0,0,0.04)'
+              : '0 10px 25px rgba(179,69,21,0.4), 0 5px 10px rgba(179,69,21,0.2), inset 0 -2px 3px rgba(0,0,0,0.1), inset -2px 0 3px rgba(0,0,0,0.06), inset 2px 0 3px rgba(0,0,0,0.06)',
         }}
         data-ai-hint="braun clock"
       >
@@ -266,6 +262,33 @@ export function Clock({
               colorScheme === 'light-blue'
                 ? 'linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0) 80%)'
                 : 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0) 80%)',
+          }}
+        />
+
+        {/* Left shadow */}
+        <div
+          className="absolute top-0 left-0 bottom-0 w-[3px]"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(0,0,0,0.06), rgba(0,0,0,0))',
+          }}
+        />
+
+        {/* Right shadow */}
+        <div
+          className="absolute top-0 right-0 bottom-0 w-[3px]"
+          style={{
+            background:
+              'linear-gradient(to left, rgba(0,0,0,0.06), rgba(0,0,0,0))',
+          }}
+        />
+
+        {/* Bottom shadow */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[3px]"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.08), rgba(0,0,0,0))',
           }}
         />
 
