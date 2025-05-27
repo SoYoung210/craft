@@ -202,7 +202,7 @@ export function Clock({
     colorScheme === 'light-blue'
       ? 'fill-[rgba(0,40,80,0.8)]'
       : 'fill-[rgba(50,20,0,0.8)]';
-  const secondHandColor = colorScheme === 'light-blue' ? '#0077CC' : '#CC3300';
+  const secondHandColor = colorScheme === 'light-blue' ? '#396C79' : '#CC3300';
   const labelTextColor =
     colorScheme === 'light-blue' ? 'text-[#002C56]' : 'text-[#331400]';
 
@@ -235,7 +235,7 @@ export function Clock({
         style={{
           boxShadow:
             colorScheme === 'light-blue'
-              ? '0 10px 25px rgba(176,220,227,0.4), 0 5px 10px rgba(176,220,227,0.2), inset 0 -2px 3px rgba(0,0,0,0.07), inset -2px 0 3px rgba(0,0,0,0.04), inset 2px 0 3px rgba(0,0,0,0.04)'
+              ? '0 10px 25px rgba(150,180,180,0.4), 0 5px 10px rgba(150,180,180,0.2), inset 0 -2px 3px rgba(0,0,0,0.07), inset -2px 0 3px rgba(0,0,0,0.04), inset 2px 0 3px rgba(0,0,0,0.04)'
               : '0 10px 25px rgba(179,69,21,0.4), 0 5px 10px rgba(179,69,21,0.2), inset 0 -2px 3px rgba(0,0,0,0.1), inset -2px 0 3px rgba(0,0,0,0.06), inset 2px 0 3px rgba(0,0,0,0.06)',
         }}
         data-ai-hint="braun clock"
@@ -385,8 +385,8 @@ export function Clock({
             >
               {colorScheme === 'light-blue' ? (
                 <>
-                  <stop offset="0%" stopColor="#EAF7FA" />
-                  <stop offset="100%" stopColor="#D8ECF0" />
+                  <stop offset="0%" stopColor="#B8CCC9" />
+                  <stop offset="100%" stopColor="#A6BFBC" />
                 </>
               ) : (
                 <>
@@ -431,103 +431,6 @@ export function Clock({
                 k3="1"
                 k4="0"
               />
-            </filter>
-
-            {/* Add filter for the raised bezel effect */}
-            <filter
-              id={`raisedBezel-${colorScheme}`}
-              x="-10%"
-              y="-10%"
-              width="120%"
-              height="120%"
-            >
-              <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
-              <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
-              <feFlood
-                floodColor="black"
-                floodOpacity="0.3"
-                result="shadowColor"
-              />
-              <feComposite
-                in="shadowColor"
-                in2="offsetBlur"
-                operator="in"
-                result="shadow"
-              />
-              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
-            </filter>
-
-            {/* Radial gradient for bezel to give 3D appearance */}
-            <radialGradient
-              id={`bezelGradient-${colorScheme}`}
-              cx="50%"
-              cy="50%"
-              r="95%"
-              fx="50%"
-              fy="30%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="75%" stopColor="#D8ECF0" />
-                  <stop offset="95%" stopColor="#B8D2D8" />
-                  <stop offset="100%" stopColor="#A8C2C8" />
-                </>
-              ) : (
-                <>
-                  <stop offset="75%" stopColor="#FF6B2B" />
-                  <stop offset="95%" stopColor="#F05B1B" />
-                  <stop offset="100%" stopColor="#E04B0B" />
-                </>
-              )}
-            </radialGradient>
-
-            {/* Flatter gradient for center dot */}
-            <linearGradient
-              id={`centerDotGradient-${colorScheme}`}
-              x1="0%"
-              y1="0%"
-              x2="0%"
-              y2="100%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="0%" stopColor="#B8DBD5" />
-                  <stop offset="95%" stopColor="#99BDB6" />
-                </>
-              ) : (
-                <>
-                  <stop offset="0%" stopColor="#D84208" />
-                  <stop offset="95%" stopColor="#C83903" />
-                </>
-              )}
-            </linearGradient>
-
-            {/* Subtle shadow for center dot */}
-            <filter
-              id={`centerDotShadow-${colorScheme}`}
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
-              <feGaussianBlur
-                in="SourceAlpha"
-                stdDeviation="0.5"
-                result="blur"
-              />
-              <feOffset in="blur" dx="0" dy="0.5" result="offsetBlur" />
-              <feFlood
-                floodColor="black"
-                floodOpacity="0.2"
-                result="shadowColor"
-              />
-              <feComposite
-                in="shadowColor"
-                in2="offsetBlur"
-                operator="in"
-                result="shadow"
-              />
-              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
             </filter>
 
             {/* Filter for recessed clock face */}
@@ -580,6 +483,56 @@ export function Clock({
               <feComposite in="shadow" in2="SourceGraphic" operator="over" />
             </filter>
 
+            {/* Enhanced bezel gradient for 3D effect */}
+            <linearGradient
+              id={`bezelEdgeGradient-${colorScheme}`}
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+              gradientTransform="rotate(45)"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="0%" stopColor="#A6BFBC" />
+                  <stop offset="50%" stopColor="#B8CCC9" />
+                  <stop offset="100%" stopColor="#A6BFBC" />
+                </>
+              ) : (
+                <>
+                  <stop offset="0%" stopColor="#F26C2C" />
+                  <stop offset="50%" stopColor="#FF7940" />
+                  <stop offset="100%" stopColor="#F26C2C" />
+                </>
+              )}
+            </linearGradient>
+
+            {/* Inner bezel shadow gradient */}
+            <radialGradient
+              id={`bezelInnerShadow-${colorScheme}`}
+              cx="50%"
+              cy="50%"
+              r="93%"
+              fx="50%"
+              fy="50%"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="91%" stopColor="#A6BFBC" />
+                  <stop offset="93%" stopColor="#8AA19E" />
+                  <stop offset="95%" stopColor="#A6BFBC" />
+                  <stop offset="100%" stopColor="#B8CCC9" />
+                </>
+              ) : (
+                <>
+                  <stop offset="91%" stopColor="#F26C2C" />
+                  <stop offset="93%" stopColor="#D85A1B" />
+                  <stop offset="95%" stopColor="#F26C2C" />
+                  <stop offset="100%" stopColor="#FF7940" />
+                </>
+              )}
+            </radialGradient>
+
             {/* Gradient for recessed face */}
             <linearGradient
               id={`recessedFaceGradient-${colorScheme}`}
@@ -590,8 +543,8 @@ export function Clock({
             >
               {colorScheme === 'light-blue' ? (
                 <>
-                  <stop offset="0%" stopColor="#9ABBB6" />
-                  <stop offset="100%" stopColor="#B0CCC7" />
+                  <stop offset="0%" stopColor="#8AA19E" />
+                  <stop offset="100%" stopColor="#99ABA8" />
                 </>
               ) : (
                 <>
@@ -600,6 +553,55 @@ export function Clock({
                 </>
               )}
             </linearGradient>
+
+            {/* Flatter gradient for center dot */}
+            <linearGradient
+              id={`centerDotGradient-${colorScheme}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="0%" stopColor="#96ABA8" />
+                  <stop offset="95%" stopColor="#7D918E" />
+                </>
+              ) : (
+                <>
+                  <stop offset="0%" stopColor="#D84208" />
+                  <stop offset="95%" stopColor="#C83903" />
+                </>
+              )}
+            </linearGradient>
+
+            {/* Subtle shadow for center dot */}
+            <filter
+              id={`centerDotShadow-${colorScheme}`}
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+            >
+              <feGaussianBlur
+                in="SourceAlpha"
+                stdDeviation="0.5"
+                result="blur"
+              />
+              <feOffset in="blur" dx="0" dy="0.5" result="offsetBlur" />
+              <feFlood
+                floodColor="black"
+                floodOpacity="0.2"
+                result="shadowColor"
+              />
+              <feComposite
+                in="shadowColor"
+                in2="offsetBlur"
+                operator="in"
+                result="shadow"
+              />
+              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+            </filter>
           </defs>
 
           {/* Recessed clock face area - appears sunken in */}
@@ -621,7 +623,7 @@ export function Clock({
             strokeWidth="1"
           />
 
-          {/* Transparent glass surface effect - reduced brightness for blue clock */}
+          {/* Transparent glass surface effect */}
           <circle
             cx="100"
             cy="100"
@@ -629,43 +631,48 @@ export function Clock({
             fill="none"
             stroke={
               colorScheme === 'light-blue'
-                ? 'rgba(180,210,210,0.3)' // Reduced brightness and opacity for blue clock
+                ? 'rgba(160,180,180,0.3)' // More muted, less bright for blue clock
                 : 'rgba(255,255,255,0.35)'
             }
             strokeWidth="0.5"
             style={{ mixBlendMode: 'overlay' }}
           />
 
-          {/* Outer circle border around the edge of clock face - adjusted color for blue */}
+          {/* 3D bezel around the clock face - inner shadow effect */}
           <circle
             cx="100"
             cy="100"
-            r="94"
+            r="93"
             fill="none"
-            stroke={`url(#bezelGradient-${colorScheme})`}
-            strokeWidth="6"
-            style={{ filter: `url(#raisedBezel-${colorScheme})` }}
+            stroke={`url(#bezelInnerShadow-${colorScheme})`}
+            strokeWidth="3"
           />
 
-          {/* Inner highlight on the raised bezel - reduced for blue */}
+          {/* 3D bezel around the clock face - main raised part */}
           <circle
             cx="100"
             cy="100"
-            r="94"
+            r="94.5"
+            fill="none"
+            stroke={`url(#bezelEdgeGradient-${colorScheme})`}
+            strokeWidth="6"
+            style={{
+              filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))',
+            }}
+          />
+
+          {/* Outer edge highlight */}
+          <circle
+            cx="100"
+            cy="100"
+            r="97"
             fill="none"
             stroke={
               colorScheme === 'light-blue'
-                ? 'rgba(220,235,235,0.3)'
-                : 'rgba(255,255,255,0.3)'
+                ? 'rgba(200,220,220,0.3)'
+                : 'rgba(255,255,255,0.25)'
             }
             strokeWidth="0.8"
-            strokeDasharray="0.5 4"
-            strokeDashoffset="0"
-            style={{
-              transformOrigin: 'center',
-              transform: 'rotate(-30deg)',
-              opacity: colorScheme === 'light-blue' ? 0.6 : 0.8,
-            }}
           />
 
           {markers}
