@@ -529,48 +529,114 @@ export function Clock({
               />
               <feComposite in="SourceGraphic" in2="shadow" operator="over" />
             </filter>
+
+            {/* Filter for recessed clock face */}
+            <filter
+              id={`recessedFace-${colorScheme}`}
+              x="-10%"
+              y="-10%"
+              width="120%"
+              height="120%"
+            >
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+              <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
+              <feFlood
+                floodColor="black"
+                floodOpacity="0.3"
+                result="shadowColor"
+              />
+              <feComposite
+                in="shadowColor"
+                in2="offsetBlur"
+                operator="in"
+                result="shadow"
+              />
+              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+            </filter>
+
+            {/* Inner shadow for recessed area */}
+            <filter
+              id={`innerShadow-${colorScheme}`}
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
+              <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
+              <feOffset dx="0" dy="0" result="offsetBlur" />
+              <feComposite
+                in2="offsetBlur"
+                operator="out"
+                in="SourceGraphic"
+                result="inverse"
+              />
+              <feFlood floodColor="black" floodOpacity="0.4" result="color" />
+              <feComposite
+                operator="in"
+                in="color"
+                in2="inverse"
+                result="shadow"
+              />
+              <feComposite in="shadow" in2="SourceGraphic" operator="over" />
+            </filter>
+
+            {/* Gradient for recessed face */}
+            <linearGradient
+              id={`recessedFaceGradient-${colorScheme}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="0%" stopColor="#9ABBB6" />
+                  <stop offset="100%" stopColor="#B0CCC7" />
+                </>
+              ) : (
+                <>
+                  <stop offset="0%" stopColor="#E55A1B" />
+                  <stop offset="100%" stopColor="#F26C2C" />
+                </>
+              )}
+            </linearGradient>
           </defs>
 
-          {/* Clock face with gradient */}
+          {/* Recessed clock face area - appears sunken in */}
           <circle
             cx="100"
             cy="100"
             r="90"
-            fill={`url(#faceGradient-${colorScheme})`}
-            filter={`url(#inner-shadow-${colorScheme})`}
+            fill={`url(#recessedFaceGradient-${colorScheme})`}
+            filter={`url(#innerShadow-${colorScheme})`}
           />
 
-          {/* Glass effect overlay */}
+          {/* Shadow around recessed area */}
+          <circle
+            cx="100"
+            cy="100"
+            r="91"
+            fill="none"
+            stroke="rgba(0,0,0,0.15)"
+            strokeWidth="1"
+          />
+
+          {/* Transparent glass surface effect - reduced brightness for blue clock */}
           <circle
             cx="100"
             cy="100"
             r="89"
-            fill="transparent"
-            stroke={
-              colorScheme === 'light-blue'
-                ? 'rgba(255,255,255,0.4)'
-                : 'rgba(255,255,255,0.3)'
-            }
-            strokeWidth="1"
-          />
-
-          {/* 3D effect for the raised bezel around clock face */}
-          {/* Outer edge shadow */}
-          <circle
-            cx="100"
-            cy="100"
-            r="95"
             fill="none"
             stroke={
               colorScheme === 'light-blue'
-                ? 'rgba(0,0,0,0.1)'
-                : 'rgba(0,0,0,0.15)'
+                ? 'rgba(180,210,210,0.3)' // Reduced brightness and opacity for blue clock
+                : 'rgba(255,255,255,0.35)'
             }
-            strokeWidth="1"
-            style={{ filter: 'blur(0.5px)' }}
+            strokeWidth="0.5"
+            style={{ mixBlendMode: 'overlay' }}
           />
 
-          {/* Raised bezel with gradient for 3D effect */}
+          {/* Outer circle border around the edge of clock face - adjusted color for blue */}
           <circle
             cx="100"
             cy="100"
@@ -581,7 +647,7 @@ export function Clock({
             style={{ filter: `url(#raisedBezel-${colorScheme})` }}
           />
 
-          {/* Inner highlight on the raised bezel */}
+          {/* Inner highlight on the raised bezel - reduced for blue */}
           <circle
             cx="100"
             cy="100"
@@ -589,7 +655,7 @@ export function Clock({
             fill="none"
             stroke={
               colorScheme === 'light-blue'
-                ? 'rgba(255,255,255,0.5)'
+                ? 'rgba(220,235,235,0.3)'
                 : 'rgba(255,255,255,0.3)'
             }
             strokeWidth="0.8"
@@ -598,7 +664,7 @@ export function Clock({
             style={{
               transformOrigin: 'center',
               transform: 'rotate(-30deg)',
-              opacity: 0.8,
+              opacity: colorScheme === 'light-blue' ? 0.6 : 0.8,
             }}
           />
 
