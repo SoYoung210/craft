@@ -197,17 +197,16 @@ export function Clock({
 
   const caseBgColor =
     colorScheme === 'light-blue' ? 'bg-[#A6BFBC]' : 'bg-[#FF6B2B]';
-  const handsColor = colorScheme === 'light-blue' ? '#002C56' : '#331400';
+  const handsColor = colorScheme === 'light-blue' ? '#A6C9C3' : '#DD3300';
   const markersAndNumeralsColorClass =
     colorScheme === 'light-blue'
       ? 'fill-[rgba(0,40,80,0.8)]'
       : 'fill-[rgba(50,20,0,0.8)]';
   const secondHandColor = colorScheme === 'light-blue' ? '#0077CC' : '#CC3300';
   const centerDotBaseColor =
-    colorScheme === 'light-blue' ? '#FFFFFF' : '#FFFFFF';
+    colorScheme === 'light-blue' ? '#99BDB6' : '#C83903';
   const labelTextColor =
     colorScheme === 'light-blue' ? 'text-[#002C56]' : 'text-[#331400]';
-  const centerDotAccentColor = handsColor;
 
   // Enhanced 3D effect with proper shadows
   const outerShadowClass =
@@ -516,9 +515,9 @@ export function Clock({
           />
 
           {/* Enhanced center dot */}
-          <circle cx="100" cy="100" r="5.5" fill={centerDotBaseColor} />
-          <circle cx="100" cy="100" r="3" fill={centerDotAccentColor} />
-          <circle cx="99" cy="99" r="1" fill="white" opacity="0.6" />
+          <circle cx="100" cy="100" r="8" fill={centerDotBaseColor} />
+          {/* <circle cx="100" cy="100" r="3" fill={centerDotAccentColor} />
+          <circle cx="99" cy="99" r="1" fill="white" opacity="0.6" /> */}
 
           {/* Small OFF indicator at bottom (as seen in reference image) */}
           <text

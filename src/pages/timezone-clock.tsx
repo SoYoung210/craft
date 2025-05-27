@@ -36,14 +36,6 @@ export default function TimezoneClockPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Timezone Clock</PageLayout.Title>
-      <header className="mb-10 text-center">
-        <h1 className="text-5xl font-bold tracking-tight text-primary">
-          Global Glance
-        </h1>
-        <p className="text-muted-foreground mt-2 text-lg">
-          Dual Time Zone Clocks
-        </p>
-      </header>
 
       <div className="flex flex-col md:flex-row gap-10 md:gap-12 mb-10">
         <Clock
