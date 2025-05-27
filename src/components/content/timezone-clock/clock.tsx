@@ -196,7 +196,7 @@ export function Clock({
   }
 
   const caseBgColor =
-    colorScheme === 'light-blue' ? 'bg-[#E5F2F5]' : 'bg-[#FF6B2B]';
+    colorScheme === 'light-blue' ? 'bg-[#A6BFBC]' : 'bg-[#FF6B2B]';
   const handsColor = colorScheme === 'light-blue' ? '#002C56' : '#331400';
   const markersAndNumeralsColorClass =
     colorScheme === 'light-blue'
