@@ -412,6 +412,17 @@ export function Clock({
             strokeWidth="1"
           />
 
+          {/* Outer circle border around the edge of clock face */}
+          <circle
+            cx="100"
+            cy="100"
+            r="94"
+            fill="none"
+            stroke={colorScheme === 'light-blue' ? '#D8ECF0' : '#FF6B2B'}
+            strokeWidth="4"
+            style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.1))' }}
+          />
+
           {markers}
 
           {Array.from({ length: 12 }, (_, i) => {
