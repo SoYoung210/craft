@@ -386,6 +386,54 @@ export function Clock({
                 k4="0"
               />
             </filter>
+
+            {/* Add filter for the raised bezel effect */}
+            <filter
+              id={`raisedBezel-${colorScheme}`}
+              x="-10%"
+              y="-10%"
+              width="120%"
+              height="120%"
+            >
+              <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+              <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
+              <feFlood
+                floodColor="black"
+                floodOpacity="0.3"
+                result="shadowColor"
+              />
+              <feComposite
+                in="shadowColor"
+                in2="offsetBlur"
+                operator="in"
+                result="shadow"
+              />
+              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+            </filter>
+
+            {/* Radial gradient for bezel to give 3D appearance */}
+            <radialGradient
+              id={`bezelGradient-${colorScheme}`}
+              cx="50%"
+              cy="50%"
+              r="95%"
+              fx="50%"
+              fy="30%"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="75%" stopColor="#D8ECF0" />
+                  <stop offset="95%" stopColor="#B8D2D8" />
+                  <stop offset="100%" stopColor="#A8C2C8" />
+                </>
+              ) : (
+                <>
+                  <stop offset="75%" stopColor="#FF6B2B" />
+                  <stop offset="95%" stopColor="#F05B1B" />
+                  <stop offset="100%" stopColor="#E04B0B" />
+                </>
+              )}
+            </radialGradient>
           </defs>
 
           {/* Clock face with gradient */}
@@ -411,15 +459,52 @@ export function Clock({
             strokeWidth="1"
           />
 
-          {/* Outer circle border around the edge of clock face */}
+          {/* 3D effect for the raised bezel around clock face */}
+          {/* Outer edge shadow */}
+          <circle
+            cx="100"
+            cy="100"
+            r="95"
+            fill="none"
+            stroke={
+              colorScheme === 'light-blue'
+                ? 'rgba(0,0,0,0.1)'
+                : 'rgba(0,0,0,0.15)'
+            }
+            strokeWidth="1"
+            style={{ filter: 'blur(0.5px)' }}
+          />
+
+          {/* Raised bezel with gradient for 3D effect */}
           <circle
             cx="100"
             cy="100"
             r="94"
             fill="none"
-            stroke={colorScheme === 'light-blue' ? '#D8ECF0' : '#FF6B2B'}
-            strokeWidth="4"
-            style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.1))' }}
+            stroke={`url(#bezelGradient-${colorScheme})`}
+            strokeWidth="6"
+            style={{ filter: `url(#raisedBezel-${colorScheme})` }}
+          />
+
+          {/* Inner highlight on the raised bezel */}
+          <circle
+            cx="100"
+            cy="100"
+            r="94"
+            fill="none"
+            stroke={
+              colorScheme === 'light-blue'
+                ? 'rgba(255,255,255,0.5)'
+                : 'rgba(255,255,255,0.3)'
+            }
+            strokeWidth="0.8"
+            strokeDasharray="0.5 4"
+            strokeDashoffset="0"
+            style={{
+              transformOrigin: 'center',
+              transform: 'rotate(-30deg)',
+              opacity: 0.8,
+            }}
           />
 
           {markers}
