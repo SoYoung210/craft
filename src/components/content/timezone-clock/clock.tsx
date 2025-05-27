@@ -235,7 +235,7 @@ export function Clock({
         {amPm}
       </div>
       <div
-        className={`w-60 h-60 md:w-72 md:h-72 p-2 ${caseBgColor} ${containerShapeClass} ${outerShadowClass} relative transition-all duration-300`}
+        className={`w-60 h-60 md:w-72 md:h-72 p-2 ${caseBgColor} ${containerShapeClass} ${outerShadowClass} relative transition-all duration-300 overflow-hidden`}
         style={{
           boxShadow:
             colorScheme === 'light-blue'
@@ -244,6 +244,31 @@ export function Clock({
         }}
         data-ai-hint="braun clock"
       >
+        {/* Realistic light reflection at the top edge */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px]"
+          style={{
+            background:
+              colorScheme === 'light-blue'
+                ? 'linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.4))'
+                : 'linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.3))',
+            borderTopLeftRadius: '0.75rem',
+            borderTopRightRadius: '0.75rem',
+          }}
+        />
+
+        {/* Subtle top area reflection */}
+        <div
+          className="absolute top-[2px] left-0 right-0"
+          style={{
+            height: '8%',
+            background:
+              colorScheme === 'light-blue'
+                ? 'linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0) 80%)'
+                : 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0) 80%)',
+          }}
+        />
+
         <svg
           ref={clockRef}
           viewBox="0 0 200 200"
