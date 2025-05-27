@@ -26,7 +26,7 @@ export function ClockHand({
         {/* Shadow for second hand */}
         <line
           x1="100"
-          y1="101" // Start slightly below center for floating effect
+          y1="100" // Start at center for better drag behavior
           x2="100"
           y2={100 - length}
           stroke="rgba(0,0,0,0.3)"
@@ -38,7 +38,7 @@ export function ClockHand({
         {/* Second hand */}
         <line
           x1="100"
-          y1="101" // Start slightly below center for floating effect
+          y1="100" // Start at center for better drag behavior
           x2="100"
           y2={100 - length}
           stroke={color}
@@ -54,27 +54,40 @@ export function ClockHand({
     const handWidth = strokeWidth * 1.2;
     const tipLength = hasWhiteTip ? length * 0.12 : 0; // Length of the white tip
 
+    // Calculate hand length, keeping a bit of the hand extending into the center for better dragging
+    const handBodyHeight = length * 0.85 - (hasWhiteTip ? tipLength : 0);
+
     return (
       <g transform={`rotate(${rotation} 100 100)`} {...props}>
+        {/* Invisible wider touch area for better dragging */}
+        <rect
+          x={100 - handWidth * 1.5}
+          y={100 - length}
+          width={handWidth * 3}
+          height={length}
+          fill="transparent"
+          style={{ cursor: 'pointer' }}
+        />
+
         {/* Hand shadow based on lighting from above */}
         <rect
           x={100 - handWidth / 2 + 0.5}
-          y={101} // Start slightly below center for floating effect
+          y={100 - handBodyHeight} // Start at center for better drag behavior
           width={handWidth}
-          height={length * 0.85 - 2} // Slightly shorter to match the floating effect
+          height={handBodyHeight} // Full length from center
           rx={handWidth / 2}
           ry={handWidth / 2}
           fill="rgba(0,0,0,0.25)"
-          transform="translate(1.5, 2)"
+          transform="translate(1.5, 1)"
           style={{ filter: 'blur(1.2px)' }}
         />
 
         {/* Main hand body - rectangle with rounded ends */}
         <rect
           x={100 - handWidth / 2}
-          y={101} // Start slightly below center for floating effect
+          y={100 - handBodyHeight} // Start at center for better drag behavior
           width={handWidth}
-          height={length * 0.85 - (hasWhiteTip ? tipLength : 0) - 2}
+          height={handBodyHeight}
           rx={handWidth / 2}
           ry={handWidth / 2}
           fill={color}
@@ -84,7 +97,7 @@ export function ClockHand({
         {hasWhiteTip && (
           <rect
             x={100 - handWidth / 2}
-            y={101 + length * 0.85 - tipLength - 2}
+            y={100 - length}
             width={handWidth}
             height={tipLength}
             rx={handWidth / 2}
@@ -97,7 +110,7 @@ export function ClockHand({
         <circle
           cx="100"
           cy="100"
-          r={handWidth * 0.7}
+          r={handWidth * 0.8}
           fill={color}
           style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.2))' }}
         />
