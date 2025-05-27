@@ -203,8 +203,6 @@ export function Clock({
       ? 'fill-[rgba(0,40,80,0.8)]'
       : 'fill-[rgba(50,20,0,0.8)]';
   const secondHandColor = colorScheme === 'light-blue' ? '#0077CC' : '#CC3300';
-  const centerDotBaseColor =
-    colorScheme === 'light-blue' ? '#99BDB6' : '#C83903';
   const labelTextColor =
     colorScheme === 'light-blue' ? 'text-[#002C56]' : 'text-[#331400]';
 
@@ -434,6 +432,55 @@ export function Clock({
                 </>
               )}
             </radialGradient>
+
+            {/* Flatter gradient for center dot */}
+            <linearGradient
+              id={`centerDotGradient-${colorScheme}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              {colorScheme === 'light-blue' ? (
+                <>
+                  <stop offset="0%" stopColor="#B8DBD5" />
+                  <stop offset="95%" stopColor="#99BDB6" />
+                </>
+              ) : (
+                <>
+                  <stop offset="0%" stopColor="#D84208" />
+                  <stop offset="95%" stopColor="#C83903" />
+                </>
+              )}
+            </linearGradient>
+
+            {/* Subtle shadow for center dot */}
+            <filter
+              id={`centerDotShadow-${colorScheme}`}
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+            >
+              <feGaussianBlur
+                in="SourceAlpha"
+                stdDeviation="0.5"
+                result="blur"
+              />
+              <feOffset in="blur" dx="0" dy="0.5" result="offsetBlur" />
+              <feFlood
+                floodColor="black"
+                floodOpacity="0.2"
+                result="shadowColor"
+              />
+              <feComposite
+                in="shadowColor"
+                in2="offsetBlur"
+                operator="in"
+                result="shadow"
+              />
+              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+            </filter>
           </defs>
 
           {/* Clock face with gradient */}
@@ -599,10 +646,24 @@ export function Clock({
             color={secondHandColor}
           />
 
-          {/* Enhanced center dot */}
-          <circle cx="100" cy="100" r="8" fill={centerDotBaseColor} />
-          {/* <circle cx="100" cy="100" r="3" fill={centerDotAccentColor} />
-          <circle cx="99" cy="99" r="1" fill="white" opacity="0.6" /> */}
+          {/* Flatter center dot with subtle lighting */}
+          <circle
+            cx="100"
+            cy="100"
+            r="9"
+            fill={`url(#centerDotGradient-${colorScheme})`}
+            filter={`url(#centerDotShadow-${colorScheme})`}
+          />
+
+          {/* Very subtle top highlight - moved higher up */}
+          <path
+            d="M95,94 Q100,92 105,94"
+            fill="none"
+            stroke="white"
+            strokeWidth="0.8"
+            opacity={colorScheme === 'light-blue' ? '0.35' : '0.2'}
+            style={{ pointerEvents: 'none' }}
+          />
 
           {/* Small OFF indicator at bottom (as seen in reference image) */}
           <text
