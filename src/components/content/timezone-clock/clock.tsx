@@ -9,7 +9,7 @@ import { getTimeParts, get24HourFormat } from './utils';
 const SVG_SIZE = 200;
 const TICK_MARKS_RADIUS = 73; // Move tick marks further in
 const NUMERAL_RADIUS = 54; // Move numerals further out from tick marks
-const HOUR_HAND_LENGTH = 38;
+const HOUR_HAND_LENGTH = 40;
 const MINUTE_HAND_LENGTH = 56;
 const SECOND_HAND_LENGTH = 66;
 const CENTER_X = 100;
@@ -358,7 +358,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             <rect
               x={CENTER_X - 4}
               y={CENTER_Y - HOUR_HAND_LENGTH}
-              width={8}
+              width={6}
               height={HOUR_HAND_LENGTH}
               fill="#212121"
               rx={4}
@@ -368,8 +368,8 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             <rect
               x={CENTER_X - 2}
               y={CENTER_Y - HOUR_HAND_LENGTH + 2}
-              width={4}
-              height={16}
+              width={2.5}
+              height={14}
               fill="url(#hourHandHighlight)"
               rx={2}
             />
@@ -405,9 +405,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             style={{ filter: 'drop-shadow(0px 0px 18px rgba(0,0,0,0.4))' }}
           >
             <rect
-              x={CENTER_X - 3}
+              x={CENTER_X - 2.5}
               y={CENTER_Y - MINUTE_HAND_LENGTH}
-              width={6}
+              width={5}
               height={MINUTE_HAND_LENGTH}
               fill="#212121"
               rx={3}
