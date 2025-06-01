@@ -182,7 +182,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 
       {/* Clock case */}
       <div
-        className="w-[300px] h-[300px] relative rounded-xl overflow-hidden"
+        className="w-[300px] h-[300px] relative rounded-[20px] overflow-hidden"
         style={{
           background: 'linear-gradient(180deg, #F3F3F3 0%, #EAE9E9 100%)',
           boxShadow:
@@ -213,7 +213,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         {/* Inner circle frame */}
         <div
           data-name="inner-frame"
-          className="absolute inset-[34px] rounded-full border-2"
+          className="absolute inset-[30px] rounded-full border-2"
           style={{
             background: '#E8E8E8',
             borderColor: 'rgba(0,0,0,0.22)',
@@ -289,8 +289,8 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           {Array.from({ length: 60 }, (_, i) => {
             const angle = i * 6;
             const isHourMark = i % 5 === 0;
-            const markerLength = isHourMark ? 10 : 5;
-            const strokeWidth = isHourMark ? 1.5 : 0.7; // Thinner tick marks
+            const markerLength = isHourMark ? 7 : 4;
+            const strokeWidth = 0.8;
             const x1 =
               CENTER_X +
               (TICK_MARKS_RADIUS - markerLength) *
@@ -336,7 +336,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 y={y + 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="12"
+                fontSize="13"
                 fontFamily="'Helvetica Neue', Arial, sans-serif"
                 fill="#000"
                 fontWeight="400"
