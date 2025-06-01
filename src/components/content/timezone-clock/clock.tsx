@@ -7,11 +7,8 @@ import { getTimeParts, get24HourFormat } from './utils';
 
 // --- Figma-based proportions ---
 const SVG_SIZE = 200;
-const OUTER_FRAME_RADIUS = 92; // Reduced for less dominance
-const MIDDLE_FRAME_RADIUS = 82; // Slightly reduced to keep proportions
-const INNER_FRAME_RADIUS = 77; // Slightly reduced
-const TICK_MARKS_RADIUS = 70; // Move tick marks further in
-const NUMERAL_RADIUS = 58; // Move numerals further out from tick marks
+const TICK_MARKS_RADIUS = 73; // Move tick marks further in
+const NUMERAL_RADIUS = 54; // Move numerals further out from tick marks
 const HOUR_HAND_LENGTH = 38;
 const MINUTE_HAND_LENGTH = 56;
 const SECOND_HAND_LENGTH = 66;
@@ -193,70 +190,47 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         }}
       >
         {/* Outer circle frame */}
-        <svg
-          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-          className="absolute inset-0 w-full h-full pointer-events-none"
-        >
-          {/* Outer frame */}
-          <circle
-            cx={CENTER_X}
-            cy={CENTER_Y}
-            r={OUTER_FRAME_RADIUS - 1}
-            fill="url(#outerFrameGradient)"
-            stroke="#E0E0E0"
-            strokeWidth={1}
-            style={{
-              filter:
-                '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff',
-            }}
-          />
-          {/* Middle frame */}
-          <circle
-            cx={CENTER_X}
-            cy={CENTER_Y}
-            r={MIDDLE_FRAME_RADIUS}
-            fill="url(#middleFrameGradient)"
-            style={{
-              filter:
-                '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
-            }}
-          />
-          {/* Inner frame */}
-          <circle
-            cx={CENTER_X}
-            cy={CENTER_Y}
-            r={INNER_FRAME_RADIUS}
-            fill="#E8E8E8"
-            stroke="rgba(0,0,0,0.22)"
-            strokeWidth={2}
-            style={{
-              filter:
-                'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)',
-            }}
-          />
-          <defs>
-            <radialGradient id="outerFrameGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="100%" stopColor="#F5F2F2" />
-            </radialGradient>
-            <linearGradient
-              id="middleFrameGradient"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop offset="0%" stopColor="#FFFCFC" />
-              <stop offset="100%" stopColor="#F7F7F7" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <div
+          data-name="outer-frame"
+          className="absolute rounded-full inset-3"
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #F5F2F2 100%)',
+            boxShadow:
+              '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff',
+            border: '1px solid #E0E0E0',
+          }}
+        />
+        {/* Middle circle frame */}
+        <div
+          data-name="middle-frame"
+          className="absolute inset-6 rounded-full"
+          style={{
+            background: 'linear-gradient(180deg, #FFFCFC 0%, #F7F7F7 100%)',
+            boxShadow:
+              '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
+          }}
+        />
+        {/* Inner circle frame */}
+        <div
+          data-name="inner-frame"
+          className="absolute inset-[34px] rounded-full border-2"
+          style={{
+            background: '#E8E8E8',
+            borderColor: 'rgba(0,0,0,0.22)',
+            boxShadow:
+              'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)',
+          }}
+        />
         {/* SVG clock face (tick marks, numerals, hands, etc) */}
         <svg
           ref={clockRef}
           viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-          className="absolute inset-0 w-full h-full touch-none"
-          style={{ zIndex: 1 }}
+          className="absolute touch-none"
+          style={{
+            zIndex: 1,
+            left: 0,
+            top: 0,
+          }}
           onMouseDown={e => {
             const angle = getAngle(e.nativeEvent);
             const minuteAngle = minuteHandRotation % 360;
@@ -362,7 +336,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 y={y + 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="13"
+                fontSize="12"
                 fontFamily="'Helvetica Neue', Arial, sans-serif"
                 fill="#000"
                 fontWeight="400"
@@ -482,7 +456,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           <circle cx={CENTER_X} cy={CENTER_Y} r={5} fill="#212121" />
 
           {/* BRAUN logo - Figma style */}
-          <g transform={`translate(${CENTER_X - 15}, ${CENTER_Y - 28})`}>
+          {/* <g transform={`translate(${CENTER_X - 15}, ${CENTER_Y - 28})`}>
             <text
               textAnchor="middle"
               fontSize="8"
@@ -492,7 +466,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             >
               BRAUN
             </text>
-          </g>
+          </g> */}
 
           {/* Quartz text - Figma style */}
           <text
