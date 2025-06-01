@@ -43,14 +43,12 @@ export default function TimezoneClockPage() {
           label="Seoul"
           baseTime={baseTime}
           onTimeAdjust={handleTimeAdjust}
-          colorScheme="light-blue"
         />
         <Clock
           timeZone={SF_TZ}
           label="San Francisco"
           baseTime={baseTime}
           onTimeAdjust={handleTimeAdjust}
-          colorScheme="bright-orange"
         />
       </div>
 

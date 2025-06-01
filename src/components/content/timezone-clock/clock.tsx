@@ -3,20 +3,22 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import type { ClockProps } from './types';
-import { ClockHand } from './clockHand';
 import { getTimeParts, get24HourFormat } from './utils';
 
-const CLOCK_CENTER_X = 100;
-const CLOCK_CENTER_Y = 100;
-const CLOCK_RADIUS = 88; // Main radius for markers
+// --- Figma-based proportions ---
+const SVG_SIZE = 200;
+const OUTER_FRAME_RADIUS = 92; // Reduced for less dominance
+const MIDDLE_FRAME_RADIUS = 82; // Slightly reduced to keep proportions
+const INNER_FRAME_RADIUS = 77; // Slightly reduced
+const TICK_MARKS_RADIUS = 70; // Move tick marks further in
+const NUMERAL_RADIUS = 58; // Move numerals further out from tick marks
+const HOUR_HAND_LENGTH = 38;
+const MINUTE_HAND_LENGTH = 56;
+const SECOND_HAND_LENGTH = 66;
+const CENTER_X = 100;
+const CENTER_Y = 100;
 
-export function Clock({
-  timeZone,
-  label,
-  baseTime,
-  onTimeAdjust,
-  colorScheme,
-}: ClockProps) {
+export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
   const [currentTimeParts, setCurrentTimeParts] = useState(
     getTimeParts(baseTime, timeZone)
   );
@@ -48,8 +50,8 @@ export function Clock({
     const svgX = ((clientX - rect.left) / rect.width) * 200;
     const svgY = ((clientY - rect.top) / rect.height) * 200;
 
-    const deltaX = svgX - CLOCK_CENTER_X;
-    const deltaY = svgY - CLOCK_CENTER_Y;
+    const deltaX = svgX - CENTER_X;
+    const deltaY = svgY - CENTER_Y;
 
     let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
     if (angle < 0) angle += 360;
@@ -161,63 +163,13 @@ export function Clock({
     onTimeAdjust(minuteAdjustment);
   }, [baseTime, timeZone, onTimeAdjust]);
 
-  const markers = [];
-  for (let i = 0; i < 60; i++) {
-    const angle = i * 6;
-    const isHourMark = i % 5 === 0;
-    const markerLength = isHourMark ? 6 : 3;
-    const strokeWidth = isHourMark ? '1.2' : '0.8';
-    const x1 =
-      CLOCK_CENTER_X +
-      (CLOCK_RADIUS - markerLength) * Math.sin((angle * Math.PI) / 180);
-    const y1 =
-      CLOCK_CENTER_Y -
-      (CLOCK_RADIUS - markerLength) * Math.cos((angle * Math.PI) / 180);
-    const x2 =
-      CLOCK_CENTER_X + CLOCK_RADIUS * Math.sin((angle * Math.PI) / 180);
-    const y2 =
-      CLOCK_CENTER_Y - CLOCK_RADIUS * Math.cos((angle * Math.PI) / 180);
-    markers.push(
-      <line
-        key={`mark-${i}`}
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-        strokeWidth={strokeWidth}
-        className={
-          colorScheme === 'light-blue'
-            ? 'stroke-[rgba(0,40,80,0.8)]'
-            : 'stroke-[rgba(50,20,0,0.8)]'
-        }
-        strokeLinecap="round"
-      />
-    );
-  }
-
-  const caseBgColor =
-    colorScheme === 'light-blue' ? 'bg-[#A6BFBC]' : 'bg-[#FF6B2B]';
-  const handsColor = colorScheme === 'light-blue' ? '#A6C9C3' : '#DD3300';
-  const markersAndNumeralsColorClass =
-    colorScheme === 'light-blue'
-      ? 'fill-[rgba(0,40,80,0.8)]'
-      : 'fill-[rgba(50,20,0,0.8)]';
-  const secondHandColor = colorScheme === 'light-blue' ? '#396C79' : '#CC3300';
-  const labelTextColor =
-    colorScheme === 'light-blue' ? 'text-[#002C56]' : 'text-[#331400]';
-
-  // Shape classes
-  const containerShapeClass = 'rounded-xl';
-
   return (
     <div className="flex flex-col items-center">
-      <h2 className={`text-xl font-semibold mb-1 ${labelTextColor}`}>
-        {label}
-      </h2>
+      <h2 className="text-xl font-semibold mb-1 text-black">{label}</h2>
       <div
         onClick={handleAmPmToggle}
-        className={`cursor-pointer text-base font-medium mb-2 px-3 py-0.5 rounded-md shadow-sm transition-colors 
-                    ${labelTextColor} hover:bg-muted/30 active:bg-muted/50 border border-transparent hover:border-muted`}
+        className="cursor-pointer text-base font-medium mb-2 px-3 py-0.5 rounded-md shadow-sm transition-colors 
+                    text-black hover:bg-muted/30 active:bg-muted/50 border border-transparent hover:border-muted"
         aria-label={`Toggle AM/PM for ${label}. Current setting is ${amPm}.`}
         role="button"
         tabIndex={0}
@@ -230,72 +182,81 @@ export function Clock({
       >
         {amPm}
       </div>
+
+      {/* Clock case */}
       <div
-        className={`w-60 h-60 md:w-72 md:h-72 p-2 ${caseBgColor} ${containerShapeClass} relative transition-all duration-300 overflow-hidden`}
+        className="w-[300px] h-[300px] relative rounded-xl overflow-hidden"
         style={{
+          background: 'linear-gradient(180deg, #F3F3F3 0%, #EAE9E9 100%)',
           boxShadow:
-            colorScheme === 'light-blue'
-              ? '0 10px 25px rgba(150,180,180,0.4), 0 5px 10px rgba(150,180,180,0.2), inset 0 -2px 3px rgba(0,0,0,0.07), inset -2px 0 3px rgba(0,0,0,0.04), inset 2px 0 3px rgba(0,0,0,0.04)'
-              : '0 10px 25px rgba(179,69,21,0.4), 0 5px 10px rgba(179,69,21,0.2), inset 0 -2px 3px rgba(0,0,0,0.1), inset -2px 0 3px rgba(0,0,0,0.06), inset 2px 0 3px rgba(0,0,0,0.06)',
+            '0px 0px 16px 0px rgba(0, 0, 0, 0.23), inset 0px 6px 10px 0px rgba(255, 255, 255, 1), inset 0px -2px 8px 0px rgba(0, 0, 0, 0.19), inset 0px 0px 8px 0px rgba(0, 0, 0, 0.12), inset 2px 3px 20px 0px rgba(255, 255, 255, 0.37)',
         }}
-        data-ai-hint="braun clock"
       >
-        {/* Realistic light reflection at the top edge */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[2px]"
-          style={{
-            background:
-              colorScheme === 'light-blue'
-                ? 'linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.4))'
-                : 'linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.3))',
-            borderTopLeftRadius: '0.75rem',
-            borderTopRightRadius: '0.75rem',
-          }}
-        />
-
-        {/* Subtle top area reflection */}
-        <div
-          className="absolute top-[2px] left-0 right-0"
-          style={{
-            height: '8%',
-            background:
-              colorScheme === 'light-blue'
-                ? 'linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0) 80%)'
-                : 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0) 80%)',
-          }}
-        />
-
-        {/* Left shadow */}
-        <div
-          className="absolute top-0 left-0 bottom-0 w-[3px]"
-          style={{
-            background:
-              'linear-gradient(to right, rgba(0,0,0,0.06), rgba(0,0,0,0))',
-          }}
-        />
-
-        {/* Right shadow */}
-        <div
-          className="absolute top-0 right-0 bottom-0 w-[3px]"
-          style={{
-            background:
-              'linear-gradient(to left, rgba(0,0,0,0.06), rgba(0,0,0,0))',
-          }}
-        />
-
-        {/* Bottom shadow */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[3px]"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.08), rgba(0,0,0,0))',
-          }}
-        />
-
+        {/* Outer circle frame */}
+        <svg
+          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+          className="absolute inset-0 w-full h-full pointer-events-none"
+        >
+          {/* Outer frame */}
+          <circle
+            cx={CENTER_X}
+            cy={CENTER_Y}
+            r={OUTER_FRAME_RADIUS - 1}
+            fill="url(#outerFrameGradient)"
+            stroke="#E0E0E0"
+            strokeWidth={1}
+            style={{
+              filter:
+                '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff',
+            }}
+          />
+          {/* Middle frame */}
+          <circle
+            cx={CENTER_X}
+            cy={CENTER_Y}
+            r={MIDDLE_FRAME_RADIUS}
+            fill="url(#middleFrameGradient)"
+            style={{
+              filter:
+                '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
+            }}
+          />
+          {/* Inner frame */}
+          <circle
+            cx={CENTER_X}
+            cy={CENTER_Y}
+            r={INNER_FRAME_RADIUS}
+            fill="#E8E8E8"
+            stroke="rgba(0,0,0,0.22)"
+            strokeWidth={2}
+            style={{
+              filter:
+                'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)',
+            }}
+          />
+          <defs>
+            <radialGradient id="outerFrameGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#F5F2F2" />
+            </radialGradient>
+            <linearGradient
+              id="middleFrameGradient"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="#FFFCFC" />
+              <stop offset="100%" stopColor="#F7F7F7" />
+            </linearGradient>
+          </defs>
+        </svg>
+        {/* SVG clock face (tick marks, numerals, hands, etc) */}
         <svg
           ref={clockRef}
-          viewBox="0 0 200 200"
-          className={`w-full h-full touch-none ${containerShapeClass} overflow-hidden`}
+          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+          className="absolute inset-0 w-full h-full touch-none"
+          style={{ zIndex: 1 }}
           onMouseDown={e => {
             const angle = getAngle(e.nativeEvent);
             const minuteAngle = minuteHandRotation % 360;
@@ -350,461 +311,203 @@ export function Clock({
             }
           }}
         >
-          <defs>
-            <filter
-              id={`inner-shadow-${colorScheme}`}
-              x="-20%"
-              y="-20%"
-              width="140%"
-              height="140%"
-            >
-              <feOffset dx="0.5" dy="0.5" />
-              <feGaussianBlur stdDeviation="1" result="offset-blur" />
-              <feComposite
-                operator="out"
-                in="SourceGraphic"
-                in2="offset-blur"
-                result="inverse"
+          {/* Tick marks - Figma style: inside frames */}
+          {Array.from({ length: 60 }, (_, i) => {
+            const angle = i * 6;
+            const isHourMark = i % 5 === 0;
+            const markerLength = isHourMark ? 10 : 5;
+            const strokeWidth = isHourMark ? 1.5 : 0.7; // Thinner tick marks
+            const x1 =
+              CENTER_X +
+              (TICK_MARKS_RADIUS - markerLength) *
+                Math.sin((angle * Math.PI) / 180);
+            const y1 =
+              CENTER_Y -
+              (TICK_MARKS_RADIUS - markerLength) *
+                Math.cos((angle * Math.PI) / 180);
+            const x2 =
+              CENTER_X + TICK_MARKS_RADIUS * Math.sin((angle * Math.PI) / 180);
+            const y2 =
+              CENTER_Y - TICK_MARKS_RADIUS * Math.cos((angle * Math.PI) / 180);
+            return (
+              <line
+                key={`mark-${i}`}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke="#000"
+                strokeWidth={strokeWidth}
+                strokeLinecap="round"
+                style={{
+                  filter: 'drop-shadow(1px 1px 0px #E2E2E2)',
+                  opacity: isHourMark ? 1 : 0.7,
+                }}
               />
-              <feFlood floodColor="black" floodOpacity="0.2" result="color" />
-              <feComposite
-                operator="in"
-                in="color"
-                in2="inverse"
-                result="shadow"
-              />
-              <feComposite operator="over" in="shadow" in2="SourceGraphic" />
-            </filter>
+            );
+          })}
 
-            <linearGradient
-              id={`faceGradient-${colorScheme}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="0%" stopColor="#B8CCC9" />
-                  <stop offset="100%" stopColor="#A6BFBC" />
-                </>
-              ) : (
-                <>
-                  <stop offset="0%" stopColor="#FF7940" />
-                  <stop offset="100%" stopColor="#FF5C16" />
-                </>
-              )}
-            </linearGradient>
-
-            <clipPath id={`clockFaceClip-${colorScheme}`}>
-              <circle cx="100" cy="100" r="90" />
-            </clipPath>
-
-            <filter
-              id={`softBlur-${colorScheme}`}
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
-              <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
-            </filter>
-
-            <filter id={`gloss-${colorScheme}`}>
-              <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur" />
-              <feOffset in="blur" dx="0" dy="-4" result="offsetBlur" />
-              <feSpecularLighting
-                in="offsetBlur"
-                surfaceScale="5"
-                specularConstant="1"
-                specularExponent="20"
-                result="specOut"
-              >
-                <fePointLight x="100" y="50" z="200" />
-              </feSpecularLighting>
-              <feComposite
-                in="specOut"
-                in2="SourceGraphic"
-                operator="arithmetic"
-                k1="0"
-                k2="1"
-                k3="1"
-                k4="0"
-              />
-            </filter>
-
-            {/* Filter for recessed clock face */}
-            <filter
-              id={`recessedFace-${colorScheme}`}
-              x="-10%"
-              y="-10%"
-              width="120%"
-              height="120%"
-            >
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
-              <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
-              <feFlood
-                floodColor="black"
-                floodOpacity="0.3"
-                result="shadowColor"
-              />
-              <feComposite
-                in="shadowColor"
-                in2="offsetBlur"
-                operator="in"
-                result="shadow"
-              />
-              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
-            </filter>
-
-            {/* Inner shadow for recessed area */}
-            <filter
-              id={`innerShadow-${colorScheme}`}
-              x="-20%"
-              y="-20%"
-              width="140%"
-              height="140%"
-            >
-              <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
-              <feOffset dx="0" dy="0" result="offsetBlur" />
-              <feComposite
-                in2="offsetBlur"
-                operator="out"
-                in="SourceGraphic"
-                result="inverse"
-              />
-              <feFlood floodColor="black" floodOpacity="0.4" result="color" />
-              <feComposite
-                operator="in"
-                in="color"
-                in2="inverse"
-                result="shadow"
-              />
-              <feComposite in="shadow" in2="SourceGraphic" operator="over" />
-            </filter>
-
-            {/* Enhanced bezel gradient for 3D effect */}
-            <linearGradient
-              id={`bezelEdgeGradient-${colorScheme}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-              gradientTransform="rotate(45)"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="0%" stopColor="#A6BFBC" />
-                  <stop offset="50%" stopColor="#B8CCC9" />
-                  <stop offset="100%" stopColor="#A6BFBC" />
-                </>
-              ) : (
-                <>
-                  <stop offset="0%" stopColor="#F26C2C" />
-                  <stop offset="50%" stopColor="#FF7940" />
-                  <stop offset="100%" stopColor="#F26C2C" />
-                </>
-              )}
-            </linearGradient>
-
-            {/* Inner bezel shadow gradient */}
-            <radialGradient
-              id={`bezelInnerShadow-${colorScheme}`}
-              cx="50%"
-              cy="50%"
-              r="93%"
-              fx="50%"
-              fy="50%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="91%" stopColor="#A6BFBC" />
-                  <stop offset="93%" stopColor="#8AA19E" />
-                  <stop offset="95%" stopColor="#A6BFBC" />
-                  <stop offset="100%" stopColor="#B8CCC9" />
-                </>
-              ) : (
-                <>
-                  <stop offset="91%" stopColor="#F26C2C" />
-                  <stop offset="93%" stopColor="#D85A1B" />
-                  <stop offset="95%" stopColor="#F26C2C" />
-                  <stop offset="100%" stopColor="#FF7940" />
-                </>
-              )}
-            </radialGradient>
-
-            {/* Gradient for recessed face */}
-            <linearGradient
-              id={`recessedFaceGradient-${colorScheme}`}
-              x1="0%"
-              y1="0%"
-              x2="0%"
-              y2="100%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="0%" stopColor="#8AA19E" />
-                  <stop offset="100%" stopColor="#99ABA8" />
-                </>
-              ) : (
-                <>
-                  <stop offset="0%" stopColor="#E55A1B" />
-                  <stop offset="100%" stopColor="#F26C2C" />
-                </>
-              )}
-            </linearGradient>
-
-            {/* Flatter gradient for center dot */}
-            <linearGradient
-              id={`centerDotGradient-${colorScheme}`}
-              x1="0%"
-              y1="0%"
-              x2="0%"
-              y2="100%"
-            >
-              {colorScheme === 'light-blue' ? (
-                <>
-                  <stop offset="0%" stopColor="#96ABA8" />
-                  <stop offset="95%" stopColor="#7D918E" />
-                </>
-              ) : (
-                <>
-                  <stop offset="0%" stopColor="#D84208" />
-                  <stop offset="95%" stopColor="#C83903" />
-                </>
-              )}
-            </linearGradient>
-
-            {/* Subtle shadow for center dot */}
-            <filter
-              id={`centerDotShadow-${colorScheme}`}
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
-              <feGaussianBlur
-                in="SourceAlpha"
-                stdDeviation="0.5"
-                result="blur"
-              />
-              <feOffset in="blur" dx="0" dy="0.5" result="offsetBlur" />
-              <feFlood
-                floodColor="black"
-                floodOpacity="0.2"
-                result="shadowColor"
-              />
-              <feComposite
-                in="shadowColor"
-                in2="offsetBlur"
-                operator="in"
-                result="shadow"
-              />
-              <feComposite in="SourceGraphic" in2="shadow" operator="over" />
-            </filter>
-          </defs>
-
-          {/* Recessed clock face area - appears sunken in */}
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            fill={`url(#recessedFaceGradient-${colorScheme})`}
-            filter={`url(#innerShadow-${colorScheme})`}
-          />
-
-          {/* Shadow around recessed area */}
-          <circle
-            cx="100"
-            cy="100"
-            r="91"
-            fill="none"
-            stroke="rgba(0,0,0,0.15)"
-            strokeWidth="1"
-          />
-
-          {/* Transparent glass surface effect */}
-          <circle
-            cx="100"
-            cy="100"
-            r="89"
-            fill="none"
-            stroke={
-              colorScheme === 'light-blue'
-                ? 'rgba(160,180,180,0.3)' // More muted, less bright for blue clock
-                : 'rgba(255,255,255,0.35)'
-            }
-            strokeWidth="0.5"
-            style={{ mixBlendMode: 'overlay' }}
-          />
-
-          {/* 3D bezel around the clock face - inner shadow effect */}
-          <circle
-            cx="100"
-            cy="100"
-            r="93"
-            fill="none"
-            stroke={`url(#bezelInnerShadow-${colorScheme})`}
-            strokeWidth="3"
-          />
-
-          {/* 3D bezel around the clock face - main raised part */}
-          <circle
-            cx="100"
-            cy="100"
-            r="94.5"
-            fill="none"
-            stroke={`url(#bezelEdgeGradient-${colorScheme})`}
-            strokeWidth="6"
-            style={{
-              filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))',
-            }}
-          />
-
-          {/* Outer edge highlight */}
-          <circle
-            cx="100"
-            cy="100"
-            r="97"
-            fill="none"
-            stroke={
-              colorScheme === 'light-blue'
-                ? 'rgba(200,220,220,0.3)'
-                : 'rgba(255,255,255,0.25)'
-            }
-            strokeWidth="0.8"
-          />
-
-          {markers}
-
+          {/* Hour numbers - Figma style: smaller, inside tick marks */}
           {Array.from({ length: 12 }, (_, i) => {
             const hourValue = i + 1;
             const angle = (hourValue / 12) * 360 - 90;
-            const numeralRadius = CLOCK_RADIUS - 18;
             const x =
-              CLOCK_CENTER_X +
-              numeralRadius * Math.cos((angle * Math.PI) / 180);
+              CENTER_X + NUMERAL_RADIUS * Math.cos((angle * Math.PI) / 180);
             const y =
-              CLOCK_CENTER_Y +
-              numeralRadius * Math.sin((angle * Math.PI) / 180);
-
+              CENTER_Y + NUMERAL_RADIUS * Math.sin((angle * Math.PI) / 180);
             return (
               <text
                 key={`numeral-${hourValue}`}
                 x={x}
-                y={y + 4.5}
+                y={y + 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="11"
+                fontSize="13"
                 fontFamily="'Helvetica Neue', Arial, sans-serif"
-                className={markersAndNumeralsColorClass}
-                fontWeight="500"
+                fill="#000"
+                fontWeight="400"
+                style={{
+                  filter: 'drop-shadow(0px 2px 0px rgba(219, 219, 219, 0.24))',
+                  userSelect: 'none',
+                }}
               >
                 {hourValue}
               </text>
             );
           })}
 
-          <text
-            x="100"
-            y="145"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="7"
-            fontFamily="'Helvetica Neue', Arial, sans-serif"
-            className={markersAndNumeralsColorClass}
-            letterSpacing="0.5"
-            style={{ opacity: 0.85 }}
+          {/* Black hour hand - fit inside numeral area */}
+          <g
+            transform={`rotate(${hourHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
+            style={{ filter: 'drop-shadow(0px 0px 18px rgba(0,0,0,0.4))' }}
           >
-            BRAUN
-          </text>
+            <rect
+              x={CENTER_X - 4}
+              y={CENTER_Y - HOUR_HAND_LENGTH}
+              width={8}
+              height={HOUR_HAND_LENGTH}
+              fill="#212121"
+              rx={4}
+              style={{ boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.48)' }}
+            />
+            {/* White cap on the arm */}
+            <rect
+              x={CENTER_X - 2}
+              y={CENTER_Y - HOUR_HAND_LENGTH + 2}
+              width={4}
+              height={16}
+              fill="url(#hourHandHighlight)"
+              rx={2}
+            />
+          </g>
+          <defs>
+            <linearGradient id="hourHandHighlight" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0.01" stopColor="#E5E5E5" />
+              <stop offset="1" stopColor="#D5D1D1" />
+            </linearGradient>
+            <linearGradient
+              id="minuteHandHighlight"
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="0"
+            >
+              <stop offset="0.01" stopColor="#E5E5E5" />
+              <stop offset="1" stopColor="#D5D1D1" />
+            </linearGradient>
+            <linearGradient id="secondHand" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FFA205" />
+              <stop offset="100%" stopColor="#FFAC02" />
+            </linearGradient>
+            <linearGradient id="secondHandCap" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FFAC02" />
+              <stop offset="100%" stopColor="#F29800" />
+            </linearGradient>
+          </defs>
 
-          {/* Enhanced light reflection effect */}
-          <ellipse
-            cx="100"
-            cy="65"
-            rx="75"
-            ry="45"
-            fill="white"
-            opacity={colorScheme === 'light-blue' ? '0.07' : '0.1'}
-            filter={`url(#softBlur-${colorScheme})`}
-            clipPath={`url(#clockFaceClip-${colorScheme})`}
-            style={{ pointerEvents: 'none' }}
-          />
-
-          {/* Additional reflections for 3D effect */}
-          <ellipse
-            cx="120"
-            cy="45"
-            rx="20"
-            ry="10"
-            fill="white"
-            opacity="0.08"
-            filter={`url(#softBlur-${colorScheme})`}
-            clipPath={`url(#clockFaceClip-${colorScheme})`}
-            style={{ pointerEvents: 'none' }}
-          />
-
-          <ClockHand
-            data-testid="hour-hand"
-            rotation={hourHandRotation}
-            length={45}
-            strokeWidth={5}
-            color={handsColor}
-          />
-          <ClockHand
-            data-testid="minute-hand"
-            rotation={minuteHandRotation}
-            length={70}
-            strokeWidth={4}
-            color={handsColor}
-          />
-          <ClockHand
-            data-testid="second-hand"
-            rotation={secondHandRotation}
-            length={75}
-            strokeWidth={1.5}
-            color={secondHandColor}
-          />
-
-          {/* Flatter center dot with subtle lighting */}
-          <circle
-            cx="100"
-            cy="100"
-            r="9"
-            fill={`url(#centerDotGradient-${colorScheme})`}
-            filter={`url(#centerDotShadow-${colorScheme})`}
-          />
-
-          {/* Very subtle top highlight - moved higher up */}
-          <path
-            d="M95,94 Q100,92 105,94"
-            fill="none"
-            stroke="white"
-            strokeWidth="0.8"
-            opacity={colorScheme === 'light-blue' ? '0.35' : '0.2'}
-            style={{ pointerEvents: 'none' }}
-          />
-
-          {/* Small OFF indicator at bottom (as seen in reference image) */}
-          <text
-            x="100"
-            y="125"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="6"
-            fontFamily="'Helvetica Neue', Arial, sans-serif"
-            className={markersAndNumeralsColorClass}
-            letterSpacing="0.2"
-            style={{ opacity: 0.7 }}
+          {/* Black minute hand - fit inside numeral area */}
+          <g
+            transform={`rotate(${minuteHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
+            style={{ filter: 'drop-shadow(0px 0px 18px rgba(0,0,0,0.4))' }}
           >
-            OFF
+            <rect
+              x={CENTER_X - 3}
+              y={CENTER_Y - MINUTE_HAND_LENGTH}
+              width={6}
+              height={MINUTE_HAND_LENGTH}
+              fill="#212121"
+              rx={3}
+              style={{ boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.78)' }}
+            />
+            {/* White cap on the arm */}
+            <rect
+              x={CENTER_X - 1}
+              y={CENTER_Y - MINUTE_HAND_LENGTH + 4}
+              width={2}
+              height={12}
+              fill="url(#minuteHandHighlight)"
+              rx={1}
+            />
+          </g>
+
+          {/* Yellow second hand - fit inside numeral area */}
+          <g
+            transform={`rotate(${secondHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
+          >
+            <rect
+              x={CENTER_X - 1}
+              y={CENTER_Y - SECOND_HAND_LENGTH}
+              width={2}
+              height={SECOND_HAND_LENGTH}
+              fill="url(#secondHand)"
+              rx={1}
+              style={{ filter: 'inset 0px 0px 2px 0px rgba(0,0,0,0.2)' }}
+            />
+            {/* Yellow cap near base */}
+            <rect
+              x={CENTER_X - 4}
+              y={CENTER_Y - 12}
+              width={8}
+              height={8}
+              fill="url(#secondHandCap)"
+              rx={4}
+              style={{
+                boxShadow:
+                  '0px 0px 2px 0px rgba(0,0,0,0.17), inset 0px 0px 4px 0px rgba(255,255,255,0.2), inset 8px 0px 10px 0px rgba(255,179,4,1)',
+              }}
+            />
+          </g>
+
+          {/* Center cap */}
+          <circle cx={CENTER_X} cy={CENTER_Y} r={5} fill="#212121" />
+
+          {/* BRAUN logo - Figma style */}
+          <g transform={`translate(${CENTER_X - 15}, ${CENTER_Y - 28})`}>
+            <text
+              textAnchor="middle"
+              fontSize="8"
+              fontFamily="'Helvetica Neue', Arial, sans-serif"
+              fill="#000"
+              fontWeight="600"
+            >
+              BRAUN
+            </text>
+          </g>
+
+          {/* Quartz text - Figma style */}
+          <text
+            x={CENTER_X}
+            y={CENTER_Y + 28}
+            textAnchor="middle"
+            fontSize="8"
+            fontFamily="'Helvetica Neue', Arial, sans-serif"
+            fill="#000"
+            fontWeight="400"
+            stroke="#FFF"
+            strokeWidth="0.5"
+          >
+            quartz
           </text>
-          <polygon
-            points="100,132 103,136 97,136"
-            className={markersAndNumeralsColorClass}
-            style={{ opacity: 0.7 }}
-          />
         </svg>
       </div>
     </div>

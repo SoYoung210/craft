@@ -3,7 +3,6 @@ export interface ClockProps {
   label: string;
   baseTime: Date;
   onTimeAdjust: (adjustedMinutes: number) => void;
-  colorScheme: 'light-blue' | 'bright-orange';
 }
 
 export interface TimeParts {
