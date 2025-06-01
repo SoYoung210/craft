@@ -393,10 +393,51 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               <stop offset="0%" stopColor="#FFA205" />
               <stop offset="100%" stopColor="#FFAC02" />
             </linearGradient>
-            <linearGradient id="secondHandCap" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FFAC02" />
-              <stop offset="100%" stopColor="#F29800" />
+            <linearGradient
+              id="secondHandCap"
+              x1="0"
+              y1="1"
+              x2="1"
+              y2="0"
+              gradientUnits="objectBoundingBox"
+            >
+              <stop offset="27.76%" stopColor="#FFAC00" />
+              <stop offset="85.18%" stopColor="#FF970B" />
             </linearGradient>
+            <filter
+              id="secondHandCapShadow"
+              x="-30%"
+              y="-30%"
+              width="160%"
+              height="160%"
+            >
+              <feGaussianBlur
+                in="SourceAlpha"
+                stdDeviation="1.2"
+                result="blur"
+              />
+              <feFlood
+                floodColor="#FFD138"
+                floodOpacity="0.32"
+                result="color"
+              />
+              <feComposite
+                in="color"
+                in2="blur"
+                operator="in"
+                result="shadow"
+              />
+              <feComposite
+                in="shadow"
+                in2="SourceAlpha"
+                operator="in"
+                result="inset-shadow"
+              />
+              <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="inset-shadow" />
+              </feMerge>
+            </filter>
           </defs>
 
           {/* Black minute hand - fit inside numeral area */}
@@ -438,22 +479,17 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               style={{ filter: 'inset 0px 0px 2px 0px rgba(0,0,0,0.2)' }}
             />
             {/* Yellow cap near base */}
-            <rect
-              x={CENTER_X - 4}
-              y={CENTER_Y - 12}
-              width={8}
-              height={8}
+            <circle
+              cx={CENTER_X}
+              cy={CENTER_Y}
+              r={10}
               fill="url(#secondHandCap)"
-              rx={4}
-              style={{
-                boxShadow:
-                  '0px 0px 2px 0px rgba(0,0,0,0.17), inset 0px 0px 4px 0px rgba(255,255,255,0.2), inset 8px 0px 10px 0px rgba(255,179,4,1)',
-              }}
+              filter="url(#secondHandCapShadow)"
             />
           </g>
 
           {/* Center cap */}
-          <circle cx={CENTER_X} cy={CENTER_Y} r={5} fill="#212121" />
+          {/* <circle cx={CENTER_X} cy={CENTER_Y} r={5} fill="#212121" /> */}
 
           {/* BRAUN logo - Figma style */}
           {/* <g transform={`translate(${CENTER_X - 15}, ${CENTER_Y - 28})`}>
