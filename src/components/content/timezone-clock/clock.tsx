@@ -13,6 +13,7 @@ const MINUTE_HAND_LENGTH = 56;
 const SECOND_HAND_LENGTH = 66;
 const CENTER_X = 100;
 const CENTER_Y = 100;
+const TRANSITION_STYLE = '0.35s cubic-bezier(0, 0, 0.58, 1)';
 
 export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
   const [currentTimeParts, setCurrentTimeParts] = useState(
@@ -233,7 +234,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           boxShadow: isDayTime
             ? '0px 0px 16px 0px rgba(0, 0, 0, 0.23), inset 0px 6px 10px 0px rgba(255, 255, 255, 1), inset 0px -2px 8px 0px rgba(0, 0, 0, 0.19), inset 0px 0px 8px 0px rgba(0, 0, 0, 0.12), inset 2px 3px 20px 0px rgba(255, 255, 255, 0.37)'
             : '0px 0px 16px 0px rgba(0,0,0,0.45), inset 0px 6px 10px 0px rgba(80,80,80,0.7), inset 0px -2px 8px 0px rgba(0,0,0,0.32), inset 0px 0px 8px 0px rgba(0,0,0,0.22), inset 2px 3px 20px 0px rgba(80,80,80,0.18)',
-          transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
+          transition: `background ${TRANSITION_STYLE}`,
         }}
       >
         {/* Outer circle frame */}
@@ -246,8 +247,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               ? '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff'
               : '0px 0px 2px 0px rgba(0,0,0,0.32), inset 0px 0px 4px 0.5px #444, inset 0px 0px 0px 3.5px #232323',
             border: `1px solid ${theme.outerFrameBorder}`,
-            transition:
-              'background 0.7s cubic-bezier(0.4,0,0.2,1), border 0.7s cubic-bezier(0.4,0,0.2,1)',
+            transition: `background ${TRANSITION_STYLE}, border ${TRANSITION_STYLE}`,
           }}
         />
         {/* Middle circle frame */}
@@ -257,8 +257,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           style={{
             background: theme.middleFrameBg,
             boxShadow: theme.middleFrameBoxShadow,
-            transition:
-              'background 0.7s cubic-bezier(0.4,0,0.2,1), box-shadow 0.7s cubic-bezier(0.4,0,0.2,1)',
+            transition: `background ${TRANSITION_STYLE}, box-shadow ${TRANSITION_STYLE}`,
           }}
         />
         {/* Inner circle frame */}
@@ -271,7 +270,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             boxShadow: isDayTime
               ? 'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)'
               : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
-            transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
+            transition: `background ${TRANSITION_STYLE}`,
           }}
         />
         {/* SVG clock face (tick marks, numerals, hands, etc) */}
@@ -371,7 +370,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                     ? 'drop-shadow(1px 1px 0px #E2E2E2)'
                     : undefined,
                   opacity: isHourMark ? 1 : 0.7,
-                  transition: 'stroke 0.7s cubic-bezier(0.4,0,0.2,1)',
+                  transition: `stroke ${TRANSITION_STYLE}`,
                 }}
               />
             );
@@ -401,7 +400,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                     isDayTime ? 'rgba(219, 219, 219, 0.24)' : 'rgba(0,0,0,0.8)'
                   })`,
                   userSelect: 'none',
-                  transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
+                  transition: `fill ${TRANSITION_STYLE}`,
                 }}
               >
                 {hourValue}
@@ -423,7 +422,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               rx={4}
               style={{
                 boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.48)',
-                transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
+                transition: `fill ${TRANSITION_STYLE}`,
               }}
             />
             {/* White cap on the arm */}
@@ -559,7 +558,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               rx={3}
               style={{
                 boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.78)',
-                transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
+                transition: `fill ${TRANSITION_STYLE}`,
               }}
             />
             {/* White cap on the arm */}
