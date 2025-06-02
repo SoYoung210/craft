@@ -459,6 +459,23 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter
+              id="whiteArmShadow"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+              <feOffset dx="0" dy="0" />
+              <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2" />
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
           {/* Black minute hand - fit inside numeral area */}
@@ -486,22 +503,33 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             />
           </g>
 
+          {/* White arm path from Untitled-1 SVG (fixed, not rotating) */}
+          <g
+            transform={`translate(${CENTER_X}, ${CENTER_Y}) scale(0.26, 0.26) translate(-67, -80)`}
+            style={{ filter: 'url(#whiteArmShadow)' }}
+          >
+            {/* Adjusted so the white circle is centered */}
+            <path
+              d="M67 30C95.1665 30 118 52.8335 118 81C118 106.792 98.8544 128.111 74 131.522V328H60V131.522C35.1456 128.111 16 106.792 16 81C16 52.8335 38.8335 30 67 30Z"
+              fill="#fff"
+            />
+            {/* Green rectangle from SVG */}
+            <rect x="60" y="268" width="14" height="60" fill="#488E28" />
+          </g>
           {/* Yellow second hand - fit inside numeral area */}
           <g
             transform={`rotate(${secondHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
           >
             {/* Yellow arm path from Figma */}
             <g
-              // transform={`translate(${CENTER_X}, ${CENTER_Y}) scale(0.28, -0.28)`}
               style={{
-                transform: `scale(-0.28, -0.28) translate(-20px, 70px) rotate(54deg)`,
+                transform: `scale(-0.28, -0.28) translate(-12px, 60px) rotate(52deg)`,
                 transformOrigin: '100px',
               }}
             >
               <path
                 d="M6.25446 8.59289C11.9345 1.8237 22.0266 0.940755 28.7958 6.62078L65.5659 37.4746L44.9967 61.988L8.22657 31.1342C1.45737 25.4542 0.574432 15.3621 6.25446 8.59289V8.59289Z"
                 fill="url(#yellowArmPath)"
-                // transform="scale(-1, 1)"
               />
             </g>
             <rect
@@ -517,7 +545,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             <circle
               cx={CENTER_X}
               cy={CENTER_Y}
-              r={10}
+              r={9.6}
               fill="url(#secondHandCap)"
               filter="url(#secondHandCapShadow)"
             />
@@ -538,21 +566,6 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               BRAUN
             </text>
           </g> */}
-
-          {/* Quartz text - Figma style */}
-          <text
-            x={CENTER_X}
-            y={CENTER_Y + 28}
-            textAnchor="middle"
-            fontSize="8"
-            fontFamily="'Helvetica Neue', Arial, sans-serif"
-            fill="#000"
-            fontWeight="400"
-            stroke="#FFF"
-            strokeWidth="0.5"
-          >
-            quartz
-          </text>
         </svg>
       </div>
     </div>
