@@ -438,6 +438,27 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 <feMergeNode in="inset-shadow" />
               </feMerge>
             </filter>
+            <linearGradient id="yellowArmPath" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#FFA205" />
+              <stop offset="100%" stopColor="#FFAC02" />
+            </linearGradient>
+            <filter
+              id="yellowArmRectShadow"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
+              <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+              <feOffset dx="0" dy="0" />
+              <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2" />
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
           {/* Black minute hand - fit inside numeral area */}
@@ -469,6 +490,20 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           <g
             transform={`rotate(${secondHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
           >
+            {/* Yellow arm path from Figma */}
+            <g
+              // transform={`translate(${CENTER_X}, ${CENTER_Y}) scale(0.28, -0.28)`}
+              style={{
+                transform: `scale(-0.28, -0.28) translate(-20px, 70px) rotate(54deg)`,
+                transformOrigin: '100px',
+              }}
+            >
+              <path
+                d="M6.25446 8.59289C11.9345 1.8237 22.0266 0.940755 28.7958 6.62078L65.5659 37.4746L44.9967 61.988L8.22657 31.1342C1.45737 25.4542 0.574432 15.3621 6.25446 8.59289V8.59289Z"
+                fill="url(#yellowArmPath)"
+                // transform="scale(-1, 1)"
+              />
+            </g>
             <rect
               x={CENTER_X - 1}
               y={CENTER_Y - SECOND_HAND_LENGTH}
