@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import type { ClockProps } from './types';
 import { getTimeParts, get24HourFormat } from './utils';
@@ -160,6 +160,42 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
     onTimeAdjust(minuteAdjustment);
   }, [baseTime, timeZone, onTimeAdjust]);
 
+  // Determine if it's day or night for theming
+  const isDayTime = useMemo(() => {
+    const hour = currentTimeParts.hours;
+    const minute = currentTimeParts.minutes;
+    // 6:00 AM (6,0) to 6:00 PM (18,0) is day
+    if (hour > 6 && hour < 18) return true;
+    if (hour === 6 && minute >= 0) return true;
+    if (hour === 18 && minute === 0) return true;
+    return false;
+  }, [currentTimeParts]);
+
+  // Theme colors
+  const theme = isDayTime
+    ? {
+        bodyBg: 'linear-gradient(180deg, #F3F3F3 0%, #EAE9E9 100%)',
+        tick: '#000',
+        numeral: '#000',
+        handBase: '#212121',
+        handHighlight: 'url(#hourHandHighlight)',
+        minHandHighlight: 'url(#minuteHandHighlight)',
+        whiteArm: '#fff',
+        whiteArmGreen: '#488E28',
+        innerCircleBg: '#E8E8E8',
+      }
+    : {
+        bodyBg: 'linear-gradient(180deg, #2B2B2B 0%, #1B1B1B 100%)',
+        tick: '#fff',
+        numeral: '#fff',
+        handBase: 'url(#nightHandBase)',
+        handHighlight: 'url(#nightHandBase)',
+        minHandHighlight: 'url(#nightHandBase)',
+        whiteArm: '#D8D8D8',
+        whiteArmGreen: '#0FEC0F',
+        innerCircleBg: 'linear-gradient(to right, #343434 0%, #292828 100%)',
+      };
+
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-semibold mb-1 text-black">{label}</h2>
@@ -184,9 +220,10 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
       <div
         className="w-[300px] h-[300px] relative rounded-[20px] overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #F3F3F3 0%, #EAE9E9 100%)',
+          background: theme.bodyBg,
           boxShadow:
             '0px 0px 16px 0px rgba(0, 0, 0, 0.23), inset 0px 6px 10px 0px rgba(255, 255, 255, 1), inset 0px -2px 8px 0px rgba(0, 0, 0, 0.19), inset 0px 0px 8px 0px rgba(0, 0, 0, 0.12), inset 2px 3px 20px 0px rgba(255, 255, 255, 0.37)',
+          transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
         {/* Outer circle frame */}
@@ -215,10 +252,11 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           data-name="inner-frame"
           className="absolute inset-[30px] rounded-full border-2"
           style={{
-            background: '#E8E8E8',
+            background: theme.innerCircleBg,
             borderColor: 'rgba(0,0,0,0.22)',
             boxShadow:
               'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)',
+            transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
           }}
         />
         {/* SVG clock face (tick marks, numerals, hands, etc) */}
@@ -310,12 +348,13 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke="#000"
+                stroke={theme.tick}
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 style={{
                   filter: 'drop-shadow(1px 1px 0px #E2E2E2)',
                   opacity: isHourMark ? 1 : 0.7,
+                  transition: 'stroke 0.7s cubic-bezier(0.4,0,0.2,1)',
                 }}
               />
             );
@@ -338,11 +377,12 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 dominantBaseline="middle"
                 fontSize="13"
                 fontFamily="'Helvetica Neue', Arial, sans-serif"
-                fill="#000"
+                fill={theme.numeral}
                 fontWeight="400"
                 style={{
                   filter: 'drop-shadow(0px 2px 0px rgba(219, 219, 219, 0.24))',
                   userSelect: 'none',
+                  transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
                 }}
               >
                 {hourValue}
@@ -360,9 +400,12 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               y={CENTER_Y - HOUR_HAND_LENGTH}
               width={6}
               height={HOUR_HAND_LENGTH}
-              fill="#212121"
+              fill={theme.handBase}
               rx={4}
-              style={{ boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.48)' }}
+              style={{
+                boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.48)',
+                transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
+              }}
             />
             {/* White cap on the arm */}
             <rect
@@ -370,7 +413,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               y={CENTER_Y - HOUR_HAND_LENGTH + 2}
               width={2.5}
               height={14}
-              fill="url(#hourHandHighlight)"
+              fill={theme.handHighlight}
               rx={2}
             />
           </g>
@@ -476,6 +519,11 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            {/* Night theme hand gradient */}
+            <linearGradient id="nightHandBase" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#D8D8D8" />
+              <stop offset="100%" stopColor="#FFFFFF" />
+            </linearGradient>
           </defs>
 
           {/* Black minute hand - fit inside numeral area */}
@@ -488,9 +536,12 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               y={CENTER_Y - MINUTE_HAND_LENGTH}
               width={5}
               height={MINUTE_HAND_LENGTH}
-              fill="#212121"
+              fill={theme.handBase}
               rx={3}
-              style={{ boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.78)' }}
+              style={{
+                boxShadow: 'inset 0px 0px 5px 0px rgba(0,0,0,0.78)',
+                transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
+              }}
             />
             {/* White cap on the arm */}
             <rect
@@ -498,7 +549,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               y={CENTER_Y - MINUTE_HAND_LENGTH + 4}
               width={2}
               height={12}
-              fill="url(#minuteHandHighlight)"
+              fill={theme.minHandHighlight}
               rx={1}
             />
           </g>
@@ -511,10 +562,16 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             {/* Adjusted so the white circle is centered */}
             <path
               d="M67 30C95.1665 30 118 52.8335 118 81C118 106.792 98.8544 128.111 74 131.522V328H60V131.522C35.1456 128.111 16 106.792 16 81C16 52.8335 38.8335 30 67 30Z"
-              fill="#fff"
+              fill={theme.whiteArm}
             />
             {/* Green rectangle from SVG */}
-            <rect x="60" y="268" width="14" height="60" fill="#488E28" />
+            <rect
+              x="60"
+              y="268"
+              width="14"
+              height="60"
+              fill={theme.whiteArmGreen}
+            />
           </g>
           {/* Yellow second hand - fit inside numeral area */}
           <g
