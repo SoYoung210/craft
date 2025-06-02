@@ -202,7 +202,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         outerFrameBorder: '#393939',
         middleFrameBg: 'linear-gradient(180deg, #2B2B2B 0%, #393939 100%)',
         middleFrameBoxShadow:
-          '0px 0px 0px 2px #232323, inset 0px 0px 16px 0px rgba(0,0,0,0.7)',
+          '0px 0px 0px 2px rgb(97,97,97), inset 0px 0px 16px 0px rgba(0,0,0,0.7)',
       };
 
   return (
@@ -468,10 +468,10 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             </linearGradient>
             <filter
               id="secondHandCapShadow"
-              x="-30%"
-              y="-30%"
-              width="160%"
-              height="160%"
+              // x="-30%"
+              // y="-30%"
+              width="110%"
+              height="110%"
             >
               <feGaussianBlur
                 in="SourceAlpha"
