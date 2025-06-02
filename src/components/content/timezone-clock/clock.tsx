@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { ClockProps } from './types';
 import { getTimeParts, get24HourFormat } from './utils';
 
-// --- Figma-based proportions ---
 const SVG_SIZE = 200;
 const TICK_MARKS_RADIUS = 73; // Move tick marks further in
 const NUMERAL_RADIUS = 54; // Move numerals further out from tick marks
@@ -183,6 +182,11 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         whiteArm: '#fff',
         whiteArmGreen: '#488E28',
         innerCircleBg: '#E8E8E8',
+        outerFrameBg: 'linear-gradient(180deg, #FFFFFF 0%, #F5F2F2 100%)',
+        outerFrameBorder: '#E0E0E0',
+        middleFrameBg: 'linear-gradient(180deg, #FFFCFC 0%, #F7F7F7 100%)',
+        middleFrameBoxShadow:
+          '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
       }
     : {
         bodyBg: 'linear-gradient(180deg, #2B2B2B 0%, #1B1B1B 100%)',
@@ -194,6 +198,11 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         whiteArm: '#D8D8D8',
         whiteArmGreen: '#0FEC0F',
         innerCircleBg: 'linear-gradient(to right, #343434 0%, #292828 100%)',
+        outerFrameBg: 'linear-gradient(180deg, #444444 0%, #232323 100%)',
+        outerFrameBorder: '#393939',
+        middleFrameBg: 'linear-gradient(180deg, #2B2B2B 0%, #393939 100%)',
+        middleFrameBoxShadow:
+          '0px 0px 0px 2px #232323, inset 0px 0px 16px 0px rgba(0,0,0,0.7)',
       };
 
   return (
@@ -221,8 +230,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         className="w-[300px] h-[300px] relative rounded-[20px] overflow-hidden"
         style={{
           background: theme.bodyBg,
-          boxShadow:
-            '0px 0px 16px 0px rgba(0, 0, 0, 0.23), inset 0px 6px 10px 0px rgba(255, 255, 255, 1), inset 0px -2px 8px 0px rgba(0, 0, 0, 0.19), inset 0px 0px 8px 0px rgba(0, 0, 0, 0.12), inset 2px 3px 20px 0px rgba(255, 255, 255, 0.37)',
+          boxShadow: isDayTime
+            ? '0px 0px 16px 0px rgba(0, 0, 0, 0.23), inset 0px 6px 10px 0px rgba(255, 255, 255, 1), inset 0px -2px 8px 0px rgba(0, 0, 0, 0.19), inset 0px 0px 8px 0px rgba(0, 0, 0, 0.12), inset 2px 3px 20px 0px rgba(255, 255, 255, 0.37)'
+            : '0px 0px 16px 0px rgba(0,0,0,0.45), inset 0px 6px 10px 0px rgba(80,80,80,0.7), inset 0px -2px 8px 0px rgba(0,0,0,0.32), inset 0px 0px 8px 0px rgba(0,0,0,0.22), inset 2px 3px 20px 0px rgba(80,80,80,0.18)',
           transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
@@ -231,10 +241,13 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           data-name="outer-frame"
           className="absolute rounded-full inset-3"
           style={{
-            background: 'linear-gradient(180deg, #FFFFFF 0%, #F5F2F2 100%)',
-            boxShadow:
-              '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff',
-            border: '1px solid #E0E0E0',
+            background: theme.outerFrameBg,
+            boxShadow: isDayTime
+              ? '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff'
+              : '0px 0px 2px 0px rgba(0,0,0,0.32), inset 0px 0px 4px 0.5px #444, inset 0px 0px 0px 3.5px #232323',
+            border: `1px solid ${theme.outerFrameBorder}`,
+            transition:
+              'background 0.7s cubic-bezier(0.4,0,0.2,1), border 0.7s cubic-bezier(0.4,0,0.2,1)',
           }}
         />
         {/* Middle circle frame */}
@@ -242,9 +255,10 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           data-name="middle-frame"
           className="absolute inset-6 rounded-full"
           style={{
-            background: 'linear-gradient(180deg, #FFFCFC 0%, #F7F7F7 100%)',
-            boxShadow:
-              '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
+            background: theme.middleFrameBg,
+            boxShadow: theme.middleFrameBoxShadow,
+            transition:
+              'background 0.7s cubic-bezier(0.4,0,0.2,1), box-shadow 0.7s cubic-bezier(0.4,0,0.2,1)',
           }}
         />
         {/* Inner circle frame */}
@@ -254,8 +268,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           style={{
             background: theme.innerCircleBg,
             borderColor: 'rgba(0,0,0,0.22)',
-            boxShadow:
-              'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)',
+            boxShadow: isDayTime
+              ? 'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)'
+              : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
             transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
           }}
         />
@@ -352,7 +367,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 style={{
-                  filter: 'drop-shadow(1px 1px 0px #E2E2E2)',
+                  filter: isDayTime
+                    ? 'drop-shadow(1px 1px 0px #E2E2E2)'
+                    : undefined,
                   opacity: isHourMark ? 1 : 0.7,
                   transition: 'stroke 0.7s cubic-bezier(0.4,0,0.2,1)',
                 }}
@@ -380,7 +397,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 fill={theme.numeral}
                 fontWeight="400"
                 style={{
-                  filter: 'drop-shadow(0px 2px 0px rgba(219, 219, 219, 0.24))',
+                  filter: `drop-shadow(0px 2px 0px ${
+                    isDayTime ? 'rgba(219, 219, 219, 0.24)' : 'rgba(0,0,0,0.8)'
+                  })`,
                   userSelect: 'none',
                   transition: 'fill 0.7s cubic-bezier(0.4,0,0.2,1)',
                 }}
