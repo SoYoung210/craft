@@ -178,8 +178,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         minHandHighlight: 'url(#minuteHandHighlight)',
         whiteArm: '#fff',
         whiteArmGreen: '#488E28',
-        innerCircleBg: '#E8E8E8',
-        outerFrameBg: 'linear-gradient(180deg, #FFFFFF 0%, #F5F2F2 100%)',
+        innerCircleBg: '#efefef',
+        outerFrameBg:
+          'radial-gradient(18% 54.28% at 10.04% 55%, rgba(0,0,0,7%) 24%, rgba(0, 0, 0, 0) 100%), linear-gradient(180deg, #fff 41%, #fefefe 100%)',
         outerFrameBorder: '#E0E0E0',
         middleFrameBg: 'linear-gradient(180deg, #FFFCFC 0%, #F7F7F7 100%)',
         middleFrameBoxShadow:
@@ -240,7 +241,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           style={{
             background: theme.outerFrameBg,
             boxShadow: isDayTime
-              ? '0px 0px 2px 0px rgba(0,0,0,0.12), inset 0px 0px 4px 0.5px #fff, inset 0px 0px 0px 3.5px #fff'
+              ? '0px 0px 2px rgba(0, 0, 0, 0.12), inset 0px 0px 1px #FFFFFF'
               : '0px 0px 2px 0px rgba(0,0,0,0.32), inset 0px 0px 4px 0.5px #444, inset 0px 0px 0px 3.5px #232323',
             border: `1px solid ${theme.outerFrameBorder}`,
             transition: `background ${TRANSITION_STYLE}, border ${TRANSITION_STYLE}`,
@@ -265,7 +266,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               background: theme.innerCircleBg,
               borderColor: 'rgba(0,0,0,0.22)',
               boxShadow: isDayTime
-                ? 'inset 0px -2px 3px rgba(255, 255, 255, 0.938593), inset 0px 0px 3px rgba(0, 0, 0, 0.314002), inset 0px 0px 0px 4px #D2CFCF'
+                ? 'inset 0px -2px 3px rgba(255, 255, 255, 0.938593), inset 0px 0px 3px rgba(0, 0, 0, 0.314002), inset 0px 0px 0px 3px #D2CFCF'
                 : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
               transition: `background ${TRANSITION_STYLE}`,
             }}
@@ -275,11 +276,11 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             style={{
               position: 'absolute',
               borderRadius: 999,
-              width: 240,
-              height: 240,
+              width: 258,
+              height: 258,
               pointerEvents: 'none',
               backgroundImage: NOISE,
-              opacity: 0.04,
+              opacity: 0.03,
               // zIndex: 1,
             }}
           />
