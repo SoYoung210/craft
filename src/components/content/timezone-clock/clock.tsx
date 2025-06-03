@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
+import { NOISE } from './constants';
 import type { ClockProps } from './types';
 import { getTimeParts, get24HourFormat } from './utils';
 
@@ -187,7 +188,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
         outerFrameBorder: '#E0E0E0',
         middleFrameBg: 'linear-gradient(180deg, #FFFCFC 0%, #F7F7F7 100%)',
         middleFrameBoxShadow:
-          '0px 0px 0px 2px rgba(143,143,143,1), inset 0px 0px 16px 0px rgba(0,0,0,0.5)',
+          '0px 0px 0px 1px #aeaeae, inset 0px 0px 4px rgba(0, 0, 0, 0.5)',
       }
     : {
         bodyBg: 'linear-gradient(180deg, #2B2B2B 0%, #1B1B1B 100%)',
@@ -261,18 +262,34 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           }}
         />
         {/* Inner circle frame */}
-        <div
-          data-name="inner-frame"
-          className="absolute inset-[30px] rounded-full border-2"
-          style={{
-            background: theme.innerCircleBg,
-            borderColor: 'rgba(0,0,0,0.22)',
-            boxShadow: isDayTime
-              ? 'inset 0px 0px 0px 8px #d2cfcf, inset 0px 0px 32px 0px rgba(0,0,0,0.31), inset 0px -9px 3px 0px rgba(255,255,255,0.94)'
-              : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
-            transition: `background ${TRANSITION_STYLE}`,
-          }}
-        />
+        <div className="relative w-60 h-60">
+          <div
+            data-name="inner-frame"
+            className="absolute  w-[244px] h-[244px] inset-[28px] rounded-full border-2"
+            style={{
+              background: theme.innerCircleBg,
+              borderColor: 'rgba(0,0,0,0.22)',
+              boxShadow: isDayTime
+                ? 'inset 0px -2px 3px rgba(255, 255, 255, 0.938593), inset 0px 0px 3px rgba(0, 0, 0, 0.314002), inset 0px 0px 0px 4px #D2CFCF'
+                : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
+              transition: `background ${TRANSITION_STYLE}`,
+            }}
+          />
+          <div
+            className="inset-6"
+            style={{
+              position: 'absolute',
+              borderRadius: 999,
+              width: 240,
+              height: 240,
+              pointerEvents: 'none',
+              backgroundImage: NOISE,
+              opacity: 0.04,
+              // zIndex: 1,
+            }}
+          />
+        </div>
+
         {/* SVG clock face (tick marks, numerals, hands, etc) */}
         <svg
           ref={clockRef}
