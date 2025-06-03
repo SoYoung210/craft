@@ -163,14 +163,9 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 
   // Determine if it's day or night for theming
   const isDayTime = useMemo(() => {
-    const hour = currentTimeParts.hours;
-    const minute = currentTimeParts.minutes;
-    // 6:00 AM (6,0) to 6:00 PM (18,0) is day
-    if (hour > 6 && hour < 18) return true;
-    if (hour === 6 && minute >= 0) return true;
-    if (hour === 18 && minute === 0) return true;
-    return false;
-  }, [currentTimeParts]);
+    const { hours24 } = get24HourFormat(baseTime, timeZone);
+    return hours24 >= 6 && hours24 < 18;
+  }, [baseTime, timeZone]);
 
   // Theme colors
   const theme = isDayTime
