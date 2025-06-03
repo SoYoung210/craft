@@ -16,6 +16,14 @@
   scrollbar-color: #404040 transparent;
 }
 
+@font-face {
+  font-family: 'Berthold Akzidenz Grotesk BE';
+  src: url('/fonts/akzidenz-grotesk-be-bold-condensed-webfont.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     /* Clock 1 (Pastel Blue) */
@@ -39,7 +47,3 @@
   }
 }
 
-/*
-#A6BEBC
-#A2BEBD
-*/

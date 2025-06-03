@@ -207,7 +207,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-semibold mb-1 text-black">{label}</h2>
+      {/* <h2 className="text-xl font-semibold mb-1 text-black">{label}</h2> */}
       <div
         onClick={handleAmPmToggle}
         className="cursor-pointer text-base font-medium mb-2 px-3 py-0.5 rounded-md shadow-sm transition-colors 
@@ -430,10 +430,27 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             );
           })}
 
+          <g
+            transform={`translate(${CENTER_X}, ${
+              CENTER_Y - 28
+            }) scale(1.14, 1.18)`}
+          >
+            <text
+              textAnchor="middle"
+              fontSize="9.6"
+              fontFamily="'Berthold Akzidenz Grotesk BE', Arial, sans-serif"
+              fill={isDayTime ? '#000' : '#fff'}
+              fontWeight="600"
+              letterSpacing="0.03em"
+            >
+              {label}
+            </text>
+          </g>
+
           {/* Black hour hand - fit inside numeral area */}
           <g
             transform={`rotate(${hourHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
-            style={{ filter: 'drop-shadow(0px 0px 18px rgba(0,0,0,0.4))' }}
+            style={{ filter: 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.25))' }}
           >
             <rect
               x={CENTER_X - 4}
@@ -569,7 +586,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           {/* Black minute hand - fit inside numeral area */}
           <g
             transform={`rotate(${minuteHandRotation}, ${CENTER_X}, ${CENTER_Y})`}
-            style={{ filter: 'drop-shadow(0px 0px 18px rgba(0,0,0,0.4))' }}
+            style={{ filter: 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.25))' }}
           >
             <rect
               x={CENTER_X - 2.5}
@@ -647,22 +664,6 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               filter="url(#secondHandCapShadow)"
             />
           </g>
-
-          {/* Center cap */}
-          {/* <circle cx={CENTER_X} cy={CENTER_Y} r={5} fill="#212121" /> */}
-
-          {/* BRAUN logo - Figma style */}
-          {/* <g transform={`translate(${CENTER_X - 15}, ${CENTER_Y - 28})`}>
-            <text
-              textAnchor="middle"
-              fontSize="8"
-              fontFamily="'Helvetica Neue', Arial, sans-serif"
-              fill="#000"
-              fontWeight="600"
-            >
-              BRAUN
-            </text>
-          </g> */}
         </svg>
       </div>
     </div>

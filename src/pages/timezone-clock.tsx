@@ -40,13 +40,13 @@ export default function TimezoneClockPage() {
       <div className="flex flex-col md:flex-row gap-10 md:gap-12 mb-10">
         <Clock
           timeZone={SEOUL_TZ}
-          label="Seoul"
+          label="SEO"
           baseTime={baseTime}
           onTimeAdjust={handleTimeAdjust}
         />
         <Clock
           timeZone={SF_TZ}
-          label="San Francisco"
+          label="SF"
           baseTime={baseTime}
           onTimeAdjust={handleTimeAdjust}
         />
