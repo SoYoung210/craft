@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
+import { cn } from '../../../utils/css';
+
 import { NOISE } from './constants';
 import type { ClockProps } from './types';
 import { getTimeParts, get24HourFormat } from './utils';
@@ -225,7 +227,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 
       {/* Clock case */}
       <div
-        className="w-[300px] h-[300px] relative rounded-[20px] overflow-hidden"
+        className="w-[300px] h-[300px] items-center flex justify-center relative rounded-[20px] overflow-hidden"
         style={{
           background: theme.bodyBg,
           boxShadow: isDayTime
@@ -258,10 +260,10 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           }}
         />
         {/* Inner circle frame */}
-        <div className="relative w-60 h-60">
+        <div className="relative w-[258px] h-[258px]">
           <div
             data-name="inner-frame"
-            className="absolute  w-[244px] h-[244px] inset-[28px] rounded-full border-2"
+            className="absolute overflow-hidden w-[244px] h-[244px] inset-[7px] rounded-full border-2"
             style={{
               background: theme.innerCircleBg,
               borderColor: 'rgba(0,0,0,0.22)',
@@ -270,9 +272,17 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
                 : 'inset 0px 0px 0px 8px #232323, inset 0px 0px 32px 0px rgba(0,0,0,0.44), inset 0px -9px 3px 0px rgba(255,255,255,0.12)',
               transition: `background ${TRANSITION_STYLE}`,
             }}
-          />
+          >
+            <div
+              data-name="inner-frame-half-right"
+              className={cn(
+                'absolute right-0 top-1 w-[120px] h-[244px] ',
+                isDayTime ? 'bg-black/[0.04]' : 'bg-black/[0.14]'
+              )}
+            />
+          </div>
           <div
-            className="inset-6"
+            className="inset-0"
             style={{
               position: 'absolute',
               borderRadius: 999,
@@ -281,7 +291,6 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
               pointerEvents: 'none',
               backgroundImage: NOISE,
               opacity: 0.03,
-              // zIndex: 1,
             }}
           />
         </div>
