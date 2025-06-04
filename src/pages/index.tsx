@@ -15,7 +15,7 @@ const IndexPage = () => {
           <Link to="/timezone-clock">
             <ContentBox title="Timezone Clock">
               <StaticImage
-                src="../images/thumbnails/tz-clock.webp"
+                src="../images/thumbnails/clock-thumbanil-5.webp"
                 alt="Timezone Clock"
                 placeholder="none"
                 style={{
