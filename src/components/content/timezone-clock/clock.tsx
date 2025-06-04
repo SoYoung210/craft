@@ -659,7 +659,6 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 // Add AmPmDial component for AM/PM toggle using the provided SVG
 function AmPmDial({ isPm, onToggle }: { isPm: boolean; onToggle: () => void }) {
   // The dial rotates the red dot to AM (up) or PM (down)
-  const rotation = isPm ? 180 : 0;
   return (
     <button
       aria-label="Toggle AM/PM"
@@ -690,6 +689,11 @@ function AmPmDial({ isPm, onToggle }: { isPm: boolean; onToggle: () => void }) {
         viewBox="0 0 88 110"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{
+          transform: isPm ? 'rotate(180deg)' : undefined,
+          transformOrigin: 'center 40%',
+          transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
+        }}
       >
         <g filter="url(#filter0_i_968_512)">
           <circle cx="44" cy="44" r="44" fill="url(#paint0_linear_968_512)" />
