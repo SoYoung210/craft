@@ -23,7 +23,12 @@ export default function TimezoneClockPage() {
   return (
     <PageLayout>
       <PageLayout.Title>Timezone Clock</PageLayout.Title>
-
+      <PageLayout.Details>
+        <PageLayout.Summary>
+          Interactive clock for comparing time between Seoul and San Francisco.
+        </PageLayout.Summary>
+        Inspired by Bauhaus Clock design
+      </PageLayout.Details>
       <div className="flex flex-col md:flex-row gap-10 md:gap-12 mb-10">
         <Clock
           timeZone={SEOUL_TZ}

@@ -12,6 +12,23 @@ const IndexPage = () => {
       <PageLayout.Title>Craft</PageLayout.Title>
       <ContentList className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
         <ContentList.Item active>
+          <Link to="/timezone-clock">
+            <ContentBox title="Timezone Clock">
+              <StaticImage
+                src="../images/thumbnails/tz-clock.webp"
+                alt="Timezone Clock"
+                placeholder="none"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+
+        <ContentList.Item>
           <Link to="/dynamic-island-toc">
             <ContentBox title="Dynamic Island TOC">
               <StaticImage
