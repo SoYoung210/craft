@@ -207,15 +207,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
       };
 
   return (
-    <div className="flex flex-col items-center relative">
-      {/* AM/PM Dial at top-right */}
-      <div className="absolute top-1 right-[10px] z-10">
-        <AmPmDial
-          isPm={amPm === 'PM'}
-          isDayTime={isDayTime}
-          onToggle={handleAmPmToggle}
-        />
-      </div>
+    <div className="flex flex-col items-center">
       {/* Clock case */}
       <div
         className="w-[300px] h-[300px] items-center flex justify-center relative rounded-[20px] overflow-hidden"
@@ -227,6 +219,14 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
           transition: `background ${TRANSITION_STYLE}`,
         }}
       >
+        {/* AM/PM Dial at top-right */}
+        <div className="absolute top-1 right-[10px] z-10">
+          <AmPmDial
+            isPm={amPm === 'PM'}
+            isDayTime={isDayTime}
+            onToggle={handleAmPmToggle}
+          />
+        </div>
         {/* Outer circle frame */}
         <div
           data-name="outer-frame"
