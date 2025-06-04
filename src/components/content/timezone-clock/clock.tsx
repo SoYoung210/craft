@@ -25,6 +25,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
   );
   const [isDraggingHour, setIsDraggingHour] = useState(false);
   const [isDraggingMinute, setIsDraggingMinute] = useState(false);
+  const dragAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const clockRef = useRef<SVGSVGElement>(null);
 
@@ -105,8 +106,13 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
     [baseTime, timeZone, onTimeAdjust, getAngle]
   );
 
+  // TODO: refactor, doesn't look like need react state
   const onMouseMove = useCallback(
     (event: MouseEvent) => {
+      if (dragAudioRef.current && (isDraggingHour || isDraggingMinute)) {
+        // dragAudioRef.current.currentTime = 0;
+        dragAudioRef.current.play();
+      }
       if (isDraggingHour) handleInteraction(event, 'hour');
       if (isDraggingMinute) handleInteraction(event, 'minute');
     },
@@ -130,6 +136,10 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
   const onMouseUp = useCallback(() => {
     setIsDraggingHour(false);
     setIsDraggingMinute(false);
+    if (dragAudioRef.current) {
+      dragAudioRef.current.currentTime = 0;
+      dragAudioRef.current.pause();
+    }
   }, []);
 
   useEffect(() => {
@@ -208,6 +218,7 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
 
   return (
     <div className="flex flex-col items-center">
+      <audio ref={dragAudioRef} src="/audio/tick-short.mp3" preload="auto" />
       {/* Clock case */}
       <div
         className="w-[300px] h-[300px] items-center flex justify-center relative rounded-[20px] overflow-hidden"
