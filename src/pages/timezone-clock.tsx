@@ -2,9 +2,12 @@ import { useState, useCallback } from 'react';
 
 const SEOUL_TZ = 'Asia/Seoul';
 const SF_TZ = 'America/Los_Angeles';
+import { graphql, PageProps } from 'gatsby';
+
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import useInterval from '../hooks/useInterval';
 import { Clock } from '../components/content/timezone-clock/clock';
+import SEO from '../components/layout/SEO';
 
 export default function TimezoneClockPage() {
   const [baseTime, setBaseTime] = useState(() => new Date());
@@ -46,3 +49,28 @@ export default function TimezoneClockPage() {
     </PageLayout>
   );
 }
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Timezone Clock"
+      description="Interactive clock for comparing time between Seoul and San Francisco."
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/clock-thumbanil-5.webp" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
