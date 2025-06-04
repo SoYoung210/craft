@@ -23,27 +23,3 @@
   font-style: normal;
   font-display: swap;
 }
-
-@layer base {
-  :root {
-    /* Clock 1 (Pastel Blue) */
-    --clock-one-case-bg: #A6BEBC;      /* Case: Pastel Blue */
-    --clock-one-face-bg: #97B9B9;      /* Face: Slightly darker pastel blue */
-    --clock-one-hands: 173 24% 72%;        /* Hands/Markers: #A5C8C4 (as requested) */
-    --clock-one-markers: 173 24% 72%;      /* Hands/Markers: #A5C8C4 */
-    --clock-one-second-hand: 200 60% 60%;  /* Second Hand: Clear, slightly desaturated blue tip */
-    --clock-one-center-dot: 0 0% 98%;      /* Almost white for center dot base */
-    --clock-one-label-text: 205 35% 55%;   /* Label: Darker, muted version of case color */
-
-
-    /* Clock 2 (Vibrant Orange) */
-    --clock-two-case-bg: 28 100% 58%;      /* Case: Vibrant orange */
-    --clock-two-face-bg: 28 95% 54%;      /* Face: Slightly darker vibrant orange */
-    --clock-two-hands: 16 100% 44%;        /* Hands/Markers: #DE3C00 (as requested) */
-    --clock-two-markers: 16 100% 44%;      /* Hands/Markers: #DE3C00 */
-    --clock-two-second-hand: 10 100% 50%;  /* Second Hand: Bright red-orange tip */
-    --clock-two-center-dot: 0 0% 98%;      /* Almost white for center dot base */
-    --clock-two-label-text: 25 80% 35%;    /* Label: Dark, slightly muted orange-brown */
-  }
-}
-
