@@ -486,48 +486,117 @@ export function Clock({ timeZone, label, baseTime, onTimeAdjust }: ClockProps) {
             </linearGradient>
             <linearGradient
               id="secondHandCap"
-              x1="0"
-              y1="1"
-              x2="1"
-              y2="0"
-              gradientUnits="objectBoundingBox"
+              x1="-0.131678"
+              y1="1.57511"
+              x2="1.23973"
+              y2="8.85491"
+              gradientUnits="userSpaceOnUse"
             >
-              <stop offset="27.76%" stopColor="#FFAC00" />
-              <stop offset="85.18%" stopColor="#FF970B" />
+              <stop offset="0.14912" stopColor="#FFAC00" />
+              <stop offset="1" stopColor="#FF970B" />
             </linearGradient>
             <filter
               id="secondHandCapShadow"
-              // x="-30%"
-              // y="-30%"
-              width="110%"
-              height="110%"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+              filterUnits="userSpaceOnUse"
+              colorInterpolationFilters="sRGB"
             >
-              <feGaussianBlur
+              <feFlood floodOpacity="0" result="BackgroundImageFix" />
+              <feColorMatrix
                 in="SourceAlpha"
-                stdDeviation="1.2"
-                result="blur"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
               />
-              <feFlood
-                floodColor="#FFD138"
-                floodOpacity="0.32"
-                result="color"
+              <feOffset />
+              <feGaussianBlur stdDeviation="1.2" />
+              <feColorMatrix
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.224978 0"
               />
+              <feBlend
+                mode="normal"
+                in2="BackgroundImageFix"
+                result="effect1_dropShadow_898_125"
+              />
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="effect1_dropShadow_898_125"
+                result="shape"
+              />
+              <feColorMatrix
+                in="SourceAlpha"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
+              />
+              <feOffset dx="-3" dy="2.5" />
+              <feGaussianBlur stdDeviation="2.5" />
               <feComposite
-                in="color"
-                in2="blur"
-                operator="in"
-                result="shadow"
+                in2="hardAlpha"
+                operator="arithmetic"
+                k2="-1"
+                k3="1"
               />
+              <feColorMatrix
+                type="matrix"
+                values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.377977 0"
+              />
+              <feBlend
+                mode="normal"
+                in2="shape"
+                result="effect2_innerShadow_898_125"
+              />
+              <feColorMatrix
+                in="SourceAlpha"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
+              />
+              <feOffset dx="1.2" dy="1.2" />
+              <feGaussianBlur stdDeviation="2" />
               <feComposite
-                in="shadow"
-                in2="SourceAlpha"
-                operator="in"
-                result="inset-shadow"
+                in2="hardAlpha"
+                operator="arithmetic"
+                k2="-1"
+                k3="1"
               />
-              <feMerge>
-                <feMergeNode in="SourceGraphic" />
-                <feMergeNode in="inset-shadow" />
-              </feMerge>
+              <feColorMatrix
+                type="matrix"
+                values="0 0 0 0 1 0 0 0 0 0.818639 0 0 0 0 0.220465 0 0 0 1 0"
+              />
+              <feBlend
+                mode="normal"
+                in2="effect2_innerShadow_898_125"
+                result="effect3_innerShadow_898_125"
+              />
+              <feColorMatrix
+                in="SourceAlpha"
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                result="hardAlpha"
+              />
+              <feOffset dx="3.5" />
+              <feGaussianBlur stdDeviation="2.5" />
+              <feComposite
+                in2="hardAlpha"
+                operator="arithmetic"
+                k2="-1"
+                k3="1"
+              />
+              <feColorMatrix
+                type="matrix"
+                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.0620903 0"
+              />
+              <feBlend
+                mode="normal"
+                in2="effect3_innerShadow_898_125"
+                result="effect4_innerShadow_898_125"
+              />
             </filter>
             <linearGradient id="yellowArmPath" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#FFA205" />
