@@ -3,7 +3,6 @@ import { globalCss } from '../../stitches.config';
 export const globalStyles = globalCss({
   '*': {
     boxSizing: `border-box`,
-    margin: 0,
     WebkitFontSmoothing: 'antialiased',
   },
   '*::selection': {
@@ -23,10 +22,6 @@ export const globalStyles = globalCss({
   },
   'ul, ol': {
     paddingInlineStart: '1.4rem',
-  },
-  button: {
-    border: 0,
-    padding: 0,
   },
 
   '@font-face': {

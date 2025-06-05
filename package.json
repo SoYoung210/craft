@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-gatsby": "^3.7.1",
+    "@tailwindcss/postcss": "^4.0.17",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
@@ -87,7 +88,6 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
-    "autoprefixer": "^10.4.20",
     "babel-jest": "^29.6.2",
     "chromium": "^3.0.3",
     "dotenv": "^16.3.1",
@@ -106,7 +106,7 @@
     "jest-preview": "^0.3.1",
     "netlify-cli": "^16.0.2",
     "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.0.17",
     "typescript": "^5.1.6"
   }
 }
