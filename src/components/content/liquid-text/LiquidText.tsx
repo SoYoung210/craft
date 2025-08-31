@@ -5,56 +5,66 @@ import * as THREE from 'three';
 
 const vertexShader = `
   varying vec2 vUv;
+  varying float vBlob;
+
+  uniform float u_scale;
+
+  float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+  }
+
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+  }
+
   void main() {
     vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+    float n = noise(uv * 8.0 * u_scale) * 0.5 + 0.5;
+    float s = sin(uv.y * 20.0 * u_scale) * 0.15;
+    float blob = n * 0.12 + s * 0.08;
+
+    vBlob = blob;
+
+    vec3 newPosition = position + normal * blob;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
   }
 `;
 
 const fragmentShader = `
   precision highp float;
   varying vec2 vUv;
-  uniform float u_time;
-  uniform float u_scale;
-  uniform vec3 u_color1, u_color2, u_color3, u_color4;
+  varying float vBlob;
 
-  float cheapNoise(vec3 stp, float ax, float ay, float az, float aw) {
-    vec3 p = vec3(stp.st, stp.p);
-    vec4 a = vec4(ax, ay, az, aw);
-    return mix(
-      sin(p.z + p.x * a.x + cos(p.x * a.x - p.z)) *
-      cos(p.z + p.y * a.y + cos(p.y * a.x + p.z)),
-      sin(1. + p.x * a.z + p.z + cos(p.y * a.w - p.z)) *
-      cos(1. + p.y * a.w + p.z + cos(p.x * a.x + p.z)),
-      .436
-    );
-  }
+  uniform vec3 u_color1;
+  uniform vec3 u_color2;
+  uniform vec3 u_color3;
+  uniform float u_scale;
 
   void main() {
-    float ax = 5.0, ay = 7.0, az = 9.0, aw = 13.0;
-    float bx = 1.0, by = 1.0;
-    vec2 st = vUv * u_scale;
-    float S = sin(u_time * .005);
-    float C = cos(u_time * .005);
-    vec2 v1 = vec2(cheapNoise(vec3(st, 2.), ax, ay, az, aw), cheapNoise(vec3(st, 1.), ax, ay, az, aw));
-    vec2 v2 = vec2(
-      cheapNoise(vec3(st + bx*v1 + vec2(C * 1.7, S * 9.2), 0.15 * u_time), ax, ay, az, aw),
-      cheapNoise(vec3(st + by*v1 + vec2(S * 8.3, C * 2.8), 0.126 * u_time), ax, ay, az, aw)
-    );
-    float n = .5 + .5 * cheapNoise(vec3(st + v2, 0.), ax, ay, az, aw);
+    float iridescence = 0.5 + 0.5 * sin(vUv.x * 10.0 * u_scale + vUv.y * 10.0 * u_scale);
+    vec3 color = mix(u_color1, u_color2, iridescence);
+    color = mix(color, u_color3, smoothstep(0.3, 0.7, vUv.y + vBlob * 0.5));
 
-    vec3 color = mix(u_color1, u_color2, clamp((n*n)*8.,0.0,1.0));
-    color = mix(color, u_color3, clamp(length(v1),0.0,1.0));
-    color = mix(color, u_color4, clamp(length(v2.x),0.0,1.0));
-    // color /= n*n + n * 7.; // Try commenting this out or reducing the divisor
-    color *= 1.05; // Increase brightness
-    color = clamp(color, 0.0, 1.0); // Prevent overflow
-    gl_FragColor = vec4(color, 1.0);
+    float highlight = pow(1.0 - abs(vUv.y - 0.5 + vBlob * 0.2), 8.0);
+    color += vec3(1.0, 1.0, 1.0) * highlight * 0.5;
 
-    gl_FragColor = vec4(color, 1.0);
+    float alpha = smoothstep(0.0, 0.08, vBlob + 0.08);
+
+    gl_FragColor = vec4(color, alpha);
   }
 `;
 
+// TODO: 일단 여기서 모양을 좀 흐르는 링크처럼 바꾸고
+// 그다음엔 마우스 반응을 좀 해볼까?
 function InkTextShader({ text = 'Horizon' }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const [fontJson, setFontJson] = useState(null);
@@ -73,12 +83,10 @@ function InkTextShader({ text = 'Horizon' }) {
 
   const uniforms = useMemo(
     () => ({
-      u_time: { value: 0 },
-      u_scale: { value: 0.4 },
-      u_color1: { value: new THREE.Color('#ffffff') },
-      u_color2: { value: new THREE.Color('#ffafaf') },
-      u_color3: { value: new THREE.Color('#0099ff') },
-      u_color4: { value: new THREE.Color('#ffffff') },
+      u_scale: { value: 1.0 },
+      u_color1: { value: new THREE.Color('#1a237e') }, // deep blue ink
+      u_color2: { value: new THREE.Color('#00eaff') }, // cyan
+      u_color3: { value: new THREE.Color('#d500f9') }, // magenta
     }),
     []
   );
