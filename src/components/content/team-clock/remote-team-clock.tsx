@@ -497,6 +497,7 @@ export function RemoteTeamClock() {
                       <motion.div
                         key={teammate.id}
                         layoutId={`item-${teammate.id}`}
+                        layout="position"
                         className={`absolute flex items-center gap-4 p-4 rounded-xl cursor-pointer ${
                           isHovered ? 'bg-gray-50' : ''
                         }`}
@@ -580,6 +581,7 @@ export function RemoteTeamClock() {
                     <motion.div
                       key={teammate.id}
                       layoutId={`item-${teammate.id}`}
+                      layout="position"
                       className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 ${
                         isHovered ? 'bg-gray-50' : 'hover:bg-gray-25'
                       }`}
