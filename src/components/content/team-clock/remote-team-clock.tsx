@@ -477,78 +477,83 @@ export function RemoteTeamClock() {
                 />
 
                 {/* Avatars on clock in clock view */}
-                {isClockView &&
-                  teammates.map((teammate, index) => {
-                    const teammatesInSameState = teammates.filter(
-                      t => t.state === teammate.state
-                    );
-                    const offsetIndex = teammatesInSameState.findIndex(
-                      t => t.id === teammate.id
-                    );
-                    const clockPosition = getAvatarPosition(
-                      teammate.state,
-                      offsetIndex
-                    );
-                    const timeDiff = getTimeDifference(teammate);
-                    const teammateTime = getTeammateTime(teammate);
-                    const isHovered = hoveredTeammate?.id === teammate.id;
+                <AnimatePresence>
+                  {isClockView &&
+                    teammates.map((teammate, index) => {
+                      const teammatesInSameState = teammates.filter(
+                        t => t.state === teammate.state
+                      );
+                      const offsetIndex = teammatesInSameState.findIndex(
+                        t => t.id === teammate.id
+                      );
+                      const clockPosition = getAvatarPosition(
+                        teammate.state,
+                        offsetIndex
+                      );
+                      const timeDiff = getTimeDifference(teammate);
+                      const teammateTime = getTeammateTime(teammate);
+                      const isHovered = hoveredTeammate?.id === teammate.id;
 
-                    return (
-                      <motion.div
-                        key={teammate.id}
-                        layoutId={`item-${teammate.id}`}
-                        layout="position"
-                        className={`absolute flex items-center gap-4 p-4 rounded-xl cursor-pointer ${
-                          isHovered ? 'bg-gray-50' : ''
-                        }`}
-                        style={{
-                          left: clockPosition.x - 16,
-                          top: clockPosition.y - 16,
-                          zIndex: 10 + index,
-                        }}
-                        transition={{
-                          layout: {
-                            duration: 0.5,
-                            ease: [0.4, 0, 0.2, 1],
-                          },
-                        }}
-                        onMouseEnter={() => setHoveredTeammate(teammate)}
-                        onMouseLeave={() => setHoveredTeammate(null)}
-                        onClick={() => setSelectedState(teammate.state)}
-                      >
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform shadow-lg border-2 border-white overflow-hidden flex-shrink-0">
-                          <img
-                            src={teammate.avatar}
-                            alt={teammate.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-
+                      return (
                         <motion.div
-                          className="flex-1 flex items-center gap-4 overflow-hidden pointer-events-none"
-                          initial={{ opacity: 1 }}
-                          animate={{ opacity: 0 }}
-                          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                          key={teammate.id}
+                          layoutId={`item-${teammate.id}`}
+                          layout="position"
+                          className={`absolute flex items-center gap-4 p-4 rounded-xl cursor-pointer ${
+                            isHovered ? 'bg-gray-50' : ''
+                          }`}
+                          style={{
+                            left: clockPosition.x - 16,
+                            top: clockPosition.y - 16,
+                            zIndex: 10 + index,
+                          }}
+                          transition={{
+                            layout: {
+                              duration: 0.5,
+                              ease: [0.4, 0, 0.2, 1],
+                            },
+                          }}
+                          onMouseEnter={() => setHoveredTeammate(teammate)}
+                          onMouseLeave={() => setHoveredTeammate(null)}
+                          onClick={() => setSelectedState(teammate.state)}
                         >
-                          <div className="flex-1 whitespace-nowrap">
-                            <div className="font-semibold text-gray-900 text-lg">
-                              {teammate.name}
-                            </div>
-                            <div className="text-gray-500 text-sm">
-                              {teammate.location}
-                            </div>
-                            <div className="text-xs text-gray-400 capitalize mt-1">
-                              {teammate.state} mode
-                            </div>
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform shadow-lg border-2 border-white overflow-hidden flex-shrink-0">
+                            <img
+                              src={teammate.avatar}
+                              alt={teammate.name}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
 
-                          <div className="text-sm font-medium text-gray-500">
-                            {teammateTime}
-                          </div>
+                          <motion.div
+                            className="flex-1 flex items-center gap-4 overflow-hidden pointer-events-none"
+                            initial={{ opacity: 1 }}
+                            animate={{ opacity: 0 }}
+                            transition={{
+                              duration: 0.3,
+                              ease: [0.4, 0, 0.2, 1],
+                            }}
+                          >
+                            <div className="flex-1 whitespace-nowrap">
+                              <div className="font-semibold text-gray-900 text-lg">
+                                {teammate.name}
+                              </div>
+                              <div className="text-gray-500 text-sm">
+                                {teammate.location}
+                              </div>
+                              <div className="text-xs text-gray-400 capitalize mt-1">
+                                {teammate.state} mode
+                              </div>
+                            </div>
+
+                            <div className="text-sm font-medium text-gray-500">
+                              {teammateTime}
+                            </div>
+                          </motion.div>
                         </motion.div>
-                      </motion.div>
-                    );
-                  })}
+                      );
+                    })}
+                </AnimatePresence>
               </div>
 
               <div className="text-center mt-6">
@@ -563,77 +568,69 @@ export function RemoteTeamClock() {
           </motion.div>
 
           {/* Right side - Teammates list */}
-          <>
-            {!isClockView && (
-              <motion.div
-                className="space-y-1"
-                // initial={{ opacity: 0 }}
-                // animate={{ opacity: 1 }}
-                // exit={{ opacity: 0 }}
-                // transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              >
-                {teammates.map((teammate, index) => {
-                  const timeDiff = getTimeDifference(teammate);
-                  const teammateTime = getTeammateTime(teammate);
-                  const isHovered = hoveredTeammate?.id === teammate.id;
+          {!isClockView && (
+            <motion.div className="space-y-1">
+              {teammates.map(teammate => {
+                const timeDiff = getTimeDifference(teammate);
+                const teammateTime = getTeammateTime(teammate);
+                const isHovered = hoveredTeammate?.id === teammate.id;
 
-                  return (
-                    <motion.div
-                      key={teammate.id}
-                      layoutId={`item-${teammate.id}`}
-                      layout="position"
-                      className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 ${
-                        isHovered ? 'bg-gray-50' : 'hover:bg-gray-25'
-                      }`}
-                      onMouseEnter={() => setHoveredTeammate(teammate)}
-                      onMouseLeave={() => setHoveredTeammate(null)}
-                      onClick={() => setSelectedState(teammate.state)}
-                      transition={{
-                        layout: {
-                          duration: 0.5,
-                          ease: [0.4, 0, 0.2, 1],
-                        },
-                      }}
-                    >
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform shadow-lg border-2 border-white overflow-hidden flex-shrink-0">
-                        <img
-                          src={teammate.avatar}
-                          alt={teammate.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                return (
+                  <motion.div
+                    key={teammate.id}
+                    layoutId={`item-${teammate.id}`}
+                    layout="position"
+                    className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                      isHovered ? 'bg-gray-50' : 'hover:bg-gray-25'
+                    }`}
+                    onMouseEnter={() => setHoveredTeammate(teammate)}
+                    onMouseLeave={() => setHoveredTeammate(null)}
+                    onClick={() => setSelectedState(teammate.state)}
+                    transition={{
+                      layout: {
+                        duration: 0.5,
+                        ease: [0.4, 0, 0.2, 1],
+                      },
+                    }}
+                  >
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-lg cursor-pointer hover:scale-110 transition-transform shadow-lg border-2 border-white overflow-hidden flex-shrink-0">
+                      <img
+                        src={teammate.avatar}
+                        alt={teammate.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
-                      <div className="flex-1 flex items-center gap-4 overflow-hidden">
-                        <div className="flex-1">
-                          <div className="font-semibold text-gray-900 text-lg">
-                            {teammate.name}
-                          </div>
-                          <div className="text-gray-500 text-sm">
-                            {teammate.location}
-                          </div>
-                          <div className="text-xs text-gray-400 capitalize mt-1">
-                            {teammate.state} mode
-                          </div>
+                    <div className="flex-1 flex items-center gap-4 overflow-hidden">
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-900 text-lg">
+                          {teammate.name}
                         </div>
-
-                        <div className="text-sm font-medium text-gray-500 flex flex-col items-end h-5 overflow-hidden">
-                          <span className="block group-hover:-translate-y-5 duration-300 transition-transform ease-in-out">
-                            {teammateTime}
-                          </span>
-                          <span
-                            className="block group-hover:-translate-y-5 duration-300 transition-transform ease-in-out"
-                            style={{ color: 'green' }}
-                          >
-                            {timeDiff || ''}
-                          </span>
+                        <div className="text-gray-500 text-sm">
+                          {teammate.location}
+                        </div>
+                        <div className="text-xs text-gray-400 capitalize mt-1">
+                          {teammate.state} mode
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            )}
-          </>
+
+                      <div className="text-sm font-medium text-gray-500 flex flex-col items-end h-5 overflow-hidden">
+                        <span className="block group-hover:-translate-y-5 duration-300 transition-transform ease-in-out">
+                          {teammateTime}
+                        </span>
+                        <span
+                          className="block group-hover:-translate-y-5 duration-300 transition-transform ease-in-out"
+                          style={{ color: 'green' }}
+                        >
+                          {timeDiff || ''}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </div>
