@@ -524,9 +524,9 @@ export function RemoteTeamClock() {
                         </div>
 
                         <motion.div
-                          className="flex-1 flex items-center gap-4 overflow-hidden"
-                          initial={{ opacity: 1, width: 'auto' }}
-                          animate={{ opacity: 0, width: 0 }}
+                          className="flex-1 flex items-center gap-4 overflow-hidden pointer-events-none"
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: 0 }}
                           transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                         >
                           <div className="flex-1 whitespace-nowrap">
@@ -541,8 +541,8 @@ export function RemoteTeamClock() {
                             </div>
                           </div>
 
-                          <div className="text-sm font-medium text-gray-500 flex flex-col items-end h-5 overflow-hidden">
-                            <span className="block">{teammateTime}</span>
+                          <div className="text-sm font-medium text-gray-500">
+                            {teammateTime}
                           </div>
                         </motion.div>
                       </motion.div>
@@ -601,12 +601,7 @@ export function RemoteTeamClock() {
                         />
                       </div>
 
-                      <motion.div
-                        className="flex-1 flex items-center gap-4 overflow-hidden"
-                        // initial={{ opacity: 1, width: 'auto' }}
-                        // animate={{ opacity: 1, width: 'auto' }}
-                        // transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                      >
+                      <div className="flex-1 flex items-center gap-4 overflow-hidden">
                         <div className="flex-1">
                           <div className="font-semibold text-gray-900 text-lg">
                             {teammate.name}
@@ -630,7 +625,7 @@ export function RemoteTeamClock() {
                             {timeDiff || ''}
                           </span>
                         </div>
-                      </motion.div>
+                      </div>
                     </motion.div>
                   );
                 })}
