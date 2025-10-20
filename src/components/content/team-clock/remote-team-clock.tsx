@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { Switch } from '../../material/switch';
+import soyoungAvatar from '../../../images/remote-team-clock/soyoung.webp';
+import brainseongAvatar from '../../../images/remote-team-clock/brainseong.webp';
+import sebAvatar from '../../../images/remote-team-clock/seb.webp';
+import arielAvatar from '../../../images/remote-team-clock/ariel.webp';
+import sasiAvatar from '../../../images/remote-team-clock/sasi.webp';
+
 type TeamState = 'work' | 'family' | 'chill' | 'doctor' | 'lost' | 'gym';
 
 interface Teammate {
@@ -15,43 +22,43 @@ interface Teammate {
 const teammates: Teammate[] = [
   {
     id: '1',
-    name: 'Sarah',
-    location: 'Vancouver, Canada',
-    timezone: 'America/Vancouver',
+    name: 'Soyoung',
+    location: 'Seoul, South Korea',
+    timezone: 'Asia/Seoul',
     state: 'chill',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    avatar: soyoungAvatar,
   },
   {
     id: '2',
-    name: 'Kumail',
-    location: 'Toronto, Canada',
-    timezone: 'America/Toronto',
-    state: 'work',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kumail',
-  },
-  {
-    id: '3',
-    name: 'Ethan',
+    name: 'Brian',
     location: 'San Francisco, USA',
     timezone: 'America/Los_Angeles',
     state: 'work',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
+    avatar: brainseongAvatar,
+  },
+  {
+    id: '3',
+    name: 'Seb',
+    location: 'San Francisco, USA',
+    timezone: 'America/Los_Angeles',
+    state: 'work',
+    avatar: sebAvatar,
   },
   {
     id: '4',
-    name: 'Isabella',
-    location: 'Toronto, Canada',
-    timezone: 'America/Toronto',
+    name: 'Ariel',
+    location: 'Rio de Janeiro, Brazil',
+    timezone: 'America/Sao_Paulo',
     state: 'work',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
+    avatar: arielAvatar,
   },
   {
     id: '5',
-    name: 'Liam',
-    location: 'London, UK',
-    timezone: 'Europe/London',
+    name: 'Sasi',
+    location: 'Tamil Nadu, India',
+    timezone: 'Asia/Kolkata',
     state: 'family',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam',
+    avatar: sasiAvatar,
   },
 ];
 
@@ -164,15 +171,20 @@ export function RemoteTeamClock() {
     const angle = (stateIndex * 60 + 30 - 90) * (Math.PI / 180); // Convert to radians
     const radius = 120; // Distance from center - reduced to keep avatars on clock face
 
-    const baseX = 200 + radius * Math.cos(angle);
-    const baseY = 200 + radius * Math.sin(angle);
+    // Clock center is always at 200,200 in the SVG viewBox coordinates
+    const centerX = 200;
+    const centerY = 200;
+
+    const baseX = centerX + radius * Math.cos(angle);
+    const baseY = centerY + radius * Math.sin(angle);
 
     const horizontalOffset = offsetIndex * 20 - 10; // Much closer spacing for overlapping effect
 
     const x = baseX + horizontalOffset;
     const y = baseY; // Keep same y position for all avatars in same state
 
-    return { x: x - 24, y: y - 24 }; // Offset for avatar size (48px / 2)
+    // Adjust for avatar container size (considering padding)
+    return { x: x - 40, y: y - 40 }; // Offset for avatar container with padding
   };
 
   const displayTime = hoveredTeammate
@@ -212,6 +224,18 @@ export function RemoteTeamClock() {
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <div className="p-8 bg-white border shadow-lg rounded-3xl">
+        {/* Fixed header that doesn't move with layout changes */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-semibold text-gray-900 flex items-center gap-3">
+            Team
+            <div className="flex items-center gap-2 text-base text-gray-500 font-normal">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              {onlineCount} online
+            </div>
+          </h1>
+          <Switch checked={isClockView} onCheckedChange={setIsClockView} />
+        </div>
+
         <motion.div
           className={
             isClockView ? 'flex justify-center' : 'grid grid-cols-2 gap-12'
@@ -219,44 +243,19 @@ export function RemoteTeamClock() {
           layout
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         >
-          {/* Left side - Clock */}
+          {/* Clock - centered when isClockView is true, left side otherwise */}
           <motion.div
             className="flex flex-col"
+            style={{ width: isClockView ? '100%' : 'auto' }}
             layout
             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           >
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-semibold text-gray-900 flex items-center gap-3">
-                  Team
-                  <div className="flex items-center gap-2 text-base text-gray-500 font-normal">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    {onlineCount} online
-                  </div>
-                </h1>
-
-                <motion.button
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    isClockView ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                  onClick={() => setIsClockView(!isClockView)}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      isClockView ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                    layout
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                </motion.button>
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <div
+            <div className="flex flex-col items-center justify-center">
+              <motion.div
                 className="relative"
                 style={{ width: '400px', height: '400px' }}
+                layout
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               >
                 <svg
                   className="absolute inset-0 w-full h-full"
@@ -377,8 +376,8 @@ export function RemoteTeamClock() {
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(hour => {
                     const angle = ((hour * 30 - 90) * Math.PI) / 180;
                     const isMainHour = hour % 3 === 0;
-                    const outerRadius = 131;
-                    const innerRadius = isMainHour ? 117 : 121;
+                    const outerRadius = 135;
+                    const innerRadius = isMainHour ? 110 : 118;
 
                     const x1 = 200 + outerRadius * Math.cos(angle);
                     const y1 = 200 + outerRadius * Math.sin(angle);
@@ -417,16 +416,16 @@ export function RemoteTeamClock() {
                 <motion.div
                   className="absolute rounded-full"
                   style={{
-                    width: '6px',
-                    height: '60px',
+                    width: '8px',
+                    height: '90px',
                     left: '50%',
                     top: '50%',
-                    transformOrigin: '50% 100%',
+                    transformOrigin: '50% 70%',
                     zIndex: 2,
                     background: '#1f2937',
                   }}
                   animate={{
-                    transform: `translateX(-50%) translateY(-100%) rotate(${
+                    transform: `translateX(-50%) translateY(-70%) rotate(${
                       hourAngle + 90
                     }deg)`,
                   }}
@@ -442,16 +441,16 @@ export function RemoteTeamClock() {
                 <motion.div
                   className="absolute rounded-full"
                   style={{
-                    width: '4px',
-                    height: '85px',
+                    width: '8px',
+                    height: '130px',
                     left: '50%',
                     top: '50%',
-                    transformOrigin: '50% 100%',
+                    transformOrigin: '50% 70%',
                     zIndex: 3,
                     background: '#4b5563',
                   }}
                   animate={{
-                    transform: `translateX(-50%) translateY(-100%) rotate(${
+                    transform: `translateX(-50%) translateY(-70%) rotate(${
                       minuteAngle + 90
                     }deg)`,
                   }}
@@ -503,8 +502,8 @@ export function RemoteTeamClock() {
                             isHovered ? 'bg-gray-50' : ''
                           }`}
                           style={{
-                            left: clockPosition.x - 16,
-                            top: clockPosition.y - 16,
+                            left: clockPosition.x,
+                            top: clockPosition.y,
                             zIndex: 10 + index,
                           }}
                           transition={{
@@ -529,6 +528,7 @@ export function RemoteTeamClock() {
                             className="flex-1 flex items-center gap-4 overflow-hidden pointer-events-none"
                             initial={{ opacity: 1 }}
                             animate={{ opacity: 0 }}
+                            exit={{ opacity: 1 }}
                             transition={{
                               duration: 0.3,
                               ease: [0.4, 0, 0.2, 1],
@@ -554,16 +554,16 @@ export function RemoteTeamClock() {
                       );
                     })}
                 </AnimatePresence>
-              </div>
+              </motion.div>
 
-              <div className="text-center mt-6">
+              {/* <div className="text-center mt-6">
                 <div className="text-2xl font-medium text-gray-700">
                   {displayTime}
                 </div>
                 <div className="text-sm text-gray-500 mt-1 capitalize">
                   {displayState} mode
                 </div>
-              </div>
+              </div> */}
             </div>
           </motion.div>
 
