@@ -60,6 +60,7 @@
     "gsap": "^3.11.3",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.483.0",
+    "motion": "^12.23.24",
     "puppeteer": "^19.8.0",
     "puppeteer-core": "^19.8.0",
     "react": "^18.2.0",
