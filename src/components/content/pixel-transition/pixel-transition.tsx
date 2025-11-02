@@ -28,6 +28,7 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
   const pixelGridRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
   const delayedCallRef = useRef<gsap.core.Tween | null>(null);
+  const mouseEntryPointRef = useRef<{ x: number; y: number } | null>(null);
 
   const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -62,7 +63,8 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
 
     const pixelGridEl = pixelGridRef.current;
     const activeEl = activeRef.current;
-    if (!pixelGridEl || !activeEl) return;
+    const containerEl = containerRef.current;
+    if (!pixelGridEl || !activeEl || !containerEl) return;
 
     const pixels = pixelGridEl.querySelectorAll<HTMLDivElement>(
       '.pixelated-image-card__pixel'
@@ -74,64 +76,227 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
       delayedCallRef.current.kill();
     }
 
-    // gsap.set(pixels, { display: "none" })
     gsap.set(pixels, { opacity: 0 });
 
     const allPixels = Array.from(pixels);
-    const densityDecimal = Math.max(0, Math.min(100, density)) / 100; // Clamp between 0-100 and convert to decimal
+    const densityDecimal = Math.max(0, Math.min(100, density)) / 100;
     const pixelCount = Math.ceil(allPixels.length * densityDecimal);
 
-    // Shuffle and pick random pixels
-    const shuffled = allPixels.sort(() => Math.random() - 0.5);
-    const selectedPixels = shuffled.slice(0, pixelCount);
+    // Calculate distance from mouse entry point for ALL pixels first
+    const entryPoint = mouseEntryPointRef.current || { x: 0.5, y: 0.5 };
 
-    // Create random animation order by assigning random delays
-    const pixelsWithRandomDelay = selectedPixels.map(pixel => ({
-      pixel,
-      delay: Math.random(),
-    }));
+    const allPixelsWithDistance = allPixels.map((pixel, index) => {
+      const col = index % gridSize;
+      const row = Math.floor(index / gridSize);
 
-    // Sort by random delay
-    pixelsWithRandomDelay.sort((a, b) => a.delay - b.delay);
+      // Calculate pixel center position (normalized 0-1)
+      const pixelCenterX = (col + 0.5) / gridSize;
+      const pixelCenterY = (row + 0.5) / gridSize;
 
-    const staggerDuration = animationStepDuration / selectedPixels.length;
+      // Calculate distance from entry point
+      const dx = pixelCenterX - entryPoint.x;
+      const dy = pixelCenterY - entryPoint.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Animate in random order (using sorted array)
-    pixelsWithRandomDelay.forEach((item, index) => {
-      gsap.to(item.pixel, {
-        // display: "block",
-        opacity: 1,
-        duration: 0,
-        delay: index * staggerDuration,
+      return {
+        pixel,
+        distance,
+        random: Math.random(), // Add random factor for variation
+      };
+    });
+
+    // Group pixels into distance bands (rings)
+    const maxDistance = Math.sqrt(2); // Maximum possible distance in normalized space
+    const numBands = 8; // Number of distance bands
+    const bandSize = maxDistance / numBands;
+
+    const pixelBands: (typeof allPixelsWithDistance)[] = Array(numBands)
+      .fill(null)
+      .map(() => []);
+
+    allPixelsWithDistance.forEach(pixelData => {
+      const bandIndex = Math.min(
+        Math.floor(pixelData.distance / bandSize),
+        numBands - 1
+      );
+      pixelBands[bandIndex].push(pixelData);
+    });
+
+    // Randomly select pixels from each band based on density
+    const selectedPixels: typeof allPixelsWithDistance = [];
+    const pixelsPerBand = Math.ceil(pixelCount / numBands);
+
+    pixelBands.forEach(band => {
+      // Shuffle pixels within each band
+      const shuffledBand = [...band].sort((a, b) => a.random - b.random);
+      // Take a portion based on density
+      const takeCount = Math.min(pixelsPerBand, shuffledBand.length);
+      selectedPixels.push(...shuffledBand.slice(0, takeCount));
+    });
+
+    // Trim to exact pixel count if we have too many
+    selectedPixels.splice(pixelCount);
+
+    // Create animation sequence with some randomness within each distance group
+    const animationSequence: typeof allPixelsWithDistance = [];
+
+    // For enter animation: animate from center outward with randomness
+    pixelBands.forEach((band, bandIndex) => {
+      const bandPixels = selectedPixels.filter(p => {
+        const pBandIndex = Math.min(
+          Math.floor(p.distance / bandSize),
+          numBands - 1
+        );
+        return pBandIndex === bandIndex;
       });
+
+      // Add random variation within each band
+      const shuffledBandPixels = [...bandPixels].sort(
+        () => Math.random() - 0.5
+      );
+      animationSequence.push(...shuffledBandPixels);
     });
 
-    delayedCallRef.current = gsap.delayedCall(animationStepDuration, () => {
-      activeEl.style.display = activate ? 'block' : 'none';
-      activeEl.style.pointerEvents = activate ? 'none' : '';
-    });
+    // Create wave animation - pixels appear and disappear to create moving effect
+    const waveWidth = 2; // How many bands are visible at once
+    const totalWaveDuration = animationStepDuration;
+    const waveDuration = totalWaveDuration / (numBands + waveWidth);
 
-    // Animate out in random order (shuffle again for different pattern)
-    const shuffledOut = [...pixelsWithRandomDelay].sort(
-      () => Math.random() - 0.5
-    );
-    shuffledOut.forEach((item, index) => {
-      gsap.to(item.pixel, {
-        // display: "none",
-        opacity: 0,
-        duration: 0,
-        delay: animationStepDuration + index * staggerDuration,
+    if (activate) {
+      // ENTER: Wave moves from center to edges only
+
+      pixelBands.forEach((band, bandIndex) => {
+        const bandPixels = selectedPixels.filter(p => {
+          const pBandIndex = Math.min(
+            Math.floor(p.distance / bandSize),
+            numBands - 1
+          );
+          return pBandIndex === bandIndex;
+        });
+
+        // Shuffle pixels within the band for randomness
+        const shuffledBandPixels = [...bandPixels].sort(
+          () => Math.random() - 0.5
+        );
+
+        shuffledBandPixels.forEach(item => {
+          const startDelay = bandIndex * waveDuration;
+          const randomOffset = Math.random() * waveDuration * 0.2; // 20% random variation
+
+          // Fade in
+          gsap.to(item.pixel, {
+            opacity: 1,
+            duration: 0,
+            delay: startDelay + randomOffset,
+          });
+
+          // Fade out after wave passes - ALL bands fade out
+          gsap.to(item.pixel, {
+            opacity: 0,
+            duration: 0,
+            delay: startDelay + randomOffset + waveWidth * waveDuration,
+          });
+        });
       });
-    });
+
+      // Show second content after wave starts moving
+      delayedCallRef.current = gsap.delayedCall(waveDuration * 2, () => {
+        activeEl.style.display = 'block';
+        activeEl.style.pointerEvents = 'none';
+      });
+
+      // Make absolutely sure all pixels are cleared after animation completes
+      gsap.delayedCall(totalWaveDuration + waveWidth * waveDuration, () => {
+        gsap.set(pixels, { opacity: 0 });
+      });
+    } else {
+      // EXIT: Wave moves from edges back to center
+      activeEl.style.display = 'none';
+      activeEl.style.pointerEvents = '';
+
+      // Animate wave returning from edges to center
+      // We need to reverse the order - start from outer bands and move inward
+      pixelBands.forEach((band, bandIndex) => {
+        const reverseBandIndex = numBands - 1 - bandIndex; // Start from outer bands
+        const bandPixels = selectedPixels.filter(p => {
+          const pBandIndex = Math.min(
+            Math.floor(p.distance / bandSize),
+            numBands - 1
+          );
+          return pBandIndex === reverseBandIndex;
+        });
+
+        // Shuffle for different pattern on exit
+        const shuffledBandPixels = [...bandPixels].sort(
+          () => Math.random() - 0.5
+        );
+
+        shuffledBandPixels.forEach(item => {
+          const startDelay = bandIndex * waveDuration;
+          const randomOffset = Math.random() * waveDuration * 0.2;
+
+          // Fade in the pixel as part of the returning wave
+          gsap.to(item.pixel, {
+            opacity: 1,
+            duration: 0,
+            delay: startDelay + randomOffset,
+          });
+
+          // Fade out after wave passes (except for the innermost band)
+          if (reverseBandIndex > waveWidth - 1) {
+            gsap.to(item.pixel, {
+              opacity: 0,
+              duration: 0,
+              delay: startDelay + randomOffset + waveWidth * waveDuration,
+            });
+          }
+        });
+      });
+
+      // Make sure all pixels disappear at the end
+      delayedCallRef.current = gsap.delayedCall(
+        totalWaveDuration + waveWidth * waveDuration,
+        () => {
+          // Clear all remaining pixels
+          gsap.set(pixels, { opacity: 0 });
+        }
+      );
+    }
   };
 
-  const handleMouseEnter = (): void => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const rect = containerEl.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+
+    // Store the normalized entry point (0-1 range)
+    mouseEntryPointRef.current = { x, y };
+
     if (!isActive) animatePixels(true);
   };
+
   const handleMouseLeave = (): void => {
+    // Don't update the entry point on leave - keep the original entry point
+    // so the animation returns to where it started
     if (isActive) animatePixels(false);
   };
-  const handleClick = (): void => {
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const rect = containerEl.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+
+    // Only update entry point if we're activating
+    if (!isActive) {
+      mouseEntryPointRef.current = { x, y };
+    }
+
     animatePixels(!isActive);
   };
 

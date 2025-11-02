@@ -10,9 +10,9 @@ export default function PixelTransitionPage() {
       </PageLayout.Details>
       <PixelTransition
         pixelColor="#fff"
-        gridSize={20}
-        animationStepDuration={0.24}
-        density={50}
+        gridSize={30}
+        animationStepDuration={0.8}
+        density={80}
         className="w-full lg:w-auto"
         firstContent={
           <a
