@@ -17,7 +17,7 @@ interface PixelTransitionProps {
 export const PixelTransition: React.FC<PixelTransitionProps> = ({
   firstContent,
   secondContent,
-  gridSize = 7,
+  gridSize = 10, // Use gridSize to determine number of pixels in the larger dimension
   pixelColor = 'currentColor',
   animationStepDuration = 0.3,
   className = '',
@@ -34,29 +34,56 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
 
   useEffect(() => {
     const pixelGridEl = pixelGridRef.current;
-    if (!pixelGridEl) return;
+    const containerEl = containerRef.current;
+    if (!pixelGridEl || !containerEl) return;
 
     pixelGridEl.innerHTML = '';
 
-    for (let row = 0; row < gridSize; row++) {
-      for (let col = 0; col < gridSize; col++) {
-        const pixel = document.createElement('div');
-        pixel.classList.add('pixelated-image-card__pixel');
-        pixel.style.backgroundColor = pixelColor;
+    // Get container dimensions
+    const rect = containerEl.getBoundingClientRect();
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
 
-        const size = 100 / gridSize;
+    // Calculate pixel size based on the larger dimension
+    // This ensures we have gridSize pixels along the larger dimension
+    const largerDimension = Math.max(containerWidth, containerHeight);
+    const calculatedPixelSize = largerDimension / gridSize;
 
-        // pixel.style.position = "absolute"
-        pixel.style.width = `${size}%`;
-        pixel.style.opacity = '0';
-        pixel.style.aspectRatio = '1/1';
-        // pixel.style.height = `${size}%`
-        pixel.style.left = `${col * size}%`;
-        pixel.style.top = `${row * size}%`;
-        pixelGridEl.appendChild(pixel);
+    // Calculate how many pixels we need in each dimension
+    const cols = Math.ceil(containerWidth / calculatedPixelSize);
+    const rows = Math.ceil(containerHeight / calculatedPixelSize);
+
+    // Generate pixels in a grid pattern
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        // Use density to determine if we should create this pixel
+        const threshold = density / 100;
+
+        // Create pixels based on density with some randomness
+        if (Math.random() < threshold) {
+          const pixel = document.createElement('div');
+          pixel.classList.add('pixelated-image-card__pixel');
+          pixel.style.backgroundColor = pixelColor;
+          pixel.style.position = 'absolute';
+          pixel.style.width = `${calculatedPixelSize}px`;
+          pixel.style.height = `${calculatedPixelSize}px`;
+          pixel.style.aspectRatio = '1/1'; // Ensure square aspect ratio
+          pixel.style.opacity = '0';
+          pixel.style.left = `${col * calculatedPixelSize}px`;
+          pixel.style.top = `${row * calculatedPixelSize}px`;
+          pixel.style.pointerEvents = 'none'; // Prevent interaction
+
+          // Store position data for animation calculations
+          pixel.dataset.col = col.toString();
+          pixel.dataset.row = row.toString();
+          pixel.dataset.cols = cols.toString();
+          pixel.dataset.rows = rows.toString();
+
+          pixelGridEl.appendChild(pixel);
+        }
       }
     }
-  }, [gridSize, pixelColor]);
+  }, [gridSize, pixelColor, density]);
 
   const animatePixels = (activate: boolean): void => {
     setIsActive(activate);
@@ -79,19 +106,20 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
     gsap.set(pixels, { opacity: 0 });
 
     const allPixels = Array.from(pixels);
-    const densityDecimal = Math.max(0, Math.min(100, density)) / 100;
-    const pixelCount = Math.ceil(allPixels.length * densityDecimal);
 
-    // Calculate distance from mouse entry point for ALL pixels first
+    // Calculate distance from mouse entry point for ALL pixels
     const entryPoint = mouseEntryPointRef.current || { x: 0.5, y: 0.5 };
 
-    const allPixelsWithDistance = allPixels.map((pixel, index) => {
-      const col = index % gridSize;
-      const row = Math.floor(index / gridSize);
+    const allPixelsWithDistance = allPixels.map(pixel => {
+      // Get stored position data
+      const col = parseFloat(pixel.dataset.col || '0');
+      const row = parseFloat(pixel.dataset.row || '0');
+      const cols = parseFloat(pixel.dataset.cols || '1');
+      const rows = parseFloat(pixel.dataset.rows || '1');
 
       // Calculate pixel center position (normalized 0-1)
-      const pixelCenterX = (col + 0.5) / gridSize;
-      const pixelCenterY = (row + 0.5) / gridSize;
+      const pixelCenterX = (col + 0.5) / cols;
+      const pixelCenterY = (row + 0.5) / rows;
 
       // Calculate distance from entry point
       const dx = pixelCenterX - entryPoint.x;
@@ -122,20 +150,15 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
       pixelBands[bandIndex].push(pixelData);
     });
 
-    // Randomly select pixels from each band based on density
+    // Since we already have optimized pixel count, use all pixels
+    // Just shuffle within each band for randomness
     const selectedPixels: typeof allPixelsWithDistance = [];
-    const pixelsPerBand = Math.ceil(pixelCount / numBands);
 
     pixelBands.forEach(band => {
-      // Shuffle pixels within each band
+      // Shuffle pixels within each band for random appearance
       const shuffledBand = [...band].sort((a, b) => a.random - b.random);
-      // Take a portion based on density
-      const takeCount = Math.min(pixelsPerBand, shuffledBand.length);
-      selectedPixels.push(...shuffledBand.slice(0, takeCount));
+      selectedPixels.push(...shuffledBand);
     });
-
-    // Trim to exact pixel count if we have too many
-    selectedPixels.splice(pixelCount);
 
     // Create animation sequence with some randomness within each distance group
     const animationSequence: typeof allPixelsWithDistance = [];
