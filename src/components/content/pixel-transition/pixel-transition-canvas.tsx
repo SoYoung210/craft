@@ -71,9 +71,10 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
     const cols = Math.ceil(width / pixelSize);
     const rows = Math.ceil(height / pixelSize);
 
-    // Create pixels
+    // Create pixels with 1px overlap to prevent gaps
     const pixels: Pixel[] = [];
     const threshold = density / 100;
+    const overlap = 1; // 1px overlap to prevent gaps
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -82,7 +83,7 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
           pixels.push({
             x: col * pixelSize,
             y: row * pixelSize,
-            size: pixelSize,
+            size: pixelSize + overlap, // Add 1px overlap
             opacity: 0,
             targetOpacity: 0,
             distance: 0, // Will be calculated based on mouse position
@@ -177,7 +178,8 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
         if (bandProgress >= 0 && bandProgress < waveWidth) {
           // Pixel is in the wave
           const wavePosition = bandProgress / waveWidth;
-          pixel.opacity = Math.sin(wavePosition * Math.PI);
+          // pixel.opacity = Math.sin(wavePosition * Math.PI);
+          pixel.opacity = 1;
         } else if (bandProgress >= waveWidth) {
           // Wave has passed
           pixel.opacity = 0;
@@ -195,7 +197,8 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
         if (bandProgress >= 0 && bandProgress < waveWidth) {
           // Pixel is in the wave
           const wavePosition = bandProgress / waveWidth;
-          pixel.opacity = Math.sin(wavePosition * Math.PI);
+          // pixel.opacity = Math.sin(wavePosition * Math.PI);
+          pixel.opacity = 1;
         } else if (bandProgress >= waveWidth) {
           // Wave has passed
           pixel.opacity = 0;
