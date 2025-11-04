@@ -25,6 +25,7 @@ interface Pixel {
   targetOpacity: number;
   distance: number;
   band: number;
+  random: number;
 }
 
 export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
@@ -88,6 +89,7 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
             targetOpacity: 0,
             distance: 0, // Will be calculated based on mouse position
             band: 0, // Will be calculated based on distance
+            random: Math.random(), // Random value for variation in animation
           });
         }
       }
@@ -171,16 +173,23 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
     const waveWidth = 2; // Number of visible bands at once
 
     if (animationDirectionRef.current === 'forward') {
-      // Animate from center to edges
+      // Animate from center to edges with randomness
       pixels.forEach(pixel => {
         const bandProgress = progress * (numBands + waveWidth) - pixel.band;
 
-        if (bandProgress >= 0 && bandProgress < waveWidth) {
-          // Pixel is in the wave
-          const wavePosition = bandProgress / waveWidth;
-          // pixel.opacity = Math.sin(wavePosition * Math.PI);
-          pixel.opacity = 1;
-        } else if (bandProgress >= waveWidth) {
+        // Add random offset to make bands less obvious (-0.5 to +0.5 band range)
+        const randomOffset = (pixel.random - 0.5) * 1.5;
+        const adjustedProgress = bandProgress + randomOffset;
+
+        if (adjustedProgress >= 0 && adjustedProgress < waveWidth) {
+          // Pixel is in the wave - add random variation to appearance
+          // Some pixels appear, some don't (60-40 split)
+          if (pixel.random > 0.4) {
+            pixel.opacity = 1;
+          } else {
+            pixel.opacity = 0;
+          }
+        } else if (adjustedProgress >= waveWidth) {
           // Wave has passed
           pixel.opacity = 0;
         } else {
@@ -189,17 +198,23 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
         }
       });
     } else {
-      // Animate from edges to center (reverse)
+      // Animate from edges to center (reverse) with randomness
       pixels.forEach(pixel => {
         const reverseBand = numBands - 1 - pixel.band;
         const bandProgress = progress * (numBands + waveWidth) - reverseBand;
 
-        if (bandProgress >= 0 && bandProgress < waveWidth) {
-          // Pixel is in the wave
-          const wavePosition = bandProgress / waveWidth;
-          // pixel.opacity = Math.sin(wavePosition * Math.PI);
-          pixel.opacity = 1;
-        } else if (bandProgress >= waveWidth) {
+        // Add random offset to make bands less obvious
+        const randomOffset = (pixel.random - 0.5) * 1.5;
+        const adjustedProgress = bandProgress + randomOffset;
+
+        if (adjustedProgress >= 0 && adjustedProgress < waveWidth) {
+          // Pixel is in the wave - add random variation to appearance
+          if (pixel.random > 0.4) {
+            pixel.opacity = 1;
+          } else {
+            pixel.opacity = 0;
+          }
+        } else if (adjustedProgress >= waveWidth) {
           // Wave has passed
           pixel.opacity = 0;
         } else {
