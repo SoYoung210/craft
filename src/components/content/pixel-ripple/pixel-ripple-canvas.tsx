@@ -14,6 +14,8 @@ interface PixelRippleCanvasProps {
   className?: string;
   style?: CSSProperties;
   density?: number;
+  enableScanlines?: boolean;
+  scanlineColor?: 'green' | 'amber' | 'white' | 'none';
 }
 
 interface Pixel {
@@ -35,6 +37,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   className = '',
   style = {},
   density = 100,
+  enableScanlines = false,
+  scanlineColor = 'green',
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -46,6 +50,7 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   const animationDirectionRef = useRef<'forward' | 'reverse'>('forward');
 
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   // Initialize pixels based on container dimensions
   const initializePixels = useCallback(() => {
@@ -279,6 +284,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   // Handle mouse enter
   const handleMouseEnter = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
+      setIsHovered(true);
+
       const container = containerRef.current;
       if (!container || isActive) return;
 
@@ -297,6 +304,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
 
   // Handle mouse leave
   const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+
     if (!isActive) return;
 
     setIsActive(false);
@@ -341,21 +350,123 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
     };
   }, [initializePixels]);
 
+  // Get scanline color filter
+  const getScanlineColorFilter = () => {
+    switch (scanlineColor) {
+      case 'green':
+        return 'hue-rotate(120deg) saturate(1.5) brightness(1.2)';
+      case 'amber':
+        return 'hue-rotate(30deg) saturate(2) brightness(1.1)';
+      case 'white':
+        return 'brightness(1.2)';
+      default:
+        return 'none';
+    }
+  };
+
+  // Scanline styles
+  const scanlineStyles: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0.05) 1px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0) 3px
+      )
+    `,
+    opacity: isHovered ? 1 : 0,
+    transition: 'opacity 0.2s ease-in-out',
+    pointerEvents: 'none' as const,
+    zIndex: 4,
+    mixBlendMode: 'multiply' as const,
+    filter: getScanlineColorFilter(),
+  };
+
+  // Moving scanline styles
+  const movingScanlineStyles: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+    opacity: isHovered ? 0.8 : 0,
+    pointerEvents: 'none' as const,
+    zIndex: 5,
+    filter: getScanlineColorFilter(),
+    animation: isHovered ? 'scanline 3s linear infinite' : 'none',
+  };
+
+  // Flicker effect styles
+  const flickerStyles: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(255, 255, 255, 0.02)',
+    opacity: isHovered ? 1 : 0,
+    pointerEvents: 'none' as const,
+    zIndex: 6,
+    animation: isHovered ? 'flicker 0.15s infinite' : 'none',
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className={`pixel-ripple relative overflow-hidden ${className}`}
-      style={style}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-    >
-      <div className="pixel-ripple__content">{children}</div>
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full z-[3] pointer-events-none"
-        style={{ display: 'block' }}
-      />
-    </div>
+    <>
+      <style>
+        {`
+          @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(calc(100vh + 100%)); }
+          }
+
+          @keyframes flicker {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.02; }
+          }
+
+          .pixel-ripple__content {
+            filter: ${isHovered && enableScanlines ? getScanlineColorFilter() : 'none'};
+            transition: filter 0.3s ease-in-out;
+          }
+        `}
+      </style>
+      <div
+        ref={containerRef}
+        className={`pixel-ripple relative overflow-hidden ${className}`}
+        style={style}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+      >
+        <div className="pixel-ripple__content">{children}</div>
+
+        {/* Scanline Effects */}
+        {enableScanlines && (
+          <>
+            {/* Static scanlines */}
+            <div style={scanlineStyles} />
+
+            {/* Moving scanline */}
+            <div style={movingScanlineStyles} />
+
+            {/* Flicker effect */}
+            <div style={flickerStyles} />
+          </>
+        )}
+
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full z-[3] pointer-events-none"
+          style={{ display: 'block' }}
+        />
+      </div>
+    </>
   );
 };

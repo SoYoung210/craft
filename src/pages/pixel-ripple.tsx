@@ -37,6 +37,15 @@ export default function PixelRipplePage() {
       step: 1,
       label: 'Density (%)',
     },
+    enableScanlines: {
+      value: true,
+      label: 'Scanlines',
+    },
+    scanlineColor: {
+      value: 'green',
+      options: ['green', 'amber', 'white', 'none'],
+      label: 'Scanline Color',
+    },
   });
 
   return (
@@ -206,6 +215,10 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationDuration={params.animationDuration}
                 density={params.density}
+                enableScanlines={params.enableScanlines}
+                scanlineColor={
+                  params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
+                }
                 className="w-full lg:w-auto"
               >
                 <a
@@ -223,6 +236,10 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationStepDuration={params.animationDuration / 1000}
                 density={params.density}
+                enableScanlines={params.enableScanlines}
+                scanlineColor={
+                  params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
+                }
                 className="w-full lg:w-auto"
               >
                 <a
