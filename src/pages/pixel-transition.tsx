@@ -7,7 +7,11 @@ import {
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
 export default function PixelTransitionPage() {
-  const canvasParams = useControls('Canvas Controls', {
+  const { useCanvas, ...params } = useControls('Pixel Transition Controls', {
+    useCanvas: {
+      value: true,
+      label: 'Canvas',
+    },
     pixelColor: {
       value: '#ffffff',
       label: 'Pixel Color',
@@ -47,7 +51,7 @@ export default function PixelTransitionPage() {
         theme={{
           sizes: {
             rootWidth: '280px',
-            controlWidth: '160px',
+            controlWidth: '120px',
           },
           space: {
             sm: '6px',
@@ -66,49 +70,50 @@ export default function PixelTransitionPage() {
           <div>
             <div className="flex items-start gap-4 mb-4">
               <h3 className="text-white flex-1">
-                Canvas Version (Better Performance)
+                {useCanvas
+                  ? 'Canvas Version (Better Performance)'
+                  : 'DOM Version'}
               </h3>
             </div>
-            <PixelTransitionCanvas
-              pixelColor={canvasParams.pixelColor}
-              gridSize={canvasParams.gridSize}
-              animationDuration={canvasParams.animationDuration}
-              density={canvasParams.density}
-              className="w-full lg:w-auto"
-              firstContent={
-                <a
-                  href="https://form.typeform.com/to/knSo3TYw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative bg-[#0066FF] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
-                >
-                  <span>Register Now (Canvas)</span>
-                </a>
-              }
-              secondContent={null}
-            />
-          </div>
-
-          <div>
-            <h3 className="text-white mb-4">DOM Version (Original)</h3>
-            <PixelTransition
-              pixelColor="#fff"
-              gridSize={30}
-              animationStepDuration={0.6}
-              density={80}
-              className="w-full lg:w-auto"
-              firstContent={
-                <a
-                  href="https://form.typeform.com/to/knSo3TYw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative bg-[#6C16B8] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
-                >
-                  <span>Register Now (DOM)</span>
-                </a>
-              }
-              secondContent={null}
-            />
+            {useCanvas ? (
+              <PixelTransitionCanvas
+                pixelColor={params.pixelColor}
+                gridSize={params.gridSize}
+                animationDuration={params.animationDuration}
+                density={params.density}
+                className="w-full lg:w-auto"
+                firstContent={
+                  <a
+                    href="https://form.typeform.com/to/knSo3TYw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative bg-[#0066FF] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
+                  >
+                    <span>Register Now (Canvas)</span>
+                  </a>
+                }
+                secondContent={null}
+              />
+            ) : (
+              <PixelTransition
+                pixelColor={params.pixelColor}
+                gridSize={params.gridSize}
+                animationStepDuration={params.animationDuration / 1000}
+                density={params.density}
+                className="w-full lg:w-auto"
+                firstContent={
+                  <a
+                    href="https://form.typeform.com/to/knSo3TYw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative bg-[#6C16B8] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
+                  >
+                    <span>Register Now (DOM)</span>
+                  </a>
+                }
+                secondContent={null}
+              />
+            )}
           </div>
         </div>
       </PageLayout>
