@@ -7,8 +7,7 @@ import React, {
 } from 'react';
 
 interface PixelRippleCanvasProps {
-  firstContent: React.ReactNode;
-  secondContent: React.ReactNode | null;
+  children: React.ReactNode;
   gridSize?: number;
   pixelColor?: string;
   animationDuration?: number;
@@ -29,8 +28,7 @@ interface Pixel {
 }
 
 export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
-  firstContent,
-  secondContent,
+  children,
   gridSize = 10,
   pixelColor = '#0066FF',
   animationDuration = 300, // in milliseconds
@@ -40,7 +38,6 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const activeRef = useRef<HTMLDivElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const pixelsRef = useRef<Pixel[]>([]);
   const mouseEntryPointRef = useRef<{ x: number; y: number } | null>(null);
@@ -258,18 +255,6 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
         pixel.opacity = 0;
       });
       drawPixels();
-
-      // Show/hide second content
-      const activeEl = activeRef.current;
-      if (activeEl) {
-        if (animationDirectionRef.current === 'forward') {
-          activeEl.style.display = 'block';
-          activeEl.style.pointerEvents = 'none';
-        } else {
-          activeEl.style.display = 'none';
-          activeEl.style.pointerEvents = '';
-        }
-      }
     }
   }, [animationDuration, drawPixels]);
 
@@ -365,14 +350,7 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <div className="pixel-ripple__default">{firstContent}</div>
-      <div
-        className="pixel-ripple__active absolute inset-0 w-full h-full"
-        ref={activeRef}
-        style={{ display: 'none' }}
-      >
-        {secondContent}
-      </div>
+      <div className="pixel-ripple__content">{children}</div>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full z-[3] pointer-events-none"

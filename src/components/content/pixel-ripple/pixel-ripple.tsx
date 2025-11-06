@@ -2,8 +2,7 @@ import { gsap } from 'gsap';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
 interface PixelRippleProps {
-  firstContent: React.ReactNode;
-  secondContent: React.ReactNode | null;
+  children: React.ReactNode;
   gridSize?: number;
   pixelColor?: string;
   animationStepDuration?: number;
@@ -13,8 +12,7 @@ interface PixelRippleProps {
 }
 
 export const PixelRipple: React.FC<PixelRippleProps> = ({
-  firstContent,
-  secondContent,
+  children,
   gridSize = 10, // Use gridSize to determine number of pixels in the larger dimension
   pixelColor = 'currentColor',
   animationStepDuration = 0.3,
@@ -24,7 +22,6 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pixelGridRef = useRef<HTMLDivElement | null>(null);
-  const activeRef = useRef<HTMLDivElement | null>(null);
   const delayedCallRef = useRef<gsap.core.Tween | null>(null);
   const mouseEntryPointRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -88,9 +85,8 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
     setIsActive(activate);
 
     const pixelGridEl = pixelGridRef.current;
-    const activeEl = activeRef.current;
     const containerEl = containerRef.current;
-    if (!pixelGridEl || !activeEl || !containerEl) return;
+    if (!pixelGridEl || !containerEl) return;
 
     const pixels = pixelGridEl.querySelectorAll<HTMLDivElement>(
       '.pixel-ripple__pixel'
@@ -234,11 +230,7 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
         });
       });
 
-      // Show second content after wave starts moving
-      delayedCallRef.current = gsap.delayedCall(waveDuration * 2, () => {
-        activeEl.style.display = 'block';
-        activeEl.style.pointerEvents = 'none';
-      });
+      // Animation starts
 
       // Make absolutely sure all pixels are cleared after animation completes
       gsap.delayedCall(totalWaveDuration + waveWidth * waveDuration, () => {
@@ -246,9 +238,6 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
       });
     } else {
       // EXIT: Wave moves from edges back to center
-      activeEl.style.display = 'none';
-      activeEl.style.pointerEvents = '';
-
       // Animate wave returning from edges to center
       // We need to reverse the order - start from outer bands and move inward
       pixelBands.forEach((band, bandIndex) => {
@@ -356,10 +345,7 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <div className="pixel-ripple__default">{firstContent}</div>
-      <div className="pixel-ripple__active" ref={activeRef}>
-        {secondContent}
-      </div>
+      <div className="pixel-ripple__content">{children}</div>
       <div
         className="pixel-ripple__pixels w-full flex flex-wrap h-full z-[3] inset-0 absolute pointer-events-none"
         ref={pixelGridRef}
