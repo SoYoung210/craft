@@ -1,5 +1,17 @@
 import { gsap } from 'gsap';
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import React, {
+  CSSProperties,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
+import {
+  HoverEffectType,
+  CHROMATIC_CONFIG,
+  SCANLINE_COLORS,
+} from './constants';
+import { ChromaticAberration } from './ChromaticAberration';
 
 interface PixelRippleProps {
   children: React.ReactNode;
@@ -11,6 +23,10 @@ interface PixelRippleProps {
   density?: number;
   enableScanlines?: boolean;
   scanlineColor?: 'green' | 'amber' | 'white' | 'none';
+  hoverEffect?: HoverEffectType;
+  chromaticIntensity?: 'low' | 'medium' | 'high';
+  chromaticNoise?: boolean;
+  chromaticGlitch?: boolean;
 }
 
 export const PixelRipple: React.FC<PixelRippleProps> = ({
@@ -23,6 +39,10 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
   density = 100,
   enableScanlines = false,
   scanlineColor = 'green',
+  hoverEffect = 'scanlines',
+  chromaticIntensity = 'medium',
+  chromaticNoise = true,
+  chromaticGlitch = true,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pixelGridRef = useRef<HTMLDivElement | null>(null);
@@ -31,6 +51,8 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
 
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [showChromatic, setShowChromatic] = useState<boolean>(false);
+  const chromaticTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const pixelGridEl = pixelGridRef.current;
@@ -305,8 +327,22 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
     }
   };
 
+  // Trigger chromatic aberration effect
+  const triggerChromaticEffect = useCallback((): void => {
+    setShowChromatic(true);
+
+    chromaticTimeoutRef.current = setTimeout(() => {
+      setShowChromatic(false);
+    }, CHROMATIC_CONFIG.duration);
+  }, []);
+
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>): void => {
     setIsHovered(true);
+
+    // Trigger hover effect based on type
+    if (hoverEffect === 'chromaticAberration') {
+      triggerChromaticEffect();
+    }
 
     const containerEl = containerRef.current;
     if (!containerEl) return;
@@ -323,6 +359,14 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
 
   const handleMouseLeave = (): void => {
     setIsHovered(false);
+
+    // Clean up hover effects
+    if (hoverEffect === 'chromaticAberration') {
+      if (chromaticTimeoutRef.current) {
+        clearTimeout(chromaticTimeoutRef.current);
+      }
+      setShowChromatic(false);
+    }
 
     // Don't update the entry point on leave - keep the original entry point
     // so the animation returns to where it started
@@ -347,16 +391,22 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
 
   // Get scanline color filter
   const getScanlineColorFilter = () => {
-    switch (scanlineColor) {
-      case 'green':
-        return 'hue-rotate(120deg) saturate(1.5) brightness(1.2)';
-      case 'amber':
-        return 'hue-rotate(30deg) saturate(2) brightness(1.1)';
-      case 'white':
-        return 'brightness(1.2)';
-      default:
-        return 'none';
+    if (scanlineColor && SCANLINE_COLORS[scanlineColor]) {
+      return SCANLINE_COLORS[scanlineColor].filter;
     }
+    return 'none';
+  };
+
+  // Get content filter based on hover effect
+  const getContentFilter = (): string => {
+    if (!isHovered) return 'none';
+
+    // Apply scanline color filter
+    if (hoverEffect === 'scanlines' && enableScanlines) {
+      return getScanlineColorFilter();
+    }
+
+    return 'none';
   };
 
   // Scanline styles
@@ -375,7 +425,7 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
         rgba(0, 0, 0, 0) 3px
       )
     `,
-    opacity: isHovered ? 1 : 0,
+    opacity: isHovered && hoverEffect === 'scanlines' ? 1 : 0,
     transition: 'opacity 0.2s ease-in-out',
     pointerEvents: 'none' as const,
     zIndex: 4,
@@ -390,12 +440,16 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
     left: 0,
     right: 0,
     height: '4px',
-    background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-    opacity: isHovered ? 0.8 : 0,
+    background:
+      'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+    opacity: isHovered && hoverEffect === 'scanlines' ? 0.8 : 0,
     pointerEvents: 'none' as const,
     zIndex: 5,
     filter: getScanlineColorFilter(),
-    animation: isHovered ? 'pixel-ripple-scanline 3s linear infinite' : 'none',
+    animation:
+      isHovered && hoverEffect === 'scanlines'
+        ? 'pixel-ripple-scanline 3s linear infinite'
+        : 'none',
   };
 
   // Flicker effect styles
@@ -406,10 +460,26 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
     right: 0,
     bottom: 0,
     background: 'rgba(255, 255, 255, 0.02)',
-    opacity: isHovered ? 1 : 0,
+    opacity: isHovered && hoverEffect === 'scanlines' ? 1 : 0,
     pointerEvents: 'none' as const,
     zIndex: 6,
-    animation: isHovered ? 'pixel-ripple-flicker 0.15s infinite' : 'none',
+    animation:
+      isHovered && hoverEffect === 'scanlines'
+        ? 'pixel-ripple-flicker 0.15s infinite'
+        : 'none',
+  };
+
+  // Chromatic aberration overlay styles
+  const chromaticOverlayStyles: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: showChromatic ? 1 : 0,
+    transition: `opacity ${CHROMATIC_CONFIG.duration}ms ease-in-out`,
+    pointerEvents: 'none' as const,
+    zIndex: 7,
   };
 
   return (
@@ -427,8 +497,21 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
           }
 
           .pixel-ripple__content {
-            filter: ${isHovered && enableScanlines ? getScanlineColorFilter() : 'none'};
+            filter: ${getContentFilter()};
             transition: filter 0.3s ease-in-out;
+          }
+
+          @keyframes pixel-ripple-chromatic-fade {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+          }
+
+          .pixel-ripple__chromatic {
+            animation: pixel-ripple-chromatic-fade ${
+              CHROMATIC_CONFIG.duration
+            }ms ease-in-out;
           }
         `}
       </style>
@@ -442,8 +525,24 @@ export const PixelRipple: React.FC<PixelRippleProps> = ({
       >
         <div className="pixel-ripple__content">{children}</div>
 
+        {/* Chromatic Aberration Overlay */}
+        {hoverEffect === 'chromaticAberration' && showChromatic && (
+          <div
+            style={chromaticOverlayStyles}
+            className="pixel-ripple__chromatic"
+          >
+            <ChromaticAberration
+              intensity={chromaticIntensity}
+              enableNoise={chromaticNoise}
+              enableGlitch={chromaticGlitch}
+            >
+              {children}
+            </ChromaticAberration>
+          </div>
+        )}
+
         {/* Scanline Effects */}
-        {enableScanlines && (
+        {hoverEffect === 'scanlines' && enableScanlines && (
           <>
             {/* Static scanlines */}
             <div style={scanlineStyles} />

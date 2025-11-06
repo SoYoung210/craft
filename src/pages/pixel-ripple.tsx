@@ -37,14 +37,32 @@ export default function PixelRipplePage() {
       step: 1,
       label: 'Density (%)',
     },
+    hoverEffect: {
+      value: 'scanlines',
+      options: ['scanlines', 'chromaticAberration', 'none'],
+      label: 'Hover Effect',
+    },
     enableScanlines: {
       value: true,
-      label: 'Scanlines',
+      label: 'Enable Scanlines',
     },
     scanlineColor: {
       value: 'green',
       options: ['green', 'amber', 'white', 'none'],
       label: 'Scanline Color',
+    },
+    chromaticIntensity: {
+      value: 'medium',
+      options: ['low', 'medium', 'high'],
+      label: 'Chromatic Intensity',
+    },
+    chromaticNoise: {
+      value: true,
+      label: 'Chromatic Noise',
+    },
+    chromaticGlitch: {
+      value: true,
+      label: 'Chromatic Glitch',
     },
   });
 
@@ -215,17 +233,27 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationDuration={params.animationDuration}
                 density={params.density}
+                hoverEffect={params.hoverEffect as any}
                 enableScanlines={params.enableScanlines}
                 scanlineColor={
                   params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
                 }
+                chromaticIntensity={
+                  params.chromaticIntensity as 'low' | 'medium' | 'high'
+                }
+                chromaticNoise={params.chromaticNoise}
+                chromaticGlitch={params.chromaticGlitch}
                 className="w-full lg:w-auto"
               >
                 <a
                   href="https://form.typeform.com/to/knSo3TYw"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative bg-[#0066FF] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
+                  className={`relative ${
+                    params.hoverEffect === 'chromaticAberration'
+                      ? 'bg-[#000]'
+                      : 'bg-[#0066FF]'
+                  } text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full`}
                 >
                   <span>Register Now</span>
                 </a>
@@ -236,17 +264,27 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationStepDuration={params.animationDuration / 1000}
                 density={params.density}
+                hoverEffect={params.hoverEffect as any}
                 enableScanlines={params.enableScanlines}
                 scanlineColor={
                   params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
                 }
+                chromaticIntensity={
+                  params.chromaticIntensity as 'low' | 'medium' | 'high'
+                }
+                chromaticNoise={params.chromaticNoise}
+                chromaticGlitch={params.chromaticGlitch}
                 className="w-full lg:w-auto"
               >
                 <a
                   href="https://form.typeform.com/to/knSo3TYw"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative bg-[#6C16B8] text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full"
+                  className={`relative ${
+                    params.hoverEffect === 'chromaticAberration'
+                      ? 'bg-[#000]'
+                      : 'bg-[#6C16B8]'
+                  } text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full`}
                 >
                   <span>Register Now</span>
                 </a>
