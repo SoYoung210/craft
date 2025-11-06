@@ -65,8 +65,9 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
           pixel.classList.add('pixelated-image-card__pixel');
           pixel.style.backgroundColor = pixelColor;
           pixel.style.position = 'absolute';
-          pixel.style.width = `${calculatedPixelSize}px`;
-          pixel.style.height = `${calculatedPixelSize}px`;
+          // Add 1px overlap to prevent gaps between pixels (matching Canvas version)
+          pixel.style.width = `${calculatedPixelSize + 1}px`;
+          pixel.style.height = `${calculatedPixelSize + 1}px`;
           pixel.style.aspectRatio = '1/1'; // Ensure square aspect ratio
           pixel.style.opacity = '0';
           pixel.style.left = `${col * calculatedPixelSize}px`;
@@ -204,21 +205,34 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
 
         shuffledBandPixels.forEach(item => {
           const startDelay = bandIndex * waveDuration;
-          const randomOffset = Math.random() * waveDuration * 0.2; // 20% random variation
 
-          // Fade in
-          gsap.to(item.pixel, {
-            opacity: 1,
-            duration: 0,
-            delay: startDelay + randomOffset,
-          });
+          // Add random offset to make bands less obvious (-0.5 to +0.5 band range)
+          // This creates more variation in when pixels appear within the wave
+          const randomOffset = (item.random - 0.5) * waveDuration * 1.5;
+          const adjustedDelay = Math.max(0, startDelay + randomOffset);
 
-          // Fade out after wave passes - ALL bands fade out
-          gsap.to(item.pixel, {
-            opacity: 0,
-            duration: 0,
-            delay: startDelay + randomOffset + waveWidth * waveDuration,
-          });
+          // Only show 60% of pixels for more organic effect (matching Canvas version)
+          if (item.random > 0.4) {
+            // Fade in
+            gsap.to(item.pixel, {
+              opacity: 1,
+              duration: 0,
+              delay: adjustedDelay,
+            });
+
+            // Fade out after wave passes
+            gsap.to(item.pixel, {
+              opacity: 0,
+              duration: 0,
+              delay: adjustedDelay + waveWidth * waveDuration,
+            });
+          } else {
+            // This pixel stays invisible during the wave
+            gsap.set(item.pixel, {
+              opacity: 0,
+              delay: adjustedDelay,
+            });
+          }
         });
       });
 
@@ -256,21 +270,33 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
 
         shuffledBandPixels.forEach(item => {
           const startDelay = bandIndex * waveDuration;
-          const randomOffset = Math.random() * waveDuration * 0.2;
 
-          // Fade in the pixel as part of the returning wave
-          gsap.to(item.pixel, {
-            opacity: 1,
-            duration: 0,
-            delay: startDelay + randomOffset,
-          });
+          // Add random offset to make bands less obvious (matching Canvas version)
+          const randomOffset = (item.random - 0.5) * waveDuration * 1.5;
+          const adjustedDelay = Math.max(0, startDelay + randomOffset);
 
-          // Fade out after wave passes (except for the innermost band)
-          if (reverseBandIndex > waveWidth - 1) {
+          // Only show 60% of pixels for more organic effect
+          if (item.random > 0.4) {
+            // Fade in the pixel as part of the returning wave
             gsap.to(item.pixel, {
-              opacity: 0,
+              opacity: 1,
               duration: 0,
-              delay: startDelay + randomOffset + waveWidth * waveDuration,
+              delay: adjustedDelay,
+            });
+
+            // Fade out after wave passes (except for the innermost band)
+            if (reverseBandIndex > waveWidth - 1) {
+              gsap.to(item.pixel, {
+                opacity: 0,
+                duration: 0,
+                delay: adjustedDelay + waveWidth * waveDuration,
+              });
+            }
+          } else {
+            // This pixel stays invisible during the wave
+            gsap.set(item.pixel, {
+              opacity: 0,
+              delay: adjustedDelay,
             });
           }
         });
