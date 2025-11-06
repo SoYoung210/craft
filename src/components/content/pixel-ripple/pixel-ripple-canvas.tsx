@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 
-interface PixelTransitionCanvasProps {
+interface PixelRippleCanvasProps {
   firstContent: React.ReactNode;
   secondContent: React.ReactNode | null;
   gridSize?: number;
@@ -28,7 +28,7 @@ interface Pixel {
   random: number;
 }
 
-export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
+export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   firstContent,
   secondContent,
   gridSize = 10,
@@ -60,9 +60,18 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
     const width = rect.width;
     const height = rect.height;
 
-    // Set canvas size
-    canvas.width = width;
-    canvas.height = height;
+    // Set canvas size with device pixel ratio for sharp rendering
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = false;
+    }
 
     // Calculate pixel size based on larger dimension
     const largerDimension = Math.max(width, height);
@@ -105,14 +114,17 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
       const canvas = canvasRef.current;
       if (!canvas) return;
 
+      const width = parseInt(canvas.style.width || '0');
+      const height = parseInt(canvas.style.height || '0');
+
       // Normalize mouse position
-      const normalizedX = mouseX / canvas.width;
-      const normalizedY = mouseY / canvas.height;
+      const normalizedX = mouseX / width;
+      const normalizedY = mouseY / height;
 
       // Update pixel distances
       pixels.forEach(pixel => {
-        const pixelCenterX = (pixel.x + pixel.size / 2) / canvas.width;
-        const pixelCenterY = (pixel.y + pixel.size / 2) / canvas.height;
+        const pixelCenterX = (pixel.x + pixel.size / 2) / width;
+        const pixelCenterY = (pixel.y + pixel.size / 2) / height;
 
         const dx = pixelCenterX - normalizedX;
         const dy = pixelCenterY - normalizedY;
@@ -141,8 +153,11 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const width = parseInt(canvas.style.width || '0');
+    const height = parseInt(canvas.style.height || '0');
+
     // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, width, height);
 
     // Set pixel color
     ctx.fillStyle = pixelColor;
@@ -151,7 +166,12 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
     pixelsRef.current.forEach(pixel => {
       if (pixel.opacity > 0.01) {
         ctx.globalAlpha = pixel.opacity;
-        ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+        ctx.fillRect(
+          Math.floor(pixel.x),
+          Math.floor(pixel.y),
+          Math.ceil(pixel.size),
+          Math.ceil(pixel.size)
+        );
       }
     });
 
@@ -339,15 +359,15 @@ export const PixelTransitionCanvas: React.FC<PixelTransitionCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`pixelated-image-card relative overflow-hidden ${className}`}
+      className={`pixel-ripple relative overflow-hidden ${className}`}
       style={style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <div className="pixelated-image-card__default">{firstContent}</div>
+      <div className="pixel-ripple__default">{firstContent}</div>
       <div
-        className="pixelated-image-card__active absolute inset-0 w-full h-full"
+        className="pixel-ripple__active absolute inset-0 w-full h-full"
         ref={activeRef}
         style={{ display: 'none' }}
       >

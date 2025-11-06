@@ -1,13 +1,13 @@
 import { Leva, useControls } from 'leva';
 
 import {
-  PixelTransition,
-  PixelTransitionCanvas,
-} from '../components/content/pixel-transition';
+  PixelRipple,
+  PixelRippleCanvas,
+} from '../components/content/pixel-ripple';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 
-export default function PixelTransitionPage() {
-  const { useCanvas, ...params } = useControls('Pixel Transition Controls', {
+export default function PixelRipplePage() {
+  const { useCanvas, ...params } = useControls('Pixel Ripple Controls', {
     useCanvas: {
       value: true,
       label: 'Canvas',
@@ -59,16 +59,16 @@ export default function PixelTransitionPage() {
         }}
       />
       <PageLayout>
-        <PageLayout.Title>Pixel Transition</PageLayout.Title>
+        <PageLayout.Title>Pixel Ripple</PageLayout.Title>
         <PageLayout.Details>
           <PageLayout.Summary>
-            Pixel Transition (DOM vs Canvas Comparison)
+            Pixel Ripple Effect (DOM vs Canvas)
           </PageLayout.Summary>
           <PageLayout.DetailsContent>
             <div className="space-y-6 text-gray-700">
               <section>
                 <h3 className="text-gray-900 font-semibold mb-3">
-                  How the Wave Effect Works
+                  How the Ripple Effect Works
                 </h3>
                 <div className="space-y-4">
                   <div>
@@ -115,7 +115,7 @@ export default function PixelTransitionPage() {
                       Adding Randomness
                     </h4>
                     <p className="text-sm leading-relaxed mb-2 text-gray-600">
-                      To avoid obvious circular bands, we add controlled chaos:
+                      To avoid obvious circular bands, added randomness:
                     </p>
                     <pre className="text-xs bg-gray-50 border border-gray-200 p-3 rounded font-mono overflow-x-auto text-gray-700">
                       {`Perfect Circle:          With Randomness:
@@ -196,14 +196,12 @@ export default function PixelTransitionPage() {
         <div className="space-y-8">
           <div>
             <div className="flex items-start gap-4 mb-4">
-              <h3 className="text-white flex-1">
-                {useCanvas
-                  ? 'Canvas Version (Better Performance)'
-                  : 'DOM Version'}
+              <h3 className="text-gray-900 flex-1">
+                {useCanvas ? 'Canvas Version' : 'DOM Version'}
               </h3>
             </div>
             {useCanvas ? (
-              <PixelTransitionCanvas
+              <PixelRippleCanvas
                 pixelColor={params.pixelColor}
                 gridSize={params.gridSize}
                 animationDuration={params.animationDuration}
@@ -222,7 +220,7 @@ export default function PixelTransitionPage() {
                 secondContent={null}
               />
             ) : (
-              <PixelTransition
+              <PixelRipple
                 pixelColor={params.pixelColor}
                 gridSize={params.gridSize}
                 animationStepDuration={params.animationDuration / 1000}

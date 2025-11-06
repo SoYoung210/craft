@@ -1,9 +1,7 @@
 import { gsap } from 'gsap';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
-// import './PixelTransition.css';
-
-interface PixelTransitionProps {
+interface PixelRippleProps {
   firstContent: React.ReactNode;
   secondContent: React.ReactNode | null;
   gridSize?: number;
@@ -14,7 +12,7 @@ interface PixelTransitionProps {
   density?: number;
 }
 
-export const PixelTransition: React.FC<PixelTransitionProps> = ({
+export const PixelRipple: React.FC<PixelRippleProps> = ({
   firstContent,
   secondContent,
   gridSize = 10, // Use gridSize to determine number of pixels in the larger dimension
@@ -62,7 +60,7 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
         // Create pixels based on density with some randomness
         if (Math.random() < threshold) {
           const pixel = document.createElement('div');
-          pixel.classList.add('pixelated-image-card__pixel');
+          pixel.classList.add('pixel-ripple__pixel');
           pixel.style.backgroundColor = pixelColor;
           pixel.style.position = 'absolute';
           // Add 1px overlap to prevent gaps between pixels (matching Canvas version)
@@ -95,7 +93,7 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
     if (!pixelGridEl || !activeEl || !containerEl) return;
 
     const pixels = pixelGridEl.querySelectorAll<HTMLDivElement>(
-      '.pixelated-image-card__pixel'
+      '.pixel-ripple__pixel'
     );
     if (!pixels.length) return;
 
@@ -352,19 +350,18 @@ export const PixelTransition: React.FC<PixelTransitionProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`pixelated-image-card relative overflow-hidden ${className}`}
+      className={`pixel-ripple relative overflow-hidden ${className}`}
       style={style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      {/* <div style={{ paddingTop: aspectRatio }} /> */}
-      <div className="pixelated-image-card__default">{firstContent}</div>
-      <div className="pixelated-image-card__active" ref={activeRef}>
+      <div className="pixel-ripple__default">{firstContent}</div>
+      <div className="pixel-ripple__active" ref={activeRef}>
         {secondContent}
       </div>
       <div
-        className="pixelated-image-card__pixels w-full flex flex-wrap h-full z-[3] inset-0 absolute pointer-events-none"
+        className="pixel-ripple__pixels w-full flex flex-wrap h-full z-[3] inset-0 absolute pointer-events-none"
         ref={pixelGridRef}
       />
     </div>
