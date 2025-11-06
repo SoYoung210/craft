@@ -1,4 +1,4 @@
-import { Leva, useControls } from 'leva';
+import { Leva, useControls, folder } from 'leva';
 
 import {
   PixelRipple,
@@ -37,33 +37,71 @@ export default function PixelRipplePage() {
       step: 1,
       label: 'Density (%)',
     },
-    hoverEffect: {
-      value: 'scanlines',
-      options: ['scanlines', 'chromaticAberration', 'none'],
-      label: 'Hover Effect',
-    },
-    enableScanlines: {
-      value: true,
-      label: 'Enable Scanlines',
-    },
-    scanlineColor: {
-      value: 'green',
-      options: ['green', 'amber', 'white', 'none'],
-      label: 'Scanline Color',
-    },
-    chromaticIntensity: {
-      value: 'medium',
-      options: ['low', 'medium', 'high'],
-      label: 'Chromatic Intensity',
-    },
-    chromaticNoise: {
-      value: true,
-      label: 'Chromatic Noise',
-    },
-    chromaticGlitch: {
-      value: true,
-      label: 'Chromatic Glitch',
-    },
+    'Hover Effects': folder({
+      hoverEffect: {
+        value: 'scanlines',
+        options: ['scanlines', 'chromaticAberration', 'pixelWave', 'none'],
+        label: 'Effect Type',
+      },
+      Scanlines: folder(
+        {
+          enableScanlines: {
+            value: true,
+            label: 'Enable',
+          },
+          scanlineColor: {
+            value: 'green',
+            options: ['green', 'amber', 'white', 'none'],
+            label: 'Color',
+          },
+        },
+        { collapsed: true }
+      ),
+      'Chromatic Aberration': folder(
+        {
+          chromaticIntensity: {
+            value: 'medium',
+            options: ['low', 'medium', 'high'],
+            label: 'Intensity',
+          },
+          chromaticNoise: {
+            value: true,
+            label: 'Noise',
+          },
+          chromaticGlitch: {
+            value: true,
+            label: 'Glitch',
+          },
+        },
+        { collapsed: true }
+      ),
+      'Pixel Wave': folder(
+        {
+          pixelWaveSize: {
+            value: 8,
+            min: 4,
+            max: 20,
+            step: 1,
+            label: 'Size',
+          },
+          pixelWaveSpeed: {
+            value: 2,
+            min: 0.5,
+            max: 5,
+            step: 0.5,
+            label: 'Speed',
+          },
+          pixelWaveAmplitude: {
+            value: 10,
+            min: 2,
+            max: 30,
+            step: 2,
+            label: 'Amplitude',
+          },
+        },
+        { collapsed: true }
+      ),
+    }),
   });
 
   return (
@@ -243,6 +281,9 @@ export default function PixelRipplePage() {
                 }
                 chromaticNoise={params.chromaticNoise}
                 chromaticGlitch={params.chromaticGlitch}
+                pixelWaveSize={params.pixelWaveSize}
+                pixelWaveSpeed={params.pixelWaveSpeed}
+                pixelWaveAmplitude={params.pixelWaveAmplitude}
                 className="w-full lg:w-auto"
               >
                 <a
@@ -250,7 +291,8 @@ export default function PixelRipplePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
-                    params.hoverEffect === 'chromaticAberration'
+                    params.hoverEffect === 'chromaticAberration' ||
+                    params.hoverEffect === 'pixelWave'
                       ? 'bg-[#000]'
                       : 'bg-[#0066FF]'
                   } text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full`}
@@ -274,6 +316,9 @@ export default function PixelRipplePage() {
                 }
                 chromaticNoise={params.chromaticNoise}
                 chromaticGlitch={params.chromaticGlitch}
+                pixelWaveSize={params.pixelWaveSize}
+                pixelWaveSpeed={params.pixelWaveSpeed}
+                pixelWaveAmplitude={params.pixelWaveAmplitude}
                 className="w-full lg:w-auto"
               >
                 <a
@@ -281,7 +326,8 @@ export default function PixelRipplePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
-                    params.hoverEffect === 'chromaticAberration'
+                    params.hoverEffect === 'chromaticAberration' ||
+                    params.hoverEffect === 'pixelWave'
                       ? 'bg-[#000]'
                       : 'bg-[#6C16B8]'
                   } text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full`}
