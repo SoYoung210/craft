@@ -10,8 +10,10 @@ import {
   HoverEffectType,
   CHROMATIC_CONFIG,
   SCANLINE_COLORS,
+  FUZZY_CONFIG,
 } from './constants';
 import { ChromaticAberration } from './ChromaticAberration';
+import { FuzzyText } from './FuzzyText';
 
 interface PixelRippleCanvasProps {
   children: React.ReactNode;
@@ -38,7 +40,22 @@ interface Pixel {
   distance: number;
   band: number;
   random: number;
+  offsetX?: number;
+  offsetY?: number;
 }
+
+// Utility to extract text from React children
+const extractTextFromChildren = (children: React.ReactNode): string => {
+  if (typeof children === 'string') return children;
+  if (typeof children === 'number') return String(children);
+  if (React.isValidElement(children)) {
+    return extractTextFromChildren(children.props.children);
+  }
+  if (Array.isArray(children)) {
+    return children.map(extractTextFromChildren).join('');
+  }
+  return '';
+};
 
 export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   children,
@@ -68,6 +85,7 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showChromatic, setShowChromatic] = useState<boolean>(false);
   const chromaticTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showFuzzy, setShowFuzzy] = useState<boolean>(false);
 
   // Initialize pixels based on container dimensions
   const initializePixels = useCallback(() => {
@@ -315,6 +333,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
       // Trigger hover effect based on type
       if (hoverEffect === 'chromaticAberration') {
         triggerChromaticEffect();
+      } else if (hoverEffect === 'fuzzy') {
+        setShowFuzzy(true);
       }
 
       const container = containerRef.current;
@@ -349,6 +369,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
         clearTimeout(chromaticTimeoutRef.current);
       }
       setShowChromatic(false);
+    } else if (hoverEffect === 'fuzzy') {
+      setShowFuzzy(false);
     }
 
     if (!isActive) return;
@@ -492,6 +514,8 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
     <>
       <style>
         {`
+          @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap');
+
           @keyframes scanline {
             0% { transform: translateY(-100%); }
             100% { transform: translateY(calc(100vh + 100%)); }
@@ -504,7 +528,7 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
 
           .pixel-ripple__content {
             filter: ${getContentFilter()};
-            transition: filter 0.3s ease-in-out;
+            transition: filter 0.3s ease-in-out, font-family 0.3s ease-in-out;
           }
 
           @keyframes chromatic-fade {
@@ -519,6 +543,122 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
               CHROMATIC_CONFIG.duration
             }ms ease-in-out;
           }
+
+          .pixel-ripple__pixel-font {
+            font-family: 'Pixelify Sans', cursive !important;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+          }
+
+          .pixel-ripple__pixel-font * {
+            font-family: 'Pixelify Sans', cursive !important;
+          }
+
+          .pixel-ripple__glitch {
+            position: relative;
+            user-select: none;
+          }
+
+          .pixel-ripple__glitch::after,
+          .pixel-ripple__glitch::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            background-color: transparent;
+            overflow: hidden;
+            clip-path: inset(0 0 0 0);
+            opacity: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .pixel-ripple__glitch::after {
+            transform: translateX(2px);
+            text-shadow: -2px 0 red;
+            animation: animate-glitch 3s infinite linear alternate-reverse;
+          }
+
+          .pixel-ripple__glitch::before {
+            transform: translateX(-2px);
+            text-shadow: 2px 0 cyan;
+            animation: animate-glitch 2s infinite linear alternate-reverse;
+          }
+
+          .pixel-ripple__fuzzy canvas {
+            background: transparent !important;
+          }
+
+          @keyframes animate-glitch {
+            0% {
+              clip-path: inset(20% 0 50% 0);
+            }
+            5% {
+              clip-path: inset(10% 0 60% 0);
+            }
+            10% {
+              clip-path: inset(15% 0 55% 0);
+            }
+            15% {
+              clip-path: inset(25% 0 35% 0);
+            }
+            20% {
+              clip-path: inset(30% 0 40% 0);
+            }
+            25% {
+              clip-path: inset(40% 0 20% 0);
+            }
+            30% {
+              clip-path: inset(10% 0 60% 0);
+            }
+            35% {
+              clip-path: inset(15% 0 55% 0);
+            }
+            40% {
+              clip-path: inset(25% 0 35% 0);
+            }
+            45% {
+              clip-path: inset(30% 0 40% 0);
+            }
+            50% {
+              clip-path: inset(20% 0 50% 0);
+            }
+            55% {
+              clip-path: inset(10% 0 60% 0);
+            }
+            60% {
+              clip-path: inset(15% 0 55% 0);
+            }
+            65% {
+              clip-path: inset(25% 0 35% 0);
+            }
+            70% {
+              clip-path: inset(30% 0 40% 0);
+            }
+            75% {
+              clip-path: inset(40% 0 20% 0);
+            }
+            80% {
+              clip-path: inset(20% 0 50% 0);
+            }
+            85% {
+              clip-path: inset(10% 0 60% 0);
+            }
+            90% {
+              clip-path: inset(15% 0 55% 0);
+            }
+            95% {
+              clip-path: inset(25% 0 35% 0);
+            }
+            100% {
+              clip-path: inset(30% 0 40% 0);
+            }
+          }
         `}
       </style>
       <div
@@ -529,7 +669,26 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
       >
-        <div className="pixel-ripple__content">{children}</div>
+        <div
+          className={`pixel-ripple__content ${
+            isHovered && hoverEffect === 'pixelFont'
+              ? 'pixel-ripple__pixel-font'
+              : ''
+          } ${
+            isHovered && hoverEffect === 'glitch' ? 'pixel-ripple__glitch' : ''
+          }`}
+          style={{
+            // opacity: isHovered && hoverEffect === 'fuzzy' ? 0 : 1,
+            color: isHovered && hoverEffect === 'fuzzy' ? '#000' : '#fff',
+            // transition: 'color 0.3s ease-in-out',
+          }}
+          {...(isHovered &&
+            hoverEffect === 'glitch' && {
+              'data-text': extractTextFromChildren(children),
+            })}
+        >
+          {children}
+        </div>
 
         {/* Chromatic Aberration Overlay */}
         {hoverEffect === 'chromaticAberration' && showChromatic && (
@@ -544,6 +703,23 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
             >
               {children}
             </ChromaticAberration>
+          </div>
+        )}
+
+        {/* Fuzzy Text Overlay (hoverEffect === 'fuzzy' && showFuzzy) */}
+        {hoverEffect === 'fuzzy' && showFuzzy && (
+          <div className="absolute inset-0 z-[8] flex items-center justify-center pointer-events-none pixel-ripple__fuzzy">
+            <div style={{ display: 'inline-block' }}>
+              <FuzzyText
+                fontSize="48px"
+                fontWeight={900}
+                // fontFamily="Acronym"
+                intensity={FUZZY_CONFIG.baseIntensity}
+                color="#fff"
+              >
+                {extractTextFromChildren(children)}
+              </FuzzyText>
+            </div>
           </div>
         )}
 

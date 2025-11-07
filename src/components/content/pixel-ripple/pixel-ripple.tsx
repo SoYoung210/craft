@@ -6,6 +6,7 @@ import React, {
   useState,
   useCallback,
 } from 'react';
+
 import {
   HoverEffectType,
   CHROMATIC_CONFIG,
