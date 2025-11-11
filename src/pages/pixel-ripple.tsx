@@ -50,8 +50,8 @@ export default function PixelRipplePage() {
             label: 'Enable',
           },
           scanlineColor: {
-            value: 'green',
-            options: ['green', 'amber', 'white', 'none'],
+            value: 'white',
+            options: ['white', 'green', 'amber', 'none'],
             label: 'Color',
           },
         },
