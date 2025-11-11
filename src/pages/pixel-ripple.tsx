@@ -5,6 +5,7 @@ import {
   PixelRippleCanvas,
 } from '../components/content/pixel-ripple';
 import PageLayout from '../components/layout/page-layout/PageLayout';
+import { HoverEffectType } from '../components/content/pixel-ripple/constants';
 
 export default function PixelRipplePage() {
   const { useCanvas, ...params } = useControls('Pixel Ripple Controls', {
@@ -57,18 +58,18 @@ export default function PixelRipplePage() {
         },
         { collapsed: true }
       ),
-      'Chromatic Aberration': folder(
+      'Color Fringing': folder(
         {
-          chromaticIntensity: {
+          intensity: {
             value: 'medium',
             options: ['low', 'medium', 'high'],
             label: 'Intensity',
           },
-          chromaticNoise: {
+          noise: {
             value: true,
             label: 'Noise',
           },
-          chromaticGlitch: {
+          glitch: {
             value: true,
             label: 'Glitch',
           },
@@ -245,16 +246,20 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationDuration={params.animationDuration}
                 density={params.density}
-                hoverEffect={params.hoverEffect as any}
+                hoverEffect={
+                  params.hoverEffect === 'color fringing'
+                    ? ('chromaticAberration' as const)
+                    : (params.hoverEffect as HoverEffectType)
+                }
                 enableScanlines={params.enableScanlines}
                 scanlineColor={
                   params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
                 }
                 chromaticIntensity={
-                  params.chromaticIntensity as 'low' | 'medium' | 'high'
+                  params.intensity as 'low' | 'medium' | 'high'
                 }
-                chromaticNoise={params.chromaticNoise}
-                chromaticGlitch={params.chromaticGlitch}
+                chromaticNoise={params.noise}
+                chromaticGlitch={params.glitch}
                 className="w-full lg:w-auto"
               >
                 <a
@@ -277,16 +282,20 @@ export default function PixelRipplePage() {
                 gridSize={params.gridSize}
                 animationStepDuration={params.animationDuration / 1000}
                 density={params.density}
-                hoverEffect={params.hoverEffect as any}
+                hoverEffect={
+                  params.hoverEffect === 'color fringing'
+                    ? ('chromaticAberration' as const)
+                    : (params.hoverEffect as HoverEffectType)
+                }
                 enableScanlines={params.enableScanlines}
                 scanlineColor={
                   params.scanlineColor as 'green' | 'amber' | 'white' | 'none'
                 }
                 chromaticIntensity={
-                  params.chromaticIntensity as 'low' | 'medium' | 'high'
+                  params.intensity as 'low' | 'medium' | 'high'
                 }
-                chromaticNoise={params.chromaticNoise}
-                chromaticGlitch={params.chromaticGlitch}
+                chromaticNoise={params.noise}
+                chromaticGlitch={params.glitch}
                 className="w-full lg:w-auto"
               >
                 <a
