@@ -40,7 +40,7 @@ export default function PixelRipplePage() {
     'Hover Effects': folder({
       hoverEffect: {
         value: 'scanlines',
-        options: ['scanlines', 'chromaticAberration', 'fuzzy', 'none'],
+        options: ['scanlines', 'color fringing', 'fuzzy', 'none'],
         label: 'Effect Type',
       },
       Scanlines: folder(
@@ -258,7 +258,7 @@ export default function PixelRipplePage() {
                 className="w-full lg:w-auto"
               >
                 <a
-                  href="https://form.typeform.com/to/knSo3TYw"
+                  href="https://x.com/soyoung__ee"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
@@ -290,7 +290,7 @@ export default function PixelRipplePage() {
                 className="w-full lg:w-auto"
               >
                 <a
-                  href="https://form.typeform.com/to/knSo3TYw"
+                  href="https://x.com/soyoung__ee"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
@@ -298,7 +298,7 @@ export default function PixelRipplePage() {
                     params.hoverEffect === 'fuzzy'
                       ? 'bg-[#000]'
                       : 'bg-[#6C16B8]'
-                  } text-white font-acronym text-[32px] px-8 md:px-24 lg:px-32 py-5 md:py-10 lg:py-12 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase tracking-wide whitespace-nowrap w-full`}
+                  } text-white font-acronym text-[48px] font-bold px-8 h-36 md:px-24 lg:px-32 flex items-center justify-center gap-3 md:gap-6 transition-all duration-300 uppercase whitespace-nowrap w-full`}
                 >
                   <span>Register Now</span>
                 </a>

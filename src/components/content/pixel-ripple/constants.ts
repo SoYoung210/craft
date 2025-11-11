@@ -1,13 +1,11 @@
-// Hover effect types
 export type HoverEffectType =
   | 'scanlines'
   | 'chromaticAberration'
   | 'fuzzy'
   | 'none';
 
-// Chromatic Aberration configurations
 export const CHROMATIC_CONFIG = {
-  duration: 400, // ms for effect
+  duration: 400, // ms
 
   // Intensity presets
   intensity: {
@@ -16,14 +14,12 @@ export const CHROMATIC_CONFIG = {
     high: 10,
   },
 
-  // RGB channel offsets
   offsets: {
     low: { r: -2, g: 0, b: 2 },
     medium: { r: -4, g: 0, b: 4 },
     high: { r: -8, g: 0, b: 8 },
   },
 
-  // Effects toggles
   enableNoise: true,
   enableGlitch: true,
 };

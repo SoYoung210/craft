@@ -1,36 +1,29 @@
 import { Pixel } from './types';
 
-// Animation constants
 const NUM_BANDS = 8;
 const WAVE_WIDTH = 2;
 const RANDOM_OFFSET_MULTIPLIER = 1.5;
 const PIXEL_APPEARANCE_THRESHOLD = 0.4;
 
-/**
- * Creates a grid of pixels based on container dimensions and settings
- */
 export const createPixelGrid = (
   width: number,
   height: number,
   gridSize: number,
   density: number
 ): Pixel[] => {
-  // Calculate pixel size based on larger dimension
   const largerDimension = Math.max(width, height);
   const pixelSize = largerDimension / gridSize;
 
-  // Calculate grid dimensions
   const cols = Math.ceil(width / pixelSize);
   const rows = Math.ceil(height / pixelSize);
 
-  // Create pixels with 1px overlap to prevent gaps
   const pixels: Pixel[] = [];
   const threshold = density / 100;
+  // prevent gaps between pixels
   const overlap = 1;
 
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      // Use density to determine if we should create this pixel
       if (Math.random() < threshold) {
         pixels.push({
           x: col * pixelSize,
@@ -80,14 +73,13 @@ export const calculatePixelDistances = (
     );
   });
 
-  // Sort pixels by distance for animation
   pixels.sort((a, b) => a.distance - b.distance);
 };
 
-/**
- * Updates pixel opacities based on animation progress (forward direction)
- */
-export const updatePixelsForward = (pixels: Pixel[], progress: number): void => {
+export const updatePixelsForward = (
+  pixels: Pixel[],
+  progress: number
+): void => {
   pixels.forEach(pixel => {
     const bandProgress = progress * (NUM_BANDS + WAVE_WIDTH) - pixel.band;
 
@@ -116,7 +108,10 @@ export const updatePixelsForward = (pixels: Pixel[], progress: number): void => 
 /**
  * Updates pixel opacities based on animation progress (reverse direction)
  */
-export const updatePixelsReverse = (pixels: Pixel[], progress: number): void => {
+export const updatePixelsReverse = (
+  pixels: Pixel[],
+  progress: number
+): void => {
   pixels.forEach(pixel => {
     const reverseBand = NUM_BANDS - 1 - pixel.band;
     const bandProgress = progress * (NUM_BANDS + WAVE_WIDTH) - reverseBand;
