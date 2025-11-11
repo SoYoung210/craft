@@ -8,7 +8,7 @@ import {
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import { HoverEffectType } from '../components/content/pixel-ripple/constants';
 import SEO from '../components/layout/SEO';
-
+// #283eff
 export default function PixelRipplePage() {
   const { useCanvas, ...params } = useControls('Pixel Ripple Controls', {
     useCanvas: {
@@ -24,7 +24,7 @@ export default function PixelRipplePage() {
       min: 10,
       max: 100,
       step: 1,
-      label: 'Grid Size',
+      label: 'Counts',
     },
     animationDuration: {
       value: 600,
