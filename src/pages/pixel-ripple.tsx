@@ -1,4 +1,5 @@
 import { Leva, useControls, folder } from 'leva';
+import { graphql, PageProps } from 'gatsby';
 
 import {
   PixelRipple,
@@ -6,6 +7,7 @@ import {
 } from '../components/content/pixel-ripple';
 import PageLayout from '../components/layout/page-layout/PageLayout';
 import { HoverEffectType } from '../components/content/pixel-ripple/constants';
+import SEO from '../components/layout/SEO';
 
 export default function PixelRipplePage() {
   const { useCanvas, ...params } = useControls('Pixel Ripple Controls', {
@@ -319,3 +321,28 @@ export default function PixelRipplePage() {
     </>
   );
 }
+
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Pixel Ripple"
+      description="Nov 2025"
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
+
+export const query = graphql`
+  query PageData {
+    pageFeatured: file(
+      absolutePath: { glob: "**/src/images/thumbnails/pixel-ripple.png" }
+    ) {
+      childImageSharp {
+        gatsbyImageData(layout: FIXED, width: 900)
+      }
+    }
+  }
+`;
