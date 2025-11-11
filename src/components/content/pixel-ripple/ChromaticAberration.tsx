@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 
 interface ChromaticAberrationProps {
   children: React.ReactNode;
@@ -20,7 +20,6 @@ export const ChromaticAberration: React.FC<ChromaticAberrationProps> = ({
   enableGlitch = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // Get offset values based on intensity
   const getOffset = () => {
@@ -40,25 +39,6 @@ export const ChromaticAberration: React.FC<ChromaticAberrationProps> = ({
   };
 
   const offset = getOffset();
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
-    };
-
-    updateDimensions();
-    const resizeObserver = new ResizeObserver(updateDimensions);
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   const redLayerStyle: CSSProperties = {
     position: 'absolute',

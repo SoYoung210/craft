@@ -1,5 +1,9 @@
 // Hover effect types
-export type HoverEffectType = 'scanlines' | 'chromaticAberration' | 'none';
+export type HoverEffectType =
+  | 'scanlines'
+  | 'chromaticAberration'
+  | 'fuzzy'
+  | 'none';
 
 // Chromatic Aberration configurations
 export const CHROMATIC_CONFIG = {
@@ -22,6 +26,12 @@ export const CHROMATIC_CONFIG = {
   // Effects toggles
   enableNoise: true,
   enableGlitch: true,
+};
+
+// Fuzzy Text configurations
+export const FUZZY_CONFIG = {
+  baseIntensity: 0.18,
+  hoverIntensity: 0.5,
 };
 
 // Scanline color configurations

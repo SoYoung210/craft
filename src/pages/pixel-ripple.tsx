@@ -40,14 +40,7 @@ export default function PixelRipplePage() {
     'Hover Effects': folder({
       hoverEffect: {
         value: 'scanlines',
-        options: [
-          'scanlines',
-          'chromaticAberration',
-          'pixelFont',
-          'glitch',
-          'fuzzy',
-          'none',
-        ],
+        options: ['scanlines', 'chromaticAberration', 'fuzzy', 'none'],
         label: 'Effect Type',
       },
       Scanlines: folder(
@@ -270,8 +263,6 @@ export default function PixelRipplePage() {
                   rel="noopener noreferrer"
                   className={`relative ${
                     params.hoverEffect === 'chromaticAberration' ||
-                    params.hoverEffect === 'pixelFont' ||
-                    params.hoverEffect === 'glitch' ||
                     params.hoverEffect === 'fuzzy'
                       ? 'bg-[#000]'
                       : 'bg-[#0066FF]'
@@ -304,8 +295,6 @@ export default function PixelRipplePage() {
                   rel="noopener noreferrer"
                   className={`relative ${
                     params.hoverEffect === 'chromaticAberration' ||
-                    params.hoverEffect === 'pixelFont' ||
-                    params.hoverEffect === 'glitch' ||
                     params.hoverEffect === 'fuzzy'
                       ? 'bg-[#000]'
                       : 'bg-[#6C16B8]'
