@@ -267,7 +267,7 @@ export default function PixelRipplePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
-                    params.hoverEffect === 'chromaticAberration' ||
+                    params.hoverEffect === 'color fringing' ||
                     params.hoverEffect === 'fuzzy'
                       ? 'bg-[#000]'
                       : 'bg-[#0066FF]'
@@ -303,7 +303,7 @@ export default function PixelRipplePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`relative ${
-                    params.hoverEffect === 'chromaticAberration' ||
+                    params.hoverEffect === 'color fringing' ||
                     params.hoverEffect === 'fuzzy'
                       ? 'bg-[#000]'
                       : 'bg-[#6C16B8]'
