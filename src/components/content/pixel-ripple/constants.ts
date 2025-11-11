@@ -1,0 +1,51 @@
+export type HoverEffectType =
+  | 'scanlines'
+  | 'chromaticAberration'
+  | 'fuzzy'
+  | 'none';
+
+export const CHROMATIC_CONFIG = {
+  duration: 400, // ms
+
+  // Intensity presets
+  intensity: {
+    low: 3,
+    medium: 6,
+    high: 10,
+  },
+
+  offsets: {
+    low: { r: -2, g: 0, b: 2 },
+    medium: { r: -4, g: 0, b: 4 },
+    high: { r: -8, g: 0, b: 8 },
+  },
+
+  enableNoise: true,
+  enableGlitch: true,
+};
+
+// Fuzzy Text configurations
+export const FUZZY_CONFIG = {
+  baseIntensity: 0.18,
+  hoverIntensity: 0.5,
+};
+
+// Scanline color configurations
+export const SCANLINE_COLORS = {
+  green: {
+    filter: 'hue-rotate(120deg) saturate(1.5) brightness(1.2)',
+    color: 'rgba(0, 255, 0, 0.1)',
+  },
+  amber: {
+    filter: 'hue-rotate(30deg) saturate(2) brightness(1.1)',
+    color: 'rgba(255, 191, 0, 0.1)',
+  },
+  white: {
+    filter: 'brightness(1.2)',
+    color: 'rgba(255, 255, 255, 0.1)',
+  },
+  none: {
+    filter: 'none',
+    color: 'transparent',
+  },
+};
