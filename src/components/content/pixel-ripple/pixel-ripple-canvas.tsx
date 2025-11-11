@@ -85,7 +85,9 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showChromatic, setShowChromatic] = useState<boolean>(false);
   const chromaticTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  // Derived state
+  const isFuzzyActive = hoverEffect === 'fuzzy' && isHovered;
 
   // Initialize pixels based on container dimensions
   const initializePixels = useCallback(() => {
@@ -506,8 +508,6 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
     zIndex: 7,
   };
 
-  const isFuzzyActive = hoverEffect === 'fuzzy' && isHovered;
-
   return (
     <>
       <style>
@@ -556,13 +556,10 @@ export const PixelRippleCanvas: React.FC<PixelRippleCanvasProps> = ({
         onClick={handleClick}
       >
         <div
-          ref={contentRef}
           className="pixel-ripple__content"
-          style={
-            {
-              color: isFuzzyActive ? '#000' : '#fff',
-            } as React.CSSProperties
-          }
+          style={{
+            color: isFuzzyActive ? '#000' : '#fff',
+          }}
         >
           {children}
         </div>
