@@ -336,7 +336,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
 };
 
 export const query = graphql`
-  query PageData {
+  query PixelRipplePageData {
     pageFeatured: file(
       absolutePath: { glob: "**/src/images/thumbnails/pixel-ripple.webp" }
     ) {
