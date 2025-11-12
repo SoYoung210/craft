@@ -338,7 +338,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
 export const query = graphql`
   query PageData {
     pageFeatured: file(
-      absolutePath: { glob: "**/src/images/thumbnails/pixel-ripple.png" }
+      absolutePath: { glob: "**/src/images/thumbnails/pixel-ripple.webp" }
     ) {
       childImageSharp {
         gatsbyImageData(layout: FIXED, width: 900)
