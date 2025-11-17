@@ -8,7 +8,7 @@ export default function ThreeJsParticlePage() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Canvas
-        camera={{ position: [3, 1, 4], fov: 50 }}
+        camera={{ position: [4, 2, 5], fov: 50 }}
         gl={{ antialias: true }}
         onCreated={({ scene }) => {
           scene.background = new THREE.Color(0x000000); // black bg
@@ -16,9 +16,9 @@ export default function ThreeJsParticlePage() {
       >
         <CarParticles count={150000} />
         <OrbitControls
-          enablePan={false}
-          minDistance={2}
-          maxDistance={10}
+          enablePan={true}
+          minDistance={1}
+          maxDistance={15}
           target={[0, 0, 0]}
         />
       </Canvas>

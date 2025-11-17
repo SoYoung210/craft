@@ -70,9 +70,15 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
               // Add midpoints of edges for denser coverage
               for (let t = 0.25; t < 1; t += 0.25) {
                 // Edge AB
-                const x1 = positions.getX(a) + (positions.getX(b) - positions.getX(a)) * t;
-                const y1 = positions.getY(a) + (positions.getY(b) - positions.getY(a)) * t;
-                const z1 = positions.getZ(a) + (positions.getZ(b) - positions.getZ(a)) * t;
+                const x1 =
+                  positions.getX(a) +
+                  (positions.getX(b) - positions.getX(a)) * t;
+                const y1 =
+                  positions.getY(a) +
+                  (positions.getY(b) - positions.getY(a)) * t;
+                const z1 =
+                  positions.getZ(a) +
+                  (positions.getZ(b) - positions.getZ(a)) * t;
                 allPositions.push(x1, y1, z1);
 
                 // Random normal for edge particles
@@ -92,8 +98,12 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
     if (allPositions.length === 0) return null;
 
     // Calculate bounds and center
-    let minX = Infinity, minY = Infinity, minZ = Infinity;
-    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+    let minX = Infinity,
+      minY = Infinity,
+      minZ = Infinity;
+    let maxX = -Infinity,
+      maxY = -Infinity,
+      maxZ = -Infinity;
 
     for (let i = 0; i < allPositions.length; i += 3) {
       minX = Math.min(minX, allPositions[i]);
@@ -111,15 +121,14 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
     const sizeX = maxX - minX;
     const sizeY = maxY - minY;
     const sizeZ = maxZ - minZ;
-    const maxSize = Math.max(sizeX, sizeY, sizeZ);
 
     console.log('Particle count:', allPositions.length / 3);
     console.log('Model size:', sizeX, sizeY, sizeZ);
 
-    // Scale to fit view (normalize to ~4 units)
-    const scale = 4 / maxSize;
+    // Scale to fit view - the model is VERY small so we need massive scaling
+    const scale = 200; // Direct scale factor since model is ~0.02 units
 
-    // Create final particle arrays
+    // Create final particle arrays - use ALL vertices for maximum detail
     const particleCount = Math.min(allPositions.length / 3, count);
     const positions = new Float32Array(particleCount * 3);
     const randoms = new Float32Array(particleCount * 3);
@@ -127,14 +136,21 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
     const sizes = new Float32Array(particleCount);
 
     // Use all vertices if less than count, otherwise sample
-    const step = allPositions.length / 3 > count ? Math.floor(allPositions.length / 3 / count) : 1;
+    const step =
+      allPositions.length / 3 > count
+        ? Math.floor(allPositions.length / 3 / count)
+        : 1;
 
     let idx = 0;
-    for (let i = 0; i < allPositions.length && idx < particleCount; i += step * 3) {
+    for (
+      let i = 0;
+      i < allPositions.length && idx < particleCount;
+      i += step * 3
+    ) {
       // Apply scale and center
-      positions[idx * 3] = (allPositions[i] - centerX) * scale * 100;
-      positions[idx * 3 + 1] = (allPositions[i + 1] - centerY) * scale * 100;
-      positions[idx * 3 + 2] = (allPositions[i + 2] - centerZ) * scale * 100;
+      positions[idx * 3] = (allPositions[i] - centerX) * scale;
+      positions[idx * 3 + 1] = (allPositions[i + 1] - centerY) * scale;
+      positions[idx * 3 + 2] = (allPositions[i + 2] - centerZ) * scale;
 
       // Use normals for explosion direction
       randoms[idx * 3] = allNormals[i];
