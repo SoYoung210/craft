@@ -14,7 +14,7 @@ export default function ThreeJsParticlePage() {
           scene.background = new THREE.Color(0x000000); // black bg
         }}
       >
-        <CarParticles count={100000} />
+        <CarParticles count={150000} />
         <OrbitControls
           enablePan={false}
           minDistance={2}

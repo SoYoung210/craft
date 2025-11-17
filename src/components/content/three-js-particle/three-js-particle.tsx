@@ -3,8 +3,6 @@ import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 import vertexShader from './shaders/carParticles.vert';
 import fragmentShader from './shaders/carParticles.frag';
@@ -21,73 +19,131 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
   const geom = useMemo(() => {
     if (!scene) return null;
 
-    const geometries: THREE.BufferGeometry[] = [];
-    scene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.updateWorldMatrix(true, true);
-        const g = child.geometry.clone();
-        g.applyMatrix4(child.matrixWorld);
+    const allPositions: number[] = [];
+    const allNormals: number[] = [];
 
-        // Ensure all geometries have position attribute only for merging
-        const positions = g.attributes.position;
-        if (positions) {
-          const cleanGeom = new THREE.BufferGeometry();
-          cleanGeom.setAttribute('position', positions);
-          geometries.push(cleanGeom);
+    // Extract ALL vertices from ALL meshes for maximum detail
+    scene.traverse((child: any) => {
+      if (child.isMesh && child.geometry) {
+        child.updateWorldMatrix(true, true);
+
+        const geometry = child.geometry.clone();
+        geometry.applyMatrix4(child.matrixWorld);
+
+        if (geometry.attributes.position) {
+          const positions = geometry.attributes.position;
+          const normals = geometry.attributes.normal || positions; // Use positions as normals if no normals
+
+          // Add every vertex
+          for (let i = 0; i < positions.count; i++) {
+            allPositions.push(
+              positions.getX(i),
+              positions.getY(i),
+              positions.getZ(i)
+            );
+
+            // Use normals for explosion direction
+            if (geometry.attributes.normal) {
+              allNormals.push(
+                normals.getX(i),
+                normals.getY(i),
+                normals.getZ(i)
+              );
+            } else {
+              // Fallback: use position as direction
+              const x = positions.getX(i);
+              const y = positions.getY(i);
+              const z = positions.getZ(i);
+              const len = Math.sqrt(x * x + y * y + z * z) || 1;
+              allNormals.push(x / len, y / len, z / len);
+            }
+          }
+
+          // Also sample additional points along edges for better detail
+          if (geometry.index) {
+            const index = geometry.index;
+            for (let i = 0; i < index.count; i += 3) {
+              const a = index.getX(i);
+              const b = index.getX(i + 1);
+              const c = index.getX(i + 2);
+
+              // Add midpoints of edges for denser coverage
+              for (let t = 0.25; t < 1; t += 0.25) {
+                // Edge AB
+                const x1 = positions.getX(a) + (positions.getX(b) - positions.getX(a)) * t;
+                const y1 = positions.getY(a) + (positions.getY(b) - positions.getY(a)) * t;
+                const z1 = positions.getZ(a) + (positions.getZ(b) - positions.getZ(a)) * t;
+                allPositions.push(x1, y1, z1);
+
+                // Random normal for edge particles
+                const rnd = new THREE.Vector3(
+                  Math.random() - 0.5,
+                  Math.random() - 0.5,
+                  Math.random() - 0.5
+                ).normalize();
+                allNormals.push(rnd.x, rnd.y, rnd.z);
+              }
+            }
+          }
         }
       }
     });
 
-    if (!geometries.length) return null;
+    if (allPositions.length === 0) return null;
 
-    const merged = BufferGeometryUtils.mergeGeometries(geometries, false);
+    // Calculate bounds and center
+    let minX = Infinity, minY = Infinity, minZ = Infinity;
+    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
 
-    if (!merged) return null;
+    for (let i = 0; i < allPositions.length; i += 3) {
+      minX = Math.min(minX, allPositions[i]);
+      maxX = Math.max(maxX, allPositions[i]);
+      minY = Math.min(minY, allPositions[i + 1]);
+      maxY = Math.max(maxY, allPositions[i + 1]);
+      minZ = Math.min(minZ, allPositions[i + 2]);
+      maxZ = Math.max(maxZ, allPositions[i + 2]);
+    }
 
-    // Calculate bounding box to understand the model size
-    merged.computeBoundingBox();
-    const bbox = merged.boundingBox!;
-    const center = new THREE.Vector3();
-    bbox.getCenter(center);
-    const size = new THREE.Vector3();
-    bbox.getSize(size);
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const centerZ = (minZ + maxZ) / 2;
 
-    console.log('Model center:', center);
-    console.log('Model size:', size);
-    console.log('Model vertices:', merged.attributes.position.count);
+    const sizeX = maxX - minX;
+    const sizeY = maxY - minY;
+    const sizeZ = maxZ - minZ;
+    const maxSize = Math.max(sizeX, sizeY, sizeZ);
 
-    // Scale up the model to make it visible (scale by 100x)
-    const scaleFactor = 100;
-    merged.scale(scaleFactor, scaleFactor, scaleFactor);
+    console.log('Particle count:', allPositions.length / 3);
+    console.log('Model size:', sizeX, sizeY, sizeZ);
 
-    // Center the model
-    merged.computeBoundingBox();
-    merged.boundingBox!.getCenter(center);
-    merged.translate(-center.x, -center.y, -center.z);
+    // Scale to fit view (normalize to ~4 units)
+    const scale = 4 / maxSize;
 
-    const sampler = new MeshSurfaceSampler(new THREE.Mesh(merged))
-      .setWeightAttribute(null)
-      .build();
+    // Create final particle arrays
+    const particleCount = Math.min(allPositions.length / 3, count);
+    const positions = new Float32Array(particleCount * 3);
+    const randoms = new Float32Array(particleCount * 3);
+    const delays = new Float32Array(particleCount);
+    const sizes = new Float32Array(particleCount);
 
-    const positions = new Float32Array(count * 3);
-    const randoms = new Float32Array(count * 3);
-    const delays = new Float32Array(count);
-    const sizes = new Float32Array(count);
+    // Use all vertices if less than count, otherwise sample
+    const step = allPositions.length / 3 > count ? Math.floor(allPositions.length / 3 / count) : 1;
 
-    const _pos = new THREE.Vector3();
-    for (let i = 0; i < count; i++) {
-      sampler.sample(_pos);
-      positions.set([_pos.x, _pos.y, _pos.z], i * 3);
+    let idx = 0;
+    for (let i = 0; i < allPositions.length && idx < particleCount; i += step * 3) {
+      // Apply scale and center
+      positions[idx * 3] = (allPositions[i] - centerX) * scale * 100;
+      positions[idx * 3 + 1] = (allPositions[i + 1] - centerY) * scale * 100;
+      positions[idx * 3 + 2] = (allPositions[i + 2] - centerZ) * scale * 100;
 
-      const dir = new THREE.Vector3(
-        Math.random() * 2 - 1,
-        Math.random() * 2 - 1,
-        Math.random() * 2 - 1
-      ).normalize();
-      randoms.set([dir.x, dir.y, dir.z], i * 3);
+      // Use normals for explosion direction
+      randoms[idx * 3] = allNormals[i];
+      randoms[idx * 3 + 1] = allNormals[i + 1];
+      randoms[idx * 3 + 2] = allNormals[i + 2];
 
-      delays[i] = Math.random(); // 0–1 delay
-      sizes[i] = 0.5 + Math.random(); // particle size variation
+      delays[idx] = Math.random();
+      sizes[idx] = 0.5 + Math.random() * 0.3; // Consistent small size
+      idx++;
     }
 
     const g2 = new THREE.BufferGeometry();
@@ -104,7 +160,7 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
     () => ({
       uTime: { value: 0 },
       uProgress: { value: -1.0 }, // Start at -1 so particles are visible at rest
-      uSize: { value: 2.5 * window.devicePixelRatio }, // Smaller for denser look
+      uSize: { value: 1.2 * window.devicePixelRatio }, // Very small for maximum detail
     }),
     []
   );
