@@ -108,6 +108,7 @@
     "jest-preview": "^0.3.2",
     "netlify-cli": "^16.9.3",
     "postcss": "^8.5.6",
+    "raw-loader": "^4.0.2",
     "tailwindcss": "^3.4.18",
     "typescript": "^5.9.3"
   }
