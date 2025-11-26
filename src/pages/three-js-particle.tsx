@@ -8,7 +8,7 @@ export default function ThreeJsParticlePage() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Canvas
-        camera={{ position: [4, 2, 5], fov: 50 }}
+        camera={{ position: [8, 4, 10], fov: 50 }}
         gl={{ antialias: true }}
         onCreated={({ scene }) => {
           scene.background = new THREE.Color(0x000000); // black bg
