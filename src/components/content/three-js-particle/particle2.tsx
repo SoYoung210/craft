@@ -39,7 +39,7 @@ export function Particle2() {
         // const r = 0.8 + 0.2 * Math.random();
         posData[index + 0] = r * Math.cos(theta);
         posData[index + 1] = r * Math.sin(theta);
-        posData[index + 2] = 1.0;
+        posData[index + 2] = 0.0;
         posData[index + 3] = 1.0;
       }
     }
@@ -144,16 +144,31 @@ export function Particle2() {
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const dummyPlane = useMemo(() => {
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100));
-    plane.position.z = 1.0;
+    plane.position.z = 0;
     return plane;
   }, []);
 
   // Mouse move handler
+  const rectRef = useRef<DOMRect | null>(null);
+
   useEffect(() => {
+    const canvas = gl.domElement;
+
+    // Cache the rect
+    const updateRect = () => {
+      rectRef.current = canvas.getBoundingClientRect();
+    };
+
+    updateRect(); // Initial calculation
+
     const handleMouseMove = (e: PointerEvent) => {
+      if (!rectRef.current) return;
+
+      const rect = rectRef.current; // Use cached value
+
       const pointer = new THREE.Vector2(
-        (e.clientX / window.innerWidth) * 2 - 1,
-        -(e.clientY / window.innerHeight) * 2 + 1
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1
       );
 
       raycaster.setFromCamera(pointer, camera);
@@ -165,9 +180,15 @@ export function Particle2() {
       }
     };
 
+    // Update rect on resize
+    window.addEventListener('resize', updateRect);
     document.addEventListener('pointermove', handleMouseMove);
-    return () => document.removeEventListener('pointermove', handleMouseMove);
-  }, [camera, raycaster, dummyPlane]);
+
+    return () => {
+      window.removeEventListener('resize', updateRect);
+      document.removeEventListener('pointermove', handleMouseMove);
+    };
+  }, [camera, raycaster, dummyPlane, gl]);
 
   // Initialize FBOs with initial data
   useEffect(() => {

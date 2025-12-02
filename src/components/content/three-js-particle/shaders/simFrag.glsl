@@ -131,14 +131,14 @@ void main() {
   radius += (targetRadius - radius) * mix(0.2,0.5,circularForce);
 
 
-  vec3 targetPos = vec3(cos(angle), sin(angle), 0.0) * radius;
+  vec3 targetPos = vec3(cos(angle) * radius, sin(angle) * radius, pos.z);
   pos.xy += (targetPos.xy - pos.xy) * 0.03;
   pos.xy += curl(pos.xyz*4.0, time*0.1, 0.1).xy * 0.002;
   float dist = length(pos.xy - mouse);
   vec2 dir = normalize(pos.xy - mouse);
 
   pos.xy += dir * 0.1 * smoothstep(0.3,0.0,dist);
-  gl_FragColor = vec4(pos.xy, 1.0, 1.0);
+  gl_FragColor = vec4(pos, 1.0);
 }
 
 /*

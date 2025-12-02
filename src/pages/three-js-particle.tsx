@@ -15,14 +15,15 @@ export default function ThreeJsParticlePage() {
           scene.background = new THREE.Color(0x000000); // black bg
         }}
       >
+        <axesHelper args={[10]} />
         {/* <CarParticles count={150000} /> */}
         <Particle2 />
-        <OrbitControls
+        {/* <OrbitControls
           enablePan={true}
           minDistance={1}
           maxDistance={15}
           target={[0, 0, 0]}
-        />
+        /> */}
       </Canvas>
     </div>
   );
