@@ -31,6 +31,9 @@ export function Particle2() {
   const { positionTexture, infoTexture } = useMemo(() => {
     // Position data - initial positions in a circular pattern
     const posData = new Float32Array(size * size * 4);
+    // Info data - store original radius for each particle
+    const infoData = new Float32Array(size * size * 4);
+
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         const index = (i + j * size) * 4;
@@ -41,6 +44,11 @@ export function Particle2() {
         posData[index + 1] = r * Math.sin(theta);
         posData[index + 2] = 0.0;
         posData[index + 3] = 1.0;
+
+        infoData[index + 0] = 0.5 + Math.random();
+        infoData[index + 1] = 0.5 + Math.random();
+        infoData[index + 2] = 1.0;
+        infoData[index + 3] = 1.0;
       }
     }
 
@@ -54,19 +62,6 @@ export function Particle2() {
     posTexture.magFilter = THREE.NearestFilter;
     posTexture.minFilter = THREE.NearestFilter;
     posTexture.needsUpdate = true;
-
-    // Info data - store original radius for each particle
-    const infoData = new Float32Array(size * size * 4);
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        const index = (i + j * size) * 4;
-
-        infoData[index + 0] = 0.5 + Math.random();
-        infoData[index + 1] = 0.5 + Math.random();
-        infoData[index + 2] = 1.0;
-        infoData[index + 3] = 1.0;
-      }
-    }
 
     const infoTex = new THREE.DataTexture(
       infoData,
