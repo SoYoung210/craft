@@ -15,7 +15,6 @@ export default function ThreeJsParticlePage() {
           scene.background = new THREE.Color(0x000000); // black bg
         }}
       >
-        <axesHelper args={[10]} />
         {/* <CarParticles count={150000} /> */}
         <Particle2 />
         {/* <OrbitControls
