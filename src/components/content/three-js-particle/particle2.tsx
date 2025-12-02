@@ -54,13 +54,20 @@ export function Particle2() {
     posTexture.minFilter = THREE.NearestFilter;
     posTexture.needsUpdate = true;
 
-    // Info data - random values for particle variation
+    // Info data - store original radius for each particle
     const infoData = new Float32Array(size * size * 4);
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         const index = (i + j * size) * 4;
-        infoData[index + 0] = 0.5 + Math.random();
-        infoData[index + 1] = 0.5 + Math.random();
+        const posIndex = index;  // Same index for position data
+
+        // Calculate and store the ORIGINAL radius
+        const x = posData[posIndex + 0];
+        const y = posData[posIndex + 1];
+        const originalRadius = Math.sqrt(x * x + y * y);
+
+        infoData[index + 0] = originalRadius;  // Store original radius!
+        infoData[index + 1] = Math.random();   // Random variation
         infoData[index + 2] = 1.0;
         infoData[index + 3] = 1.0;
       }

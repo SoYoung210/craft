@@ -130,7 +130,8 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
 
     // Create final particle arrays - use ALL vertices for maximum detail
     const particleCount = Math.min(allPositions.length / 3, count);
-    const positions = new Float32Array(particleCount * 3);
+    const positions = new Float32Array(particleCount * 3);        // Final car shape positions
+    const scatteredPos = new Float32Array(particleCount * 3);     // Starting scattered positions
     const randoms = new Float32Array(particleCount * 3);
     const delays = new Float32Array(particleCount);
     const sizes = new Float32Array(particleCount);
@@ -147,10 +148,24 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
       i < allPositions.length && idx < particleCount;
       i += step * 3
     ) {
-      // Apply scale and center
-      positions[idx * 3] = (allPositions[i] - centerX) * scale;
-      positions[idx * 3 + 1] = (allPositions[i + 1] - centerY) * scale;
-      positions[idx * 3 + 2] = (allPositions[i + 2] - centerZ) * scale;
+      // Final car shape position (target)
+      const finalX = (allPositions[i] - centerX) * scale;
+      const finalY = (allPositions[i + 1] - centerY) * scale;
+      const finalZ = (allPositions[i + 2] - centerZ) * scale;
+
+      positions[idx * 3] = finalX;
+      positions[idx * 3 + 1] = finalY;
+      positions[idx * 3 + 2] = finalZ;
+
+      // Generate scattered starting position - FLAT PLANE (like water surface)
+      // For water wave effect, particles should be spread on XZ plane (horizontal)
+      const spreadX = (Math.random() - 0.5) * 20; // Wide horizontal spread
+      const spreadZ = (Math.random() - 0.5) * 20; // Wide depth spread
+      const spreadY = (Math.random() - 0.5) * 3; // Minimal vertical spread
+
+      scatteredPos[idx * 3] = finalX + spreadX;
+      scatteredPos[idx * 3 + 1] = finalY + spreadY + 5.0; // Start slightly above
+      scatteredPos[idx * 3 + 2] = finalZ + spreadZ;
 
       // Use normals for explosion direction
       randoms[idx * 3] = allNormals[i];
@@ -158,12 +173,13 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
       randoms[idx * 3 + 2] = allNormals[i + 2];
 
       delays[idx] = Math.random();
-      sizes[idx] = 0.5 + Math.random() * 0.3; // Consistent small size
+      sizes[idx] = 0.5 + Math.random() * 0.3;
       idx++;
     }
 
     const g2 = new THREE.BufferGeometry();
     g2.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    g2.setAttribute('aScattered', new THREE.BufferAttribute(scatteredPos, 3));  // NEW
     g2.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
     g2.setAttribute('aDelay', new THREE.BufferAttribute(delays, 1));
     g2.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
@@ -177,17 +193,33 @@ export function CarParticles({ count = 80000 }: CarParticlesProps) {
       uTime: { value: 0 },
       uProgress: { value: -1.0 }, // Start at -1 so particles are visible at rest
       uSize: { value: 1.2 * window.devicePixelRatio }, // Very small for maximum detail
+      uEntrance: { value: 0 }, // Start at 0 (scattered), animate to 1 (formed)
     }),
     []
   );
 
-  // Animate time & progress
+  // Track entrance animation
+  const entranceRef = useRef({ started: false, startTime: 0 });
+
+  // Animate time & entrance
   useFrame(state => {
     if (!pointsRef.current) return;
 
     uniforms.uTime.value = state.clock.elapsedTime;
 
-    // Automatic explosion is disabled - only triggered by click
+    // Start entrance animation on first frame
+    if (!entranceRef.current.started) {
+      entranceRef.current.started = true;
+      entranceRef.current.startTime = state.clock.elapsedTime;
+    }
+
+    // Animate entrance over ~3.5 seconds (gentle snowfall settling)
+    const entranceDuration = 3.5;
+    const entranceElapsed =
+      state.clock.elapsedTime - entranceRef.current.startTime;
+    const entranceProgress = Math.min(entranceElapsed / entranceDuration, 1);
+
+    uniforms.uEntrance.value = entranceProgress;
   });
 
   // click to restart blow
