@@ -142,10 +142,11 @@ export function Particle2() {
   // Mouse position
   const mouseRef = useRef(new THREE.Vector2(0, 0));
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  const dummyPlane = useMemo(
-    () => new THREE.Mesh(new THREE.PlaneGeometry(100, 100)),
-    []
-  );
+  const dummyPlane = useMemo(() => {
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100));
+    plane.position.z = 1.0;
+    return plane;
+  }, []);
 
   // Mouse move handler
   useEffect(() => {
