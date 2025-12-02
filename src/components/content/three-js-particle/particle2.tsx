@@ -36,6 +36,7 @@ export function Particle2() {
         const index = (i + j * size) * 4;
         const theta = Math.random() * Math.PI * 2;
         const r = 0.5 + 0.5 * Math.random();
+        // const r = 0.8 + 0.2 * Math.random();
         posData[index + 0] = r * Math.cos(theta);
         posData[index + 1] = r * Math.sin(theta);
         posData[index + 2] = 1.0;
@@ -59,15 +60,9 @@ export function Particle2() {
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         const index = (i + j * size) * 4;
-        const posIndex = index;  // Same index for position data
 
-        // Calculate and store the ORIGINAL radius
-        const x = posData[posIndex + 0];
-        const y = posData[posIndex + 1];
-        const originalRadius = Math.sqrt(x * x + y * y);
-
-        infoData[index + 0] = originalRadius;  // Store original radius!
-        infoData[index + 1] = Math.random();   // Random variation
+        infoData[index + 0] = 0.5 + Math.random();
+        infoData[index + 1] = 0.5 + Math.random();
         infoData[index + 2] = 1.0;
         infoData[index + 3] = 1.0;
       }

@@ -118,6 +118,8 @@ void main() {
   vec3 pos = texture2D(uPositions, vUv).xyz;
   vec3 info = texture2D(uInfo, vUv).xyz;
 
+  vec2 mouse = uMouse;
+
   float radius = length(pos.xy);
   float circularForce = 1.0 - smoothstep(0.3, 1.4, abs(pos.x - radius));
 	float angle = atan(pos.y, pos.x) - info.y * 0.3*mix(0.5,1.0,circularForce);
@@ -130,12 +132,12 @@ void main() {
 
 
   vec3 targetPos = vec3(cos(angle), sin(angle), 0.0) * radius;
-  pos.xy += (targetPos.xy - pos.xy) * 0.1;
-  pos.xy += curl(pos.xyz*4.0, time*0.1, 0.1).xy * 0.006;
-// float dist = length(pos.xy - mouse);
-// 	vec2 dir = normalize(pos.xy - mouse);
-// 	pos.xy += dir * 0.1 * smoothstep(0.3,0.0,dist);
+  pos.xy += (targetPos.xy - pos.xy) * 0.03;
+  pos.xy += curl(pos.xyz*4.0, time*0.1, 0.1).xy * 0.002;
+  float dist = length(pos.xy - mouse);
+  vec2 dir = normalize(pos.xy - mouse);
 
+  pos.xy += dir * 0.1 * smoothstep(0.3,0.0,dist);
   gl_FragColor = vec4(pos.xy, 1.0, 1.0);
 }
 
