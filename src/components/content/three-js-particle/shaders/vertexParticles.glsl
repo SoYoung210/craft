@@ -22,13 +22,19 @@ void main() {
 
   float edge = 0.15; // softness around both ends of the arc
 
-  // Soft fade near the starting seam (12 o'clock wraps 1.0 -> 0.0)
-  float startBlend = smoothstep(0.0, edge, min(angle01, 1.0 - angle01));
+  // Extend progress slightly above 1.0 so the sweep fully covers the last angles
+  float extendedProgress = mix(0.0, 1.0 + edge, progress);
+
+  // Soft fade near the starting seam only during the early phase; fade this helper out as progress -> 1
+  float seamFactor = smoothstep(0.0, edge, min(angle01, 1.0 - angle01));
+  float seamRelease = smoothstep(1.0 - edge, 1.0, progress);
+  float seamBlend  = mix(seamFactor, 1.0, seamRelease);
 
   // Soft fade for the moving edge of the sweep
-  float sweep = smoothstep(angle01 - edge, angle01 + edge, progress);
+  float sweep = smoothstep(angle01 - edge, angle01 + edge, extendedProgress);
 
-  float alpha = sweep * startBlend;
+  // Final alpha: sweep controls the drawing head, seamBlend prevents a permanent hole at 12 o'clock
+  float alpha = sweep * seamBlend;
 
 
   float brightness = 1.0 + 0.45*sin(angle+time*0.4);
