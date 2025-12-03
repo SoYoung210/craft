@@ -38,14 +38,19 @@ export function Particle2() {
       for (let j = 0; j < size; j++) {
         const index = (i + j * size) * 4;
         const theta = Math.random() * Math.PI * 2;
-        const r = 0.5 + 0.5 * Math.random();
-        // const r = 0.8 + 0.2 * Math.random();
+
+        const baseRadius = 1.7;
+        const jitter = 0.4 * (Math.random() - 0.5); // 두께를 조절
+        const r = baseRadius + jitter;
+
+        // 초기 위치: 반지름 r, 각도 theta 에 따라 원형으로 배치
         posData[index + 0] = r * Math.cos(theta);
         posData[index + 1] = r * Math.sin(theta);
         posData[index + 2] = 0.0;
         posData[index + 3] = 1.0;
 
-        infoData[index + 0] = 0.5 + Math.random();
+        // store base radius for each particle
+        infoData[index + 0] = baseRadius;
         infoData[index + 1] = 0.5 + Math.random();
         infoData[index + 2] = 1.0;
         infoData[index + 3] = 1.0;
