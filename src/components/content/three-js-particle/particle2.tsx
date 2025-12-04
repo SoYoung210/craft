@@ -9,7 +9,7 @@ import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertexParticles.glsl';
 
 export function Particle2() {
-  const size = 256;
+  const size = 512;
   const { gl, camera } = useThree();
 
   // Create FBOs for ping-pong rendering
@@ -40,7 +40,7 @@ export function Particle2() {
         const theta = Math.random() * Math.PI * 2;
 
         const baseRadius = 1.7;
-        const jitter = 0.4 * (Math.random() - 0.5); // 두께를 조절
+        const jitter = 0.35 * (Math.random() - 0.5); // 두께를 조절
         const r = baseRadius + jitter;
 
         // 초기 위치: 반지름 r, 각도 theta 에 따라 원형으로 배치

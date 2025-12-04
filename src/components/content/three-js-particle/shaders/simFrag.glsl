@@ -121,9 +121,9 @@ void main() {
   float radius = length(pos.xy);
 
   float circularForce = 1.0 - smoothstep(0.3, 1.4, abs(pos.x - radius));
-	float angle = atan(pos.y, pos.x) - info.y * 0.3*mix(0.5,1.0,circularForce);
+	float angle = atan(pos.y, pos.x) - info.y * 0.34*mix(0.5,1.0,circularForce);
   float targetRadius = mix(
-		info.x, 1.8,
+		info.x, 1.7,
 		0.5 + 0.45*sin(angle*2.0 + time*0.2)
 	);
   // float radius = info.x;
@@ -132,31 +132,10 @@ void main() {
 
   vec3 targetPos = vec3(cos(angle) * radius, sin(angle) * radius, pos.z);
   pos.xy += (targetPos.xy - pos.xy) * 0.03;
-  pos.xy += curl(pos.xyz*4.0, time*0.1, 0.1).xy * 0.002;
+  pos.xy += curl(pos.xyz*4.0, time*0.2, 0.1).xy * 0.002;
   float dist = length(pos.xy - mouse);
   vec2 dir = normalize(pos.xy - mouse);
 
-  pos.xy += dir * 0.05 * smoothstep(0.22,0.0,dist);
+  pos.xy += dir * 0.08 * smoothstep(0.3,0.0,dist);
   gl_FragColor = vec4(pos, 1.0);
 }
-
-/*
-
-void main() {
-  vec3 pos = texture2D(uPositions, vUv).xyz;
-  vec3 info = texture2D(uInfo, vUv).xyz;
-
-  float radius = length(pos.xy);
-  float circularForce = 1.0 - smoothstep(0.5, 1.0, abs(pos.x - radius));
-
-  // float radius = info.x;
-  float angle = atan(pos.y, pos.x) - info.y * 0.1;
-
-  vec3 targetPos = vec3(cos(angle), sin(angle), 0.0) * radius;
-  pos.xy += (targetPos.xy - pos.xy) * 0.1;
-
-
-  gl_FragColor = vec4(pos, 1.0);
-}
-
-*/

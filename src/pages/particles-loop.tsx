@@ -1,8 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
 
-import { CarParticles } from '../components/content/three-js-particle/three-js-particle';
 import { Particle2 } from '../components/content/three-js-particle/particle2';
 
 export default function ThreeJsParticlePage() {
@@ -24,6 +22,11 @@ export default function ThreeJsParticlePage() {
           target={[0, 0, 0]}
         /> */}
       </Canvas>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center">
+        <h1 className="text-4xl font-light tracking-wide uppercase bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+          Particles Loop
+        </h1>
+      </div>
     </div>
   );
 }
