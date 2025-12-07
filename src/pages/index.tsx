@@ -13,7 +13,12 @@ const IndexPage = () => {
       <ContentList className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
         <ContentList.Item active>
           <Link to="/particles-loop">
-            <ContentBox title="Particles Loop" className="bg-black">
+            <ContentBox
+              title="Particles Loop"
+              style={{
+                backgroundColor: 'black',
+              }}
+            >
               <StaticImage
                 src="../images/thumbnails/particles-loop.webp"
                 alt="Particles Loop"
