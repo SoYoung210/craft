@@ -7,6 +7,19 @@ const puppeteer = require('puppeteer');
 
 // eslint-disable-next-line no-undef
 module.exports = {
+  onCreateWebpackConfig: ({ actions }) => {
+    actions.setWebpackConfig({
+      module: {
+        rules: [
+          {
+            test: /\.(glsl|vs|fs|vert|frag)$/,
+            exclude: /node_modules/,
+            use: ['raw-loader'],
+          },
+        ],
+      },
+    });
+  },
   onCreateBabelConfig: ({ actions }) => {
     actions.setBabelPreset({
       name: 'babel-preset-gatsby',
