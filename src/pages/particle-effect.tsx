@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { forwardRef, ReactNode, useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
 import '@fontsource/nanum-pen-script/400.css';

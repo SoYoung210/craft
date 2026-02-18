@@ -1,6 +1,6 @@
 import { MediaHTMLAttributes, useRef } from 'react';
 import { Link } from 'gatsby';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import CardVideo from '../../../images/video/card-demo_2.mp4';
 import GlowCursorVideo from '../../../images/video/glow-cursor.mp4';

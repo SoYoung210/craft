@@ -9,7 +9,7 @@ import React, {
   useId,
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import { ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 import { cn } from '../../../utils/css';

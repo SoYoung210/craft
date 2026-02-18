@@ -1,6 +1,6 @@
 // like radix-ui Tab.Content
 
-import { AnimatePresence, motion, Variants } from 'framer-motion';
+import { AnimatePresence, motion, Variants } from 'motion/react';
 import { forwardRef, ReactElement } from 'react';
 
 import { styled } from '../../../../stitches.config';
