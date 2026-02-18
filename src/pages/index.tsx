@@ -12,6 +12,26 @@ const IndexPage = () => {
       <PageLayout.Title>Craft</PageLayout.Title>
       <ContentList className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
         <ContentList.Item active>
+          <Link to="/ripple-shader">
+            <ContentBox
+              title="Ripple Shader"
+              style={{ backgroundColor: '#0a0a0a' }}
+            >
+              <StaticImage
+                src="../images/shader-image/test1.jpeg"
+                alt="Ripple Shader preview"
+                placeholder="none"
+                objectFit="contain"
+                style={{
+                  display: 'flex',
+                  height: 250,
+                  justifyContent: 'center',
+                }}
+              />
+            </ContentBox>
+          </Link>
+        </ContentList.Item>
+        <ContentList.Item active>
           <Link to="/particles-loop">
             <ContentBox
               title="Particles Loop"
