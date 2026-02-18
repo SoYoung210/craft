@@ -1,6 +1,6 @@
 import { Root, Portal, Content, DialogProps } from '@radix-ui/react-dialog';
 import { Primitive } from '@radix-ui/react-primitive';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { styled } from '@stitches/react';
 import {
   ButtonHTMLAttributes,

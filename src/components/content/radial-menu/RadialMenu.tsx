@@ -10,7 +10,7 @@ import {
   useState,
   forwardRef,
 } from 'react';
-import { AnimatePresence, motion, useMotionTemplate } from 'framer-motion';
+import { AnimatePresence, motion, useMotionTemplate } from 'motion/react';
 import { Key } from 'w3c-keys';
 import { createPortal } from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';

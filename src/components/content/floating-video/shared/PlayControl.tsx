@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { forwardRef, HTMLAttributes, useMemo } from 'react';
 
 import { css, styled } from '../../../../../stitches.config';

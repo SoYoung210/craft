@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useMotionValue, useSpring } from 'framer-motion';
+import { useMotionValue, useSpring } from 'motion/react';
 
 import { Position } from '../types';
 import { getAngleBetweenPositions } from '../../../../utils/math';

@@ -1,6 +1,6 @@
 import { Portal } from '@radix-ui/react-portal';
 import { ReactNode, useCallback, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import { styled } from '../../../../stitches.config';

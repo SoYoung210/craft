@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';

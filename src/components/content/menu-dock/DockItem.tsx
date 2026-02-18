@@ -1,5 +1,5 @@
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ButtonHTMLAttributes, ReactNode, useMemo } from 'react';
 
 import { styled } from '../../../../stitches.config';

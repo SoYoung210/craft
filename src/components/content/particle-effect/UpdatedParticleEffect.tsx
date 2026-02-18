@@ -6,7 +6,7 @@ import React, {
   ComponentPropsWithoutRef,
   forwardRef,
 } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Canvas, extend, useThree } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   ComponentPropsWithoutRef,
   CSSProperties,
@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { MotionProps } from 'framer-motion';
+import type { MotionProps, TargetAndTransition } from 'motion/react';
 
 import { styled } from '../../../../stitches.config';
 import useTimeout from '../../../hooks/useTimeout';
@@ -151,7 +151,7 @@ const originGeometryVariants: MotionProps = {
   },
   transition: {
     duration: 0.35,
-    type: 'ease',
+    type: 'tween',
   },
 };
 
@@ -161,7 +161,7 @@ const scaleDownVariants: MotionProps = {
   exit: 'exit',
   variants: {
     initial: {},
-    animate: (custom: DynamicSlideVariantsValue) => custom,
+    animate: (custom: DynamicSlideVariantsValue) => custom as TargetAndTransition,
     exit: {
       x: EXIT_OFFSET,
       opacity: 0,
