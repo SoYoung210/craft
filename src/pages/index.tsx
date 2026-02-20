@@ -18,7 +18,7 @@ const IndexPage = () => {
               style={{ backgroundColor: '#0a0a0a' }}
             >
               <StaticImage
-                src="../images/shader-image/test1.jpeg"
+                src="../images/shader-image/test2.webp"
                 alt="Ripple Shader preview"
                 placeholder="none"
                 objectFit="contain"
