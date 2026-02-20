@@ -1,32 +1,20 @@
 import { useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
 import { Leva, useControls } from 'leva';
+import { RotateCcw } from 'lucide-react';
 
-import PageLayout from '../components/layout/page-layout/PageLayout';
+import { globalStyles } from '../styles/global';
 import SEO from '../components/layout/SEO';
 import { ShineImageShader } from '../components/content/ripple-shader/shine-image-shader';
 
 export default function RippleShaderPage({
   data,
 }: PageProps<Queries.RippleShaderPageQuery>) {
+  globalStyles();
   const imageUrl = data.testImage?.publicURL ?? '';
   const [replayKey, setReplayKey] = useState(0);
 
   const params = useControls('Shine Image Shader', {
-    sharpness: {
-      value: 0.7,
-      min: 0.1,
-      max: 1.0,
-      step: 0.05,
-      label: 'Sharpness',
-    },
-    spread: {
-      value: 0.15,
-      min: 0.01,
-      max: 0.5,
-      step: 0.01,
-      label: 'Spread',
-    },
     duration: {
       value: 3.5,
       min: 0.3,
@@ -40,6 +28,13 @@ export default function RippleShaderPage({
       max: 3.0,
       step: 0.1,
       label: 'Delay (s)',
+    },
+    spread: {
+      value: 0.15,
+      min: 0.01,
+      max: 0.5,
+      step: 0.01,
+      label: 'Spread',
     },
     glowColor: {
       value: '#ffffff',
@@ -86,71 +81,105 @@ export default function RippleShaderPage({
           },
         }}
       />
-      <PageLayout>
-        <PageLayout.Title>Ripple Shader</PageLayout.Title>
-        <PageLayout.Details>
-          <PageLayout.Summary>
-            A WebGL image shader with a ripple/shine animation on load.
-          </PageLayout.Summary>
-        </PageLayout.Details>
-        <div
-          style={{
-            width: '100%',
-            height: 600,
-            background: '#0a0a0a',
-            borderRadius: 16,
-            position: 'relative',
-          }}
-        >
-          <ShineImageShader
-            key={replayKey}
-            imageUrl={imageUrl}
-            objectFit={params.objectFit as 'cover' | 'contain'}
-            objectPosition={params.objectPosition as 'center' | 'top'}
-            backgroundColor="#0a0a0a"
-            borderRadius={params.borderRadius}
-            sharpness={params.sharpness}
-            spread={params.spread}
-            duration={params.duration}
-            delay={params.delay}
-            glowColor={params.glowColor}
-            glowIntensity={params.glowIntensity}
-          />
-          <button
-            onClick={() => setReplayKey(k => k + 1)}
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#0c0c0e',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 32px',
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: 900 }}>
+          <div
             style={{
-              position: 'absolute',
-              bottom: 16,
-              right: 16,
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 8,
-              color: '#fff',
-              padding: '6px 14px',
-              fontSize: 13,
-              cursor: 'pointer',
-              backdropFilter: 'blur(8px)',
+              width: '100%',
+              height: 600,
+              background: '#0a0a0a',
+              borderRadius: 24,
+              position: 'relative',
+              overflow: 'hidden',
             }}
           >
-            Replay
-          </button>
+            <ShineImageShader
+              key={replayKey}
+              imageUrl={imageUrl}
+              spread={params.spread}
+              objectFit={params.objectFit as 'cover' | 'contain'}
+              objectPosition={params.objectPosition as 'center' | 'top'}
+              backgroundColor="#0a0a0a"
+              borderRadius={params.borderRadius}
+              duration={params.duration}
+              delay={params.delay}
+              glowColor={params.glowColor}
+              glowIntensity={params.glowIntensity}
+            />
+            <button
+              onClick={() => setReplayKey(k => k + 1)}
+              title="Replay"
+              style={{
+                position: 'absolute',
+                bottom: 12,
+                right: 12,
+                width: 28,
+                height: 28,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                background: 'rgba(255, 255, 255, 0.06)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: 'none',
+                borderRadius: 7,
+                color: 'rgba(255,255,255,0.45)',
+              }}
+            >
+              <RotateCcw size={12} />
+            </button>
+          </div>
+          <p
+            style={{
+              marginTop: 12,
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.35)',
+              letterSpacing: '0.02em',
+            }}
+          >
+            Photo by{' '}
+            <a
+              href="https://www.sebliu.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}
+            >
+              Seb
+            </a>
+          </p>
         </div>
-      </PageLayout>
+      </div>
     </>
   );
 }
 
-export const Head = () => (
-  <SEO
-    title="Ripple Shader"
-    description="WebGL image shader with ripple/shine animation."
-  />
-);
+export const Head = (props: PageProps<Queries.PageDataQuery>) => {
+  return (
+    <SEO
+      title="Ripple Shader"
+      description="WebGL image shader with ripple/shine animation."
+      thumbnailSrc={
+        props.data.pageFeatured?.childImageSharp?.gatsbyImageData.images
+          .fallback?.src
+      }
+    />
+  );
+};
 
 export const query = graphql`
   query RippleShaderPage {
     testImage: file(
-      absolutePath: { glob: "**/src/images/shader-image/test1.jpeg" }
+      absolutePath: { glob: "**/src/images/shader-image/test2.webp" }
     ) {
       publicURL
     }
