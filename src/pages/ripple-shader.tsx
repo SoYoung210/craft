@@ -64,6 +64,20 @@ export default function RippleShaderPage({
       step: 1,
       label: 'Border Radius',
     },
+    chromaticAberration: {
+      value: 1.0,
+      min: 0,
+      max: 5.0,
+      step: 0.1,
+      label: 'Chromatic Aberration',
+    },
+    iridescence: {
+      value: 1.0,
+      min: 0,
+      max: 1.0,
+      step: 0.05,
+      label: 'Iridescence',
+    },
   });
 
   return (
@@ -114,6 +128,8 @@ export default function RippleShaderPage({
               delay={params.delay}
               glowColor={params.glowColor}
               glowIntensity={params.glowIntensity}
+              chromaticAberration={params.chromaticAberration}
+              iridescence={params.iridescence}
             />
             <button
               onClick={() => setReplayKey(k => k + 1)}

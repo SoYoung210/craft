@@ -24,6 +24,10 @@ interface ShineImageShaderProps {
   backgroundColor?: string;
   /** Vertical alignment for cover mode (default "center") */
   objectPosition?: 'center' | 'top';
+  /** Chromatic aberration strength at the ripple edge (default 1.0, 0 = off) */
+  chromaticAberration?: number;
+  /** Iridescent color shift blend (default 1.0, 0 = flat glowColor only) */
+  iridescence?: number;
 }
 
 function hexToVec3(hex: string): [number, number, number] {
@@ -60,8 +64,33 @@ uniform float uGlowIntensity;
 uniform vec3 uGlowColor;
 uniform vec3 uBackgroundColor;
 uniform float uHasBackground; // 1.0 = use background color, 0.0 = transparent
+uniform float uChromaticAberration;
+uniform float uIridescence;
 
 out vec4 fragColor;
+
+// NameDrop-style subtle iridescent tint blended with white
+vec3 iridescentColor(vec2 uv, vec2 center, float dist, float front) {
+  float angle = atan(uv.y - center.y, uv.x - center.x);
+  float angleNorm = angle / (2.0 * 3.14159) + 0.5;
+  float distPhase = (dist - front) * 2.0;
+  float t = fract(angleNorm * 0.3 + distPhase);
+
+  // Pastel palette: warm white → soft pink → cool white/blue
+  vec3 warm = vec3(1.0, 0.95, 0.85);   // warm white with hint of gold
+  vec3 pink = vec3(1.0, 0.82, 0.88);   // very soft pink
+  vec3 cool = vec3(0.85, 0.92, 1.0);   // cool white with hint of blue
+
+  vec3 col;
+  if (t < 0.33) {
+    col = mix(warm, pink, t / 0.33);
+  } else if (t < 0.66) {
+    col = mix(pink, cool, (t - 0.33) / 0.33);
+  } else {
+    col = mix(cool, warm, (t - 0.66) / 0.34);
+  }
+  return col;
+}
 
 // Signed distance function for rounded rectangle
 float sdRoundedBox(vec2 p, vec2 b, float r) {
@@ -150,51 +179,62 @@ void main() {
     return;
   }
 
-  // --- Wave: Bottom → Top (broad bloom) ---
-  vec2 center2 = vec2(0.5, 1.05);
-  float wp2 = smoothstep(0.25, 1.0, uProgress);
-  float maxR2 = 1.6;
-  float front2 = wp2 * maxR2;
-  float safeFront2 = max(front2, 0.001);
-  float dist2 = distance(uv, center2);
+  // --- Shine ring: Top → Bottom ---
+  vec2 center = vec2(0.5, 1.05);
+  float wp = smoothstep(0.0, 1.0, uProgress);
+  float maxR = 1.6;
+  float front = wp * maxR;
+  float safeFront = max(front, 0.001);
+  float dist = distance(uv, center);
 
-  float ramp2 = smoothstep(0.0, 0.3, wp2);
+  float spread = 0.25;
+  float scaleDiff = 0.0;
+  vec2 disp = vec2(0.0);
 
-  float spread2 = 0.25;
-  float scaleDiff2 = 0.0;
-  vec2 disp2 = vec2(0.0);
-
-  if (dist2 <= (safeFront2 + spread2) && dist2 >= max(safeFront2 - spread2, 0.0)) {
-    float diff = dist2 - safeFront2;
-    // Softer profile using smoothstep
-    scaleDiff2 = smoothstep(spread2, 0.0, abs(diff));
-    float diffTime = diff * scaleDiff2;
-    vec2 dir = normalize(uv - center2);
-
-    // Gentler displacement for wave 2
-    disp2 = (dir * diffTime * ramp2) / (safeFront2 * max(dist2, 0.2) * 20.0);
-    disp2 = clamp(disp2, -0.03, 0.03);
+  if (dist <= (safeFront + spread) && dist >= max(safeFront - spread, 0.0)) {
+    float diff = dist - safeFront;
+    scaleDiff = smoothstep(spread, 0.0, abs(diff));
+    float diffTime = diff * scaleDiff;
+    vec2 dir = normalize(uv - center);
+    disp = dir * diffTime * 0.1;
+    disp = clamp(disp, -0.03, 0.03);
   }
 
-  // Combined displacement
-  vec2 totalDisp = disp2;
-  vec2 displacedUV = clamp(uv + totalDisp, 0.0, 1.0);
-  color = texture(uTexture, fitUV(displacedUV));
+  // Leading distortion ahead of the ring (enters from top, sweeps down with ring)
+  float ahead = dist - safeFront;
+  float leadProfile = smoothstep(0.25, 0.0, ahead) * smoothstep(-0.05, 0.02, ahead);
+  float leadFade = smoothstep(0.0, 0.1, uProgress) * smoothstep(1.0, 0.5, uProgress);
+  vec2 leadDisp = normalize(uv - center) * leadProfile * leadFade * 0.012;
 
-  // --- Luminous glow ---
+  vec2 displacedUV = uv + disp + leadDisp;
+  displacedUV = clamp(displacedUV, 0.0, 1.0);
+  vec2 finalUV = fitUV(displacedUV);
 
-  float glow2 = 0.0;
-  if (scaleDiff2 > 0.0) {
-    glow2 = scaleDiff2 * ramp2 / (safeFront2 * max(dist2, 0.2) * 8.0);
-  }
+  // Chromatic aberration: offset R/G/B along radial direction, tight to ring only
+  float abStrength = scaleDiff * uChromaticAberration * 0.008;
+  vec2 abDir = normalize(uv - center);
+  vec2 uvR = clamp(finalUV + abDir * abStrength, vec2(0.0), vec2(1.0));
+  vec2 uvB = clamp(finalUV - abDir * abStrength, vec2(0.0), vec2(1.0));
 
-  // Soft bloom extending beyond wave band (exponential falloff)
-  float bloom2 = exp(-abs(dist2 - front2) * 4.0) * wp2 * 0.12;
+  color.r = texture(uTexture, uvR).r;
+  color.g = texture(uTexture, finalUV).g;
+  color.b = texture(uTexture, uvB).b;
+  color.a = texture(uTexture, finalUV).a;
 
-  float totalGlow = (glow2 + bloom2) * uGlowIntensity;
+  // --- Iridescent Glow ---
+  float bloom = exp(-abs(dist - front) * 5.0) * wp * 0.08;
 
-  // Add glow as white/colored light (not just existing color multiplication)
-  color.rgb += uGlowColor * totalGlow;
+  // Fade envelope: ramp in and fade out so image returns to original
+  float fadeEnvelope = smoothstep(0.0, 0.15, uProgress) * smoothstep(1.0, 0.65, uProgress);
+
+  vec3 iriColor = iridescentColor(uv, center, dist, front);
+  // Iridescent color only in the tight core of the ring
+  float iriMask = smoothstep(spread, 0.0, abs(dist - safeFront)) * smoothstep(spread * 0.5, 0.0, abs(dist - safeFront));
+  vec3 finalGlowColor = mix(uGlowColor, iriColor, uIridescence * iriMask);
+  // Ring glow + bloom both use mostly white; only the tight core gets color
+  float ringGlow = scaleDiff * 0.4;
+  color.rgb += finalGlowColor * ringGlow * uGlowIntensity * fadeEnvelope
+             + uGlowColor * bloom * uGlowIntensity * fadeEnvelope;
 
   fragColor = color;
 }
@@ -215,6 +255,8 @@ export function ShineImageShader({
   glowColor = '#ffffff',
   backgroundColor,
   objectPosition = 'center',
+  chromaticAberration = 1.0,
+  iridescence = 1.0,
 }: ShineImageShaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const programRef = useRef<Program | null>(null);
@@ -282,6 +324,8 @@ export function ShineImageShader({
           value: new Float32Array(bgVec3),
         },
         uHasBackground: { value: backgroundColor ? 1.0 : 0.0 },
+        uChromaticAberration: { value: chromaticAberration },
+        uIridescence: { value: iridescence },
       },
     });
 
@@ -375,6 +419,8 @@ export function ShineImageShader({
     glowIntensity,
     glowColor,
     backgroundColor,
+    chromaticAberration,
+    iridescence,
   ]);
 
   return (
