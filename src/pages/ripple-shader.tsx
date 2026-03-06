@@ -78,6 +78,13 @@ export default function RippleShaderPage({
       step: 0.05,
       label: 'Iridescence',
     },
+    causticIntensity: {
+      value: 0.5,
+      min: 0,
+      max: 2.0,
+      step: 0.05,
+      label: 'Caustic Intensity',
+    },
   });
 
   return (
@@ -130,6 +137,7 @@ export default function RippleShaderPage({
               glowIntensity={params.glowIntensity}
               chromaticAberration={params.chromaticAberration}
               iridescence={params.iridescence}
+              causticIntensity={params.causticIntensity}
             />
             <button
               onClick={() => setReplayKey(k => k + 1)}
