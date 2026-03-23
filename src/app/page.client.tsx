@@ -117,21 +117,7 @@ export default function IndexClient() {
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/dock-menu">
-            <ContentBox title="Dock Menu">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/dock-item.jpeg"
-                  alt="Oval Dock Menu with Content"
-                  fill
-                  quality={70}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+
         <ContentList.Item>
           <Link href="/switch-tab">
             <ContentBox title="Switch Tab">
@@ -177,21 +163,7 @@ export default function IndexClient() {
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/random-text">
-            <ContentBox title="random text">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/random-text.png"
-                  alt="Random Text content preview"
-                  fill
-                  quality={100}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+
         <ContentList.Item>
           <Link href="/link-preview">
             <ContentBox title="link preview">
@@ -207,21 +179,7 @@ export default function IndexClient() {
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/stacked-toast">
-            <ContentBox title="stacked toast">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/stacked-toast.jpg"
-                  alt="stacked toast content preview"
-                  fill
-                  quality={100}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+
         <ContentList.Item>
           <Link href="/dynamic-card">
             <ContentBox title="dynamic card">
@@ -251,20 +209,7 @@ export default function IndexClient() {
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/typing-text">
-            <ContentBox title="typing-text">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/typing-text.png"
-                  alt="Typing Text Effect Preview Image"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+
         <ContentList.Item>
           <Link href="/blurred-logo">
             <ContentBox title="blurred-logo">
