@@ -203,7 +203,7 @@ export const Head = (props: PageProps<Queries.PageDataQuery>) => {
 export const query = graphql`
   query RippleShaderPage {
     testImage: file(
-      absolutePath: { glob: "**/src/images/shader-image/test2.webp" }
+      absolutePath: { glob: "**/src/images/thumbnails/ripple_og.webp" }
     ) {
       publicURL
     }
