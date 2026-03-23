@@ -18,20 +18,21 @@ const IndexPage = () => {
               style={{ backgroundColor: '#0a0a0a' }}
             >
               <StaticImage
-                src="../images/shader-image/test2.webp"
+                src="../images/thumbnails/ripple_og.webp"
                 alt="Ripple Shader preview"
                 placeholder="none"
-                objectFit="contain"
+                objectFit="cover"
                 style={{
                   display: 'flex',
                   height: 250,
+                  width: '100%',
                   justifyContent: 'center',
                 }}
               />
             </ContentBox>
           </Link>
         </ContentList.Item>
-        <ContentList.Item active>
+        <ContentList.Item>
           <Link to="/particles-loop">
             <ContentBox
               title="Particles Loop"
