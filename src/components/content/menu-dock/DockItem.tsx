@@ -2,7 +2,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { motion } from 'motion/react';
 import { ButtonHTMLAttributes, ReactNode, useMemo } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import { usePrevious } from '../../../hooks/usePrevious';
 
 import { useMenuDockContext } from './context';
@@ -24,6 +24,7 @@ export function DockItem({
   children,
   index,
   onClick,
+  className,
   ...restProps
 }: DockItemProps) {
   const { onActiveIndexChange, activeIndex, direction, onDirectionChange } =
@@ -59,7 +60,20 @@ export function DockItem({
   }, [direction, nextPathLengthValueCandidate, prevPathLengthValue]);
 
   return (
-    <Item
+    <motion.button
+      className={cn(
+        'absolute top-0 left-0 bg-transparent rounded-xl',
+        'border border-white/90 h-12 w-12',
+        'saturate-[0.9] brightness-[0.9] transition-transform duration-[0.25s] ease-[ease]',
+        'flex items-center justify-center',
+        className
+      )}
+      style={{
+        offsetPath:
+          'path("M80.5 93.0032V68.2395C102.179 50.8165 127.503 33.912 163.6 21.3472C199.805 8.74474 246.872 0.5 312 0.5C442.114 0.5 510.116 28.4174 551.5 68.2127V95.9968L80.5 93.0032Z")',
+        offsetRotate: '0deg',
+        filter: 'saturate(0.9) brightness(0.9)',
+      }}
       onClick={composeEventHandlers(onClick, () => {
         const direction = order < 2 ? 'clockwise' : 'counterclockwise';
         onDirectionChange(direction);
@@ -85,7 +99,7 @@ export function DockItem({
       {...restProps}
     >
       {children}
-    </Item>
+    </motion.button>
   );
 }
 
@@ -101,22 +115,3 @@ function adjustInRange(number: number, min: number, max: number): number {
     return number;
   }
 }
-
-const Item = styled(motion.button, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  offsetPath:
-    'path("M80.5 93.0032V68.2395C102.179 50.8165 127.503 33.912 163.6 21.3472C199.805 8.74474 246.872 0.5 312 0.5C442.114 0.5 510.116 28.4174 551.5 68.2127V95.9968L80.5 93.0032Z")',
-  offsetRotate: '0deg',
-  background: 'transparent',
-  borderRadius: 12,
-  border: '1px solid rgba(255, 255, 255, 0.9)',
-  height: 48,
-  width: 48,
-  filter: 'saturate(0.9) brightness(0.9)',
-  transition: 'transform 0.25s ease',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});

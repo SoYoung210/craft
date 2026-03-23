@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { styled } from '../../../../stitches.config';
-import errorView from '../../../images/link-preview/error_view.png';
+import { cn } from '../../../utils/cn';
+const errorView = '/images/link-preview/error_view.png';
 
 import { useLinkPreview } from './hooks/useLinkPreview';
 import { LoadingSkeleton, Tooltip } from './styled';
@@ -22,9 +22,21 @@ const LinkPreview = ({ label, preview, url }: Props) => {
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
         <Tooltip.Trigger asChild>
-          <Link href={url} target="_blank" rel="noreferrer">
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className={cn(
+              'relative inline-block text-black visited:text-black',
+              'after:content-[""] after:w-full after:h-0.5 after:bg-gray-10 after:absolute after:-bottom-0.5 after:left-1/2',
+              'after:origin-center after:transition-[transform] after:duration-200 after:ease-[ease]',
+              'after:[transform:translateX(-50%)_scaleX(0)]',
+              'hover:after:[transform:translateX(-50%)_scaleX(1)]',
+              'focus:after:[transform:translateX(-50%)_scaleX(1)]'
+            )}
+          >
             {label}
-          </Link>
+          </a>
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
@@ -49,32 +61,4 @@ const LinkPreview = ({ label, preview, url }: Props) => {
   );
 };
 
-const Link = styled('a', {
-  position: 'relative',
-  display: 'inline-block',
-  color: '$black',
-
-  '&:visited': {
-    color: '$black',
-  },
-
-  '&::after': {
-    content: '""',
-    width: '100%',
-    height: 2,
-    backgroundColor: '$gray10',
-    position: 'absolute',
-    bottom: -2,
-    left: '50%',
-    transition: 'transform 0.2s ease',
-    transformOrigin: 'center',
-    transform: 'translateX(-50%) scaleX(0)',
-  },
-
-  '&:focus, &:hover': {
-    '&::after': {
-      transform: 'translateX(-50%) scaleX(1)',
-    },
-  },
-});
 export default LinkPreview;

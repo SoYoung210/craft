@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
 
-import { styled } from '../../../../stitches.config';
 import { CSSUnit } from '../../../utils/type';
 import Button, { ButtonProps } from '../../material/Button';
 
@@ -26,25 +25,16 @@ export default function BorderAnimationButton(props: Props) {
     <Button
       variant="ghost"
       size="xlarge"
-      css={{
-        border: '1px solid rgba(0, 0, 0, 0.08)',
-        backgroundImage: 'linear-gradient(to top right, #18181b, #27272a)',
-        color: '$gray4',
-        fontWeight: 500,
-      }}
+      className="border border-[rgba(0,0,0,0.08)] bg-gradient-to-tr from-[#18181b] to-[#27272a] text-gray-4 font-medium"
       {...buttonProps}
     >
       <BorderMask width={1}>
         <AnimatePresence>
           {animationActive && (
             <BorderTransformer duration={duration}>
-              <MotionBox
-                css={{
-                  width: '100%',
-                  height: '100%',
-                  background: activeBorderColor,
-                  filter: 'blur(8px)',
-                }}
+              <motion.div
+                className="w-full h-full blur-[8px]"
+                style={{ background: activeBorderColor }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -57,5 +47,3 @@ export default function BorderAnimationButton(props: Props) {
     </Button>
   );
 }
-
-const MotionBox = styled(motion.div);

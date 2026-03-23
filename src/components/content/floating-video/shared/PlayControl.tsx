@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { forwardRef, HTMLAttributes, useMemo } from 'react';
 
-import { css, styled } from '../../../../../stitches.config';
+import { cn } from '../../../../utils/cn';
 import { PauseIcon } from '../../../material/icon/PauseIcon';
 import { PlayIcon } from '../../../material/icon/Play';
 
@@ -20,7 +20,7 @@ const duration = {
 
 export const PlayControl = forwardRef<HTMLButtonElement, PlayControlProps>(
   (
-    { playing, onPlayingChange, size = 24, reduceMotion = false, ...restProps },
+    { playing, onPlayingChange, size = 24, reduceMotion = false, className, ...restProps },
     ref
   ) => {
     const label = playing ? 'pause video' : 'play video';
@@ -32,16 +32,28 @@ export const PlayControl = forwardRef<HTMLButtonElement, PlayControlProps>(
     }, [playing]);
 
     return (
-      <ResetButton
+      <button
         aria-label={label}
         onClick={handler}
         ref={ref}
-        reduceMotion={reduceMotion}
+        className={cn(
+          'reset-button inline-flex',
+          !reduceMotion && [
+            '[&_svg]:transition-[scale] [&_svg]:duration-[0.24s] [&_svg]:ease-in-out',
+            'hover:[&_svg]:scale-110',
+            'active:[&_svg]:scale-[0.85]',
+          ],
+          className
+        )}
         {...restProps}
       >
-        <span className={css({ size, position: 'relative' })()}>
+        <span
+          className="relative"
+          style={{ width: size, height: size }}
+        >
           <AnimatePresence>
-            <MotionSpan
+            <motion.span
+              className="absolute inset-0 leading-[0]"
               key={playing ? 'play' : 'pause'}
               initial={{
                 scale: 0.6,
@@ -63,42 +75,10 @@ export const PlayControl = forwardRef<HTMLButtonElement, PlayControlProps>(
               }}
             >
               <Icon color={ICON_COLOR} size={size} />
-            </MotionSpan>
+            </motion.span>
           </AnimatePresence>
         </span>
-      </ResetButton>
+      </button>
     );
   }
 );
-
-const ResetButton = styled('button', {
-  resetButton: 'inline-flex',
-
-  variants: {
-    reduceMotion: {
-      false: {
-        '& svg': {
-          transition: 'scale 0.24s ease',
-        },
-
-        '&:hover': {
-          '& svg': {
-            scale: 1.1,
-          },
-        },
-
-        '&:active': {
-          '& svg': {
-            scale: 0.85,
-          },
-        },
-      },
-    },
-  },
-});
-
-const MotionSpan = styled(motion.span, {
-  position: 'absolute',
-  inset: 0,
-  lineHeight: 0,
-});

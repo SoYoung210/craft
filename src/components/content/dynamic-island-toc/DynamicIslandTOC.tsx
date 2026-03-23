@@ -604,7 +604,7 @@ export function DynamicIslandTOCRoot({
     }
 
     // bottom padding
-    return isVertical ? 16 : 0;
+    return isVertical && !isExpanded ? 6 : isVertical ? 16 : 0;
   };
 
   // Memoized context value to prevent unnecessary re-renders
@@ -711,7 +711,7 @@ export function DynamicIslandTOCRoot({
                     data-debug-id="dynamic-island-toc-notch-content"
                     className={cn(
                       'flex items-center min-w-0 min-h-0',
-                      isVertical && !isExpanded ? 'space-y-2' : 'space-x-2'
+                      'gap-x-[7px]'
                     )}
                     style={{
                       writingMode:
@@ -737,7 +737,7 @@ export function DynamicIslandTOCRoot({
                     <motion.div
                       layout="position"
                       className={cn(
-                        'text-white min-w-0 min-h-0 text-xs space-x-1 font-medium flex items-center justify-center w-full'
+                        'text-white min-w-0 min-h-0 text-[10.5px] gap-x-[3.5px] font-medium flex items-center justify-center w-full'
                       )}
                       style={{
                         // Explicitly reset transform to prevent scale issues

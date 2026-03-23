@@ -1,6 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
 
-import { styled } from '../../../../stitches.config';
 import Text from '../../material/Text';
 
 import useParticleText, { EffectControl } from './useParticleText';
@@ -29,29 +28,13 @@ const SnowFlake = forwardRef<EffectControl>((_, ref) => {
   );
 
   return (
-    <Root>
+    <div className="relative [&_canvas]:w-full [&_canvas]:h-full [&_a]:absolute [&_a]:inset-0 [&_a]:w-full [&_a]:h-full">
       <canvas style={{ backgroundColor: 'black' }} ref={canvasRef} />
       <Text color="gray0" asChild>
         <a href="https://so-so.dev" target="_blank" rel="noreferrer" />
       </Text>
-    </Root>
+    </div>
   );
-});
-
-const Root = styled('div', {
-  position: 'relative',
-
-  '& canvas': {
-    width: '100%',
-    height: '100%',
-  },
-
-  '& a': {
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-  },
 });
 
 export default SnowFlake;

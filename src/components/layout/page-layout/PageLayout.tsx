@@ -1,138 +1,122 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-import { keyframes, styled } from '../../../../stitches.config';
-import { globalStyles } from '../../../styles/global';
-import { entries } from '../../../utils/object';
-import { radialGradient } from '../../../utils/style/gradient';
+import { cva } from 'class-variance-authority';
+
+import { cn } from '@/utils/cn';
+import { entries } from '@/utils/object';
+import { radialGradient } from '@/utils/style/gradient';
 
 import { backgroundColorMap } from './PageLayout.css';
 import { ContentSwitchTab } from './ContentSwitchTab';
 
-interface Props extends ComponentPropsWithoutRef<typeof Main> {
+const mainVariants = cva(
+  'max-w-[760px] p-16 min-h-screen flex flex-col gap-8 relative mx-auto',
+  {
+    variants: {
+      theme: {
+        gradient: '',
+        normal: '',
+      },
+    },
+    defaultVariants: {
+      theme: 'normal',
+    },
+  }
+);
+
+const gradientBackgroundImage = entries(backgroundColorMap)
+  .map(([, { start, end, value }]) => {
+    return radialGradient(start, end, [`${value} 0`, 'transparent 50%']);
+  })
+  .join(', ');
+
+interface Props extends ComponentPropsWithoutRef<'main'> {
   children: ReactNode;
   theme?: 'gradient' | 'normal';
   switchTabDefaultOpen?: boolean;
 }
 
-//https://web.dev/rendering-performance/
-// https://stackoverflow.com/questions/35906196/improve-css3-background-position-animations-performance
-const backgroundAnimation = keyframes({
-  '0%': { transform: 'translateX(-50%) rotate(0deg)' },
-  '50%': { transform: 'translateX(-50%) rotate(270deg)' },
-  '100%': { transform: 'translateX(-50%) rotate(0deg)' },
-});
-
 export default function PageLayout({
   children,
   theme = 'normal',
   switchTabDefaultOpen,
+  className,
   ...props
 }: Props) {
-  globalStyles();
-
   return (
-    <Main {...props} theme={theme}>
+    <main className={cn(mainVariants({ theme }), className)} {...props}>
+      {theme === 'gradient' && (
+        <div
+          className="fixed top-0 left-1/2 -translate-x-1/2 w-[60%] h-full pointer-events-none animate-[background-rotate_20s_linear_infinite] opacity-20 -z-1"
+          style={{
+            backgroundImage: gradientBackgroundImage,
+            backgroundSize: '180%, 200%',
+            filter: 'blur(100px) saturate(150%)',
+          }}
+        />
+      )}
       {children}
       <ContentSwitchTab defaultOpen={switchTabDefaultOpen} />
-    </Main>
+    </main>
   );
 }
 
-const Main = styled('main', {
-  maxWidth: 760,
-  padding: 64,
-  minHeight: '100vh',
+function Title({ className, ...props }: React.ComponentProps<'h1'>) {
+  return (
+    <h1
+      className={cn(
+        'text-[40px] font-bold text-gray-8 tracking-[-0.03em]',
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '32px',
+function SubTitle({ className, ...props }: React.ComponentProps<'h2'>) {
+  return (
+    <h2
+      className={cn(
+        'text-[20px] font-medium text-gray-8 tracking-[-0.01em] leading-[1.8]',
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
-  position: 'relative',
-  margin: '0 auto',
+function DetailContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'p-3 leading-[1.5] scale-90 opacity-0 transition-[opacity,transform] duration-100 ease-linear group-open:opacity-100 group-open:scale-100',
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    theme: {
-      gradient: {
-        '&::before': {
-          position: 'fixed',
-          top: '0',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          content: '',
-          width: '60%',
-          height: '100%',
-          backgroundImage: entries(backgroundColorMap)
-            .map(([, { start, end, value }]) => {
-              return radialGradient(start, end, [
-                `${value} 0`,
-                'transparent 50%',
-              ]);
-            })
-            .join(', '),
-          backgroundSize: '180%, 200%',
-          filter: 'blur(100px) saturate(150%)',
-          animation: `${backgroundAnimation} infinite 20s linear`,
-          opacity: 0.2,
-          zIndex: -1,
-        },
-      },
-      normal: {
-        '&::before': {
-          display: 'none',
-        },
-      },
-    },
-  },
-});
+function Details({ className, ...props }: React.ComponentProps<'details'>) {
+  return (
+    <details
+      className={cn(
+        'group flex flex-col text-gray-6 focus:outline-none focus-visible:outline-none',
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
-const Title = styled('h1', {
-  fontSize: 40,
-  fontWeight: 700,
-  color: '$gray8',
-  letterSpacing: '-0.03em',
-});
-
-const SubTitle = styled('h2', {
-  fontSize: 20,
-  fontWeight: 500,
-  color: '$gray8',
-  letterSpacing: '-0.01em',
-  lineHeight: 1.8,
-});
-
-const DetailContent = styled('div', {
-  padding: 12,
-  lineHeight: 1.5,
-
-  transform: 'scale(0.9)',
-  opacity: 0,
-
-  transition: 'opacity 0.1s ease, transform 0.1s ease',
-});
-
-const Details = styled('details', {
-  display: 'flex',
-  flexDirection: 'column',
-
-  color: '$gray6',
-
-  '&:focus-visible, &:focus': {
-    outline: 'none',
-  },
-
-  '&[open]': {
-    [`& ${DetailContent}`]: {
-      opacity: 1,
-      transform: 'scale(1)',
-    },
-  },
-});
-
-const Summary = styled('summary', {
-  '&:focus-visible, &:focus': {
-    outline: 'none',
-  },
-});
+function Summary({ className, ...props }: React.ComponentProps<'summary'>) {
+  return (
+    <summary
+      className={cn('focus:outline-none focus-visible:outline-none', className)}
+      {...props}
+    />
+  );
+}
 
 PageLayout.Title = Title;
 PageLayout.SubTitle = SubTitle;

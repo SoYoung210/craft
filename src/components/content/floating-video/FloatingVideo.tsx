@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
-import { css, styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import { ArrowUpLeft } from '../../material/icon/ArrowUpLeft';
 import { Underline } from '../../material/icon/Underline';
 import { HStack } from '../../material/Stack';
@@ -97,19 +97,15 @@ export function FloatingVideo(props: FloatingVideoProps) {
           key="floating"
           asChild
           data-todo-role="floating-video-root"
-          className={css({
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
+          className={cn(
+            'fixed bottom-0 left-0 will-change-transform rounded-xl',
+            'shadow-[rgba(0,0,0,0.12)_0px_0px_24px] overflow-hidden'
+          )}
+          style={{
             height: floatingVideoRootHeight,
             width: `min(${width}px, 80vw)`,
             aspectRatio,
-            willChange: 'transform',
-            borderRadius: 12,
-            boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
-            overflow: 'hidden',
-          })()}
-          style={{ width: `min(${width}px, 80vw)` }}
+          }}
         >
           <motion.div
             style={{
@@ -166,14 +162,32 @@ export function FloatingVideo(props: FloatingVideoProps) {
                 }}
               />
             </VideoController.BottomControlContainer>
-            <FloatingIconContainer gap={8}>
+            <HStack
+              gap={8}
+              className="absolute top-2.5 right-2.5 z-[1]"
+            >
               <FloatingIconRoot asChild>
-                <MinimizeButton onClick={setMinimize}>
+                <motion.button
+                  className={cn(
+                    'reset-button flex',
+                    '[&_svg_path]:transition-transform [&_svg_path]:duration-200 [&_svg_path]:ease-in-out',
+                    'active:[&_svg_path]:translate-y-1'
+                  )}
+                  onClick={setMinimize}
+                >
                   <Underline color="white" />
-                </MinimizeButton>
+                </motion.button>
               </FloatingIconRoot>
               <FloatingIconRoot asChild>
-                <ResizeButton
+                <motion.button
+                  className={cn(
+                    'reset-button flex cursor-ne-resize',
+                    '[&_svg]:rotate-45',
+                    '[&_svg_path]:transition-transform [&_svg_path]:duration-200 [&_svg_path]:ease-in-out',
+                    '[&_svg_path:last-of-type]:origin-center',
+                    'active:[&_svg_path:first-of-type]:-translate-y-1',
+                    'active:[&_svg_path:last-of-type]:scale-y-[1.3] active:[&_svg_path:last-of-type]:-translate-y-0.5'
+                  )}
                   drag={true}
                   onDrag={(event, info) => {
                     const offset = getBiggerOffset(info.delta.x, info.delta.y);
@@ -190,61 +204,15 @@ export function FloatingVideo(props: FloatingVideoProps) {
                   dragMomentum={false}
                 >
                   <ArrowUpLeft color="white" />
-                </ResizeButton>
+                </motion.button>
               </FloatingIconRoot>
-            </FloatingIconContainer>
+            </HStack>
           </motion.div>
         </VideoController>
       )}
     </AnimatePresence>
   );
 }
-
-const FloatingIconContainer = styled(HStack, {
-  position: 'absolute',
-  top: 10,
-  right: 10,
-  zIndex: 1,
-});
-
-const MinimizeButton = styled(motion.button, {
-  resetButton: 'flex',
-
-  'svg path': {
-    transition: 'transform 0.2s ease-in-out',
-  },
-
-  '&:active': {
-    'svg path': {
-      transform: 'translateY(4px)',
-    },
-  },
-});
-
-const ResizeButton = styled(motion.button, {
-  resetButton: 'flex',
-  cursor: 'ne-resize',
-  svg: {
-    transform: 'rotate(45deg)',
-  },
-
-  'svg path': {
-    transition: 'transform 0.2s ease-in-out',
-  },
-
-  'svg path:last-of-type': {
-    transformOrigin: 'center',
-  },
-
-  '&:active': {
-    'svg path:first-of-type': {
-      transform: 'translateY(-4px)',
-    },
-    'svg path:last-of-type': {
-      transform: 'scaleY(1.3) translateY(-2px)',
-    },
-  },
-});
 
 /**
  *

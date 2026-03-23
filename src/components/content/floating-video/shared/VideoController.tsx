@@ -1,76 +1,67 @@
 import { Primitive } from '@radix-ui/react-primitive';
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
-import { ease, styled } from '../../../../../stitches.config';
+import { cn } from '../../../../utils/cn';
 
 import { PlayControl as PlayControlRaw } from './PlayControl';
 
-interface VideoControllerProps extends ComponentPropsWithoutRef<typeof Root> {
+interface VideoControllerProps extends ComponentPropsWithoutRef<typeof Primitive.div> {
   children: ReactNode;
+  className?: string;
 }
 const VideoControllerImpl = forwardRef<HTMLDivElement, VideoControllerProps>(
   (props, ref) => {
-    const { children, ...restProps } = props;
+    const { children, className, ...restProps } = props;
 
     return (
-      <Root ref={ref} {...restProps}>
+      <Primitive.div
+        ref={ref}
+        className={cn(
+          'relative group/video',
+          'after:content-[""] after:opacity-0 after:transition-opacity after:duration-[0.24s] after:ease-out-cubic',
+          'after:absolute after:inset-0 after:w-full after:h-full after:bg-black/18',
+          'hover:after:opacity-100',
+          '[&>div]:leading-[0]',
+          className
+        )}
+        {...restProps}
+      >
         {children}
-      </Root>
+      </Primitive.div>
     );
   }
 );
 
-const BottomControlContainer = styled('div', {
-  position: 'absolute',
-  bottom: 6,
-  width: '95%',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  zIndex: 2,
-  opacity: 0,
-  transition: `opacity 0.24s ${ease.easeOutCubic}`,
-});
+const BottomControlContainer = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'div'> & { className?: string }) => (
+  <div
+    className={cn(
+      'absolute bottom-1.5 w-[95%] left-1/2 -translate-x-1/2 z-[2]',
+      'opacity-0 transition-opacity duration-[0.24s] ease-out-cubic',
+      'group-hover/video:opacity-100',
+      className
+    )}
+    {...props}
+  />
+);
 
-const PlayControl = styled(PlayControlRaw, {
-  opacity: 0,
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  zIndex: 2,
-  scale: 1,
-  transition: `opacity 0.24s ${ease.easeOutCubic}`,
-});
-
-const Root = styled(Primitive.div, {
-  position: 'relative',
-
-  '&::after': {
-    content: '""',
-    opacity: 0,
-    transition: `opacity 0.24s ${ease.easeOutCubic}`,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.18)',
-  },
-
-  '&:hover': {
-    '&::after': { opacity: 1 },
-    [`& ${BottomControlContainer}, & ${PlayControl}`]: {
-      opacity: 1,
-    },
-  },
-
-  // reset video wrapper style
-  '& > div': {
-    lineHeight: 0,
-  },
-});
+const PlayControl = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<typeof PlayControlRaw> & { className?: string }
+>(({ className, ...props }, ref) => (
+  <PlayControlRaw
+    ref={ref}
+    className={cn(
+      'opacity-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2]',
+      'scale-100 transition-opacity duration-[0.24s] ease-out-cubic',
+      'group-hover/video:opacity-100',
+      className
+    )}
+    {...props}
+  />
+));
 
 export const VideoController = Object.assign({}, VideoControllerImpl, {
   PlayControl,

@@ -1,9 +1,18 @@
 import { Primitive } from '@radix-ui/react-primitive';
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
-import { styled } from '../../../stitches.config';
+import { cn } from '../../utils/cn';
 
-const Box = styled(Primitive.div);
+export type BoxProps = ComponentPropsWithoutRef<typeof Primitive.div> & {
+  className?: string;
+};
 
-export type BoxProps = ComponentPropsWithoutRef<typeof Box>;
+const Box = forwardRef<HTMLDivElement, BoxProps>(
+  ({ className, ...props }, ref) => {
+    return <Primitive.div ref={ref} className={cn(className)} {...props} />;
+  }
+);
+
+Box.displayName = 'Box';
+
 export default Box;

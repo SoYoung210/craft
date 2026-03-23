@@ -1,7 +1,6 @@
 import { Root, Portal, Content, DialogProps } from '@radix-ui/react-dialog';
 import { Primitive } from '@radix-ui/react-primitive';
 import { motion } from 'motion/react';
-import { styled } from '@stitches/react';
 import {
   ButtonHTMLAttributes,
   forwardRef,
@@ -41,15 +40,15 @@ export function SwitchTab(props: SwitchTabProps) {
     ...restProps
   } = props;
 
-  const [value, setValue] = useControllableState({
+  const [value, setValue] = useControllableState<string | undefined>({
     prop: valueFromProps,
-    onChange: onValueChange,
+    onChange: onValueChange as ((value: string | undefined) => void) | undefined,
     defaultProp: defaultValue,
   });
 
-  const [open, setOpenRaw] = useControllableState({
+  const [open, setOpenRaw] = useControllableState<boolean | undefined>({
     prop: openFromProps,
-    onChange: onOpenChange,
+    onChange: onOpenChange as ((value: boolean | undefined) => void) | undefined,
     defaultProp: defaultOpen,
   });
 
@@ -96,11 +95,14 @@ export function SwitchTab(props: SwitchTabProps) {
   return (
     <Root open={open} onOpenChange={setOpenRaw} {...restProps}>
       <Portal>
-        <StyledContent onOpenAutoFocus={e => e.preventDefault()}>
+        <Content
+          onOpenAutoFocus={e => e.preventDefault()}
+          style={styledContentStyles}
+        >
           <SwitchTabProvider value={value} onValueChange={setValue}>
             {children}
           </SwitchTabProvider>
-        </StyledContent>
+        </Content>
       </Portal>
     </Root>
   );
@@ -140,27 +142,28 @@ const Item = forwardRef<HTMLButtonElement, ItemProps>((props, ref) => {
   }, [clear, focusItem, selected]);
 
   return (
-    <ItemRoot key={valueFromContext}>
-      <StyledItem
+    <div style={{ position: 'relative', borderRadius: RADIUS }}>
+      <Primitive.button
         ref={composedRefs}
         onFocus={composeEventHandlers(onFocus, () => {
           onValueChange(value);
         })}
         asChild={asChild}
+        style={styledItemStyles}
         {...restProps}
       >
         {children}
-      </StyledItem>
+      </Primitive.button>
       <If condition={selected}>
         <Indicator />
       </If>
-    </ItemRoot>
+    </div>
   );
 });
 
 const Indicator = () => {
   return (
-    <StyledIndicator
+    <motion.div
       layoutId="switch-tab-indicator"
       transition={{
         type: 'spring',
@@ -168,7 +171,20 @@ const Indicator = () => {
         damping: 38,
         mass: 1,
       }}
-    />
+      style={styledIndicatorStyles}
+    >
+      <div
+        style={{
+          backgroundImage: NOISE,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          borderRadius: 'inherit',
+        }}
+      />
+    </motion.div>
   );
 };
 
@@ -177,7 +193,7 @@ SwitchTab.Item = Item;
 const OUT_OFFSET = 24;
 const RADIUS = 28;
 
-const StyledIndicator = styled(motion.div, {
+const styledIndicatorStyles: React.CSSProperties = {
   position: 'absolute',
   top: OUT_OFFSET * -1,
   left: OUT_OFFSET * -1,
@@ -185,39 +201,33 @@ const StyledIndicator = styled(motion.div, {
   backgroundColor: 'rgba(0, 0, 0, 0.055)',
   width: `calc(100% + ${OUT_OFFSET * 2}px)`,
   height: `calc(100% + ${OUT_OFFSET * 2}px)`,
-  '&::before': {
-    content: '""',
-    backgroundImage: NOISE,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    borderRadius: 'inherit',
-  },
-
   zIndex: -1,
-});
+};
 
-const ItemRoot = styled('div', {
-  position: 'relative',
-  borderRadius: RADIUS,
-});
-
-const StyledItem = styled(Primitive.button, {
-  '&:focus': {
-    outline: 'none',
-  },
-
+const styledItemStyles: React.CSSProperties = {
   borderRadius: 'inherit',
   backgroundColor: 'transparent',
-  resetButton: 'flex',
-
+  // resetButton styles
+  display: 'flex',
+  whiteSpace: 'nowrap',
+  userSelect: 'none',
+  WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+  overflow: 'hidden',
+  margin: 0,
+  padding: 0,
+  outline: 0,
+  border: '0 solid transparent',
+  background: 'transparent',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  fontWeight: 600,
+  WebkitFontSmoothing: 'antialiased',
+  // dimensions
   width: 'clamp(288px, 14vw, 360px)',
   aspectRatio: '4 / 3',
-});
+};
 
-const StyledContent = styled(Content, {
+const styledContentStyles: React.CSSProperties = {
   padding: 48,
   paddingBottom: 52,
   paddingTop: 52,
@@ -226,19 +236,15 @@ const StyledContent = styled(Content, {
   backdropFilter: 'blur(12px)',
   boxShadow:
     '0 0 0 1px rgba(0,0,59,0.051),0px 8px 40px rgba(0,0,59,0.051),0px 12px 32px -16px rgba(0,0,0,0.055)',
-
-  '&:focus': {
-    outline: 'none',
-  },
+  outline: 'none',
   position: 'fixed',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   minWidth: 878,
-  maxWidth: `calc(100vw - 40px)`,
+  maxWidth: 'calc(100vw - 40px)',
   overflow: 'hidden',
-
   display: 'grid',
   gridAutoFlow: 'column',
-  gap: '64px',
-});
+  gap: 64,
+};

@@ -1,38 +1,40 @@
 import { Primitive } from '@radix-ui/react-primitive';
-import { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { ComponentPropsWithoutRef, CSSProperties, forwardRef } from 'react';
 
-import { styled, StitchesCssType } from '../../../stitches.config';
-import useMergeCss from '../../hooks/useMergeCss';
+import { cn } from '../../utils/cn';
 
-type FlexStyledDivProps = ComponentPropsWithoutRef<typeof FlexStyleDiv>;
-export interface FlexProps extends FlexStyledDivProps {
-  direction?: StitchesCssType['flexDirection'];
-  alignItems?: StitchesCssType['alignItems'];
-  justifyContent?: StitchesCssType['justifyContent'];
+type PrimitiveDivProps = ComponentPropsWithoutRef<typeof Primitive.div>;
+export interface FlexProps extends PrimitiveDivProps {
+  direction?: CSSProperties['flexDirection'];
+  alignItems?: CSSProperties['alignItems'];
+  justifyContent?: CSSProperties['justifyContent'];
 }
 
 const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const {
-    css: cssFromProps,
+    className,
+    style: styleFromProps,
     direction,
     alignItems,
     justifyContent,
     ...restProps
   } = props;
 
-  const css = useMergeCss(
-    {
-      flexDirection: direction,
-      alignItems,
-      justifyContent,
-    },
-    cssFromProps
-  );
-  return <FlexStyleDiv ref={ref} css={css} {...restProps} />;
-});
+  const style: CSSProperties = {
+    ...styleFromProps,
+    flexDirection: direction,
+    alignItems,
+    justifyContent,
+  };
 
-const FlexStyleDiv = styled(Primitive.div, {
-  display: 'flex',
+  return (
+    <Primitive.div
+      ref={ref}
+      className={cn('flex', className)}
+      style={style}
+      {...restProps}
+    />
+  );
 });
 
 export default Flex;

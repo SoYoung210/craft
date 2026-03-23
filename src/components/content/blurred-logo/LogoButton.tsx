@@ -1,147 +1,76 @@
 import { ReactElement } from 'react';
 
-import { styled } from '../../../../stitches.config';
-// layer쌓기
+import { cn } from '../../../utils/cn';
+
+// layer stacking
 interface Props {
   logo: ReactElement;
 }
 export default function LogoButton({ logo }: Props) {
   return (
-    <Button>
-      <BottomLayer1>{logo}</BottomLayer1>
-      <Content>
-        <HighlightBar side="left" />
-        <HighlightBar side="right" />
-        <BottomLayer2>{logo}</BottomLayer2>
-        <BgLayer1>{logo}</BgLayer1>
-        <BgLayer2>{logo}</BgLayer2>
-        <ContentLayer>{logo}</ContentLayer>
-      </Content>
-    </Button>
+    <button
+      className={cn(
+        'bg-transparent border-0 relative',
+        'w-[200px] h-[200px] rounded-[48px]',
+        'will-change-transform transition-[filter] duration-150 ease-linear',
+        'flex items-center justify-center'
+      )}
+    >
+      {/* BottomLayer1 */}
+      <div
+        className="flex items-center justify-center absolute pointer-events-none select-none w-full h-full -z-[1] left-0 [&_svg]:w-[54%] [&_svg]:h-[54%] [&_svg]:z-[2]"
+        style={{ bottom: -48, filter: 'blur(45px) opacity(0.7)' }}
+      >
+        {logo}
+      </div>
+      {/* Content */}
+      <div className="overflow-hidden w-full h-full relative rounded-[inherit]">
+        {/* HighlightBar left */}
+        <div
+          className="absolute h-[70%] z-[2] bg-white w-2.5"
+          style={{ filter: 'blur(5px)', opacity: 0.3, top: 32, left: 16 }}
+        />
+        {/* HighlightBar right */}
+        <div
+          className="absolute h-[70%] z-[2] bg-white w-2.5"
+          style={{ filter: 'blur(5px)', opacity: 0.3, top: 32, right: 16 }}
+        />
+        {/* BottomLayer2 */}
+        <div
+          className="flex items-center justify-center absolute pointer-events-none select-none w-full h-full -z-[1] left-0 [&_svg]:w-[54%] [&_svg]:h-[54%] [&_svg]:z-[2]"
+          style={{
+            bottom: -12,
+            transform: 'scale(0.5)',
+            filter: 'blur(20px) opacity(0.7)',
+          }}
+        >
+          {logo}
+        </div>
+        {/* BgLayer1 */}
+        <div
+          className="flex items-center justify-center absolute pointer-events-none select-none w-full h-full top-0 left-0 [&_svg]:w-full [&_svg]:h-full [&_svg]:z-[2]"
+          style={{
+            transform: 'scale(2)',
+            filter: 'blur(20px) opacity(0.3) saturate(250%)',
+          }}
+        >
+          {logo}
+        </div>
+        {/* BgLayer2 */}
+        <div
+          className="flex items-center justify-center absolute pointer-events-none select-none w-full !h-1/2 bottom-0 left-0 [&_svg]:w-[54%] [&_svg]:h-[54%] [&_svg]:z-[2]"
+          style={{
+            transform: 'scale(2.4)',
+            filter: 'blur(15px) opacity(0.1) brightness(20%)',
+          }}
+        >
+          {logo}
+        </div>
+        {/* ContentLayer */}
+        <div className="flex items-center justify-center w-full h-full [&_svg]:w-1/2 [&_svg]:h-1/2 [&_svg]:z-[2]">
+          {logo}
+        </div>
+      </div>
+    </button>
   );
 }
-
-const Button = styled('button', {
-  background: 'transparent',
-  border: 0,
-
-  position: 'relative',
-
-  width: 200,
-  height: 200,
-  borderRadius: 48,
-  willChange: 'transform',
-  transition: 'filter 0.15s ease',
-
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const Content = styled('div', {
-  overflow: 'hidden',
-  width: '100%',
-  height: '100%',
-  position: 'relative',
-  borderRadius: 'inherit',
-});
-
-const Layer = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'absolute',
-  // image drag prevent
-  pointerEvents: 'none',
-  userSelect: 'none',
-  width: '100%',
-  height: '100%',
-
-  '& svg': {
-    width: '54%',
-    height: '54%',
-    zIndex: 2,
-  },
-});
-
-const BottomLayer1 = styled(Layer, {
-  zIndex: -1,
-  bottom: -48,
-  left: 0,
-
-  filter: 'blur(45px) opacity(0.7)',
-});
-
-const BottomLayer2 = styled(Layer, {
-  zIndex: -1,
-  bottom: -12,
-  left: 0,
-  width: '100%',
-  height: '100%',
-
-  transform: 'scale(0.5)',
-  filter: 'blur(20px) opacity(0.7)',
-});
-
-// primary bg layer
-const BgLayer1 = styled(Layer, {
-  top: 0,
-  left: 0,
-
-  // center origin scale
-  transform: 'scale(2)',
-  filter: 'blur(20px) opacity(0.3) saturate(250%)',
-
-  '& svg': {
-    width: '100%',
-    height: '100%',
-  },
-});
-
-const BgLayer2 = styled(Layer, {
-  bottom: 0,
-  left: 0,
-  '&&': {
-    height: '50%',
-  },
-
-  // center origin scale
-  transform: 'scale(2.4)',
-  filter: 'blur(15px) opacity(0.1) brightness(20%)',
-});
-
-const ContentLayer = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  height: '100%',
-
-  '& svg': {
-    width: '50%',
-    height: '50%',
-    zIndex: 2,
-  },
-});
-
-const HighlightBar = styled('div', {
-  position: 'absolute',
-  height: '70%',
-  zIndex: 2,
-  background: '$white',
-  filter: 'blur(5px)',
-  opacity: 0.3,
-  top: 32,
-  width: 10,
-
-  variants: {
-    side: {
-      left: {
-        left: 16,
-      },
-      right: {
-        right: 16,
-      },
-    },
-  },
-});

@@ -15,7 +15,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import useListNavigation from '../../../hooks/useListNavigation';
-import { styled } from '../../../../stitches.config';
 import { createContext } from '../../utility/createContext';
 import useId from '../../../hooks/useId';
 // import { FocusScope } from 'react-aria';
@@ -148,10 +147,10 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
     [id, onExpandedStateChange, onOpenChangeFromProps]
   );
 
-  const [open = false, setOpen] = useControllableState({
+  const [open = false, setOpen] = useControllableState<boolean | undefined>({
     prop: openFromProps ?? expandedState.get(id),
     defaultProp: defaultOpen,
-    onChange: onOpenChange,
+    onChange: onOpenChange as ((value: boolean | undefined) => void) | undefined,
   });
 
   const listItemRef = useRef<HTMLLIElement>(null);
@@ -162,9 +161,10 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
   return (
     <ItemProvider level={level + 1} open={open} onOpenChange={setOpen}>
       {/* eslint-disable-next-line react/no-unknown-property */}
-      <Li
+      <li
         ref={composedRefs}
         {...restProps}
+        className={restProps.className}
         style={{
           ...restProps.style,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -185,7 +185,7 @@ const Item = forwardRef<HTMLLIElement, ItemProps>((props, ref) => {
         })}
       >
         {props.children}
-      </Li>
+      </li>
     </ItemProvider>
   );
 });
@@ -227,12 +227,6 @@ function getSubList(children: ReactNode) {
     return isValidElement(child) && child.type === SubList;
   });
 }
-
-const Li = styled('li', {
-  '&[data-craft-treeitem-state="true"]': {
-    color: 'red',
-  },
-});
 
 const Tree = Object.assign(Root, {
   List,

@@ -1,6 +1,6 @@
 import * as RadixSlider from '@radix-ui/react-slider';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 
 interface Props
   extends Omit<RadixSlider.SliderProps, 'value' | 'onValueChange'> {
@@ -11,10 +11,16 @@ interface Props
   onValueChange: (value: number) => void;
 }
 export function Slider(props: Props) {
-  const { width, height = 30, max, value, onValueChange, ...restProps } = props;
+  const { width, height = 30, max, value, onValueChange, className, ...restProps } = props;
 
   return (
-    <SliderRoot
+    <RadixSlider.Root
+      className={cn(
+        'relative flex items-center select-none touch-none cursor-pointer',
+        'transition-transform duration-200 ease-in-out',
+        'hover:scale-y-[1.3]',
+        className
+      )}
       value={[value]}
       max={max}
       step={0.01}
@@ -25,38 +31,13 @@ export function Slider(props: Props) {
       onValueChange={v => onValueChange(v[0])}
       {...restProps}
     >
-      <SliderTrack>
-        <SliderRange />
-      </SliderTrack>
-    </SliderRoot>
+      <RadixSlider.Track
+        className="bg-white/40 relative grow rounded-[999px] h-2"
+      >
+        <RadixSlider.Range
+          className="absolute bg-white/80 rounded-[3px] h-full"
+        />
+      </RadixSlider.Track>
+    </RadixSlider.Root>
   );
 }
-
-const SliderRoot = styled(RadixSlider.Root, {
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  userSelect: 'none',
-  touchAction: 'none',
-  cursor: 'pointer',
-  transition: 'transform 0.2s ease',
-
-  '&:hover': {
-    transform: 'scaleY(1.3)',
-  },
-});
-
-const SliderTrack = styled(RadixSlider.Track, {
-  backgroundColor: 'rgba(255, 255, 255, 0.4)',
-  position: 'relative',
-  flexGrow: 1,
-  borderRadius: '999px',
-  height: 8,
-});
-
-const SliderRange = styled(RadixSlider.Range, {
-  position: 'absolute',
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  borderRadius: '3px',
-  height: '100%',
-});

@@ -1,84 +1,81 @@
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Command as CmdkCommand } from 'cmdk';
+import { cn } from '../../utils/cn';
 
-import { styled } from '../../../stitches.config';
+const StyledCommand = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<typeof CmdkCommand>
+>(({ className, ...props }, ref) => (
+  <CmdkCommand
+    ref={ref}
+    className={cn(
+      'max-w-[640px] w-full bg-[#fcfcfc] shadow-[0_16px_70px_rgba(0,0,0,.2)] border border-[#e2e2e2] rounded-xl py-2',
+      className
+    )}
+    {...props}
+  />
+));
 
-const StyledCommand = styled(CmdkCommand, {
-  maxWidth: 640,
-  width: '100%',
-  backgroundColor: '#fcfcfc',
-  boxShadow: '0 16px 70px rgba(0,0,0,.2)',
-  border: '1px solid #e2e2e2',
-  borderRadius: 12,
-  py: 8,
-});
+const StyledInput = forwardRef<
+  HTMLInputElement,
+  ComponentPropsWithoutRef<typeof CmdkCommand.Input>
+>(({ className, ...props }, ref) => (
+  <CmdkCommand.Input
+    ref={ref}
+    className={cn(
+      'border-none w-full text-[15px] py-2 px-4 outline-none text-gray-10 placeholder:text-gray-6',
+      className
+    )}
+    {...props}
+  />
+));
 
-const StyledInput = styled(CmdkCommand.Input, {
-  border: 'none',
-  width: '100%',
-  fontSize: 15,
-  py: 8,
-  px: 16,
-  outline: 'none',
-  color: '$gray10',
+const StyledItem = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<typeof CmdkCommand.Item>
+>(({ className, ...props }, ref) => (
+  <CmdkCommand.Item
+    ref={ref}
+    className={cn(
+      'cursor-pointer h-10 rounded-lg text-sm flex items-center gap-2 px-2',
+      'transition-[background,color] duration-150 ease-in-out',
+      'aria-selected:bg-[#ededed] aria-selected:text-gray-10',
+      'active:bg-gray-2',
+      'first:mt-2 [&+&]:mt-1',
+      className
+    )}
+    {...props}
+  />
+));
 
-  '&:placeholder': {
-    color: '$gray6',
-  },
-});
+const StyledList = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<typeof CmdkCommand.List>
+>(({ className, ...props }, ref) => (
+  <CmdkCommand.List
+    ref={ref}
+    className={cn(
+      'px-2 pb-10 overflow-auto overscroll-contain',
+      className
+    )}
+    {...props}
+  />
+));
 
-const StyledItem = styled(CmdkCommand.Item, {
-  cursor: 'pointer',
-  height: 40,
-  borderRadius: 8,
-  fontSize: 14,
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  px: 8,
-
-  willChange: 'background, color',
-  transitionProperty: 'background, color',
-  transitionDuration: '0.15s',
-  transitionTimingFunction: 'ease',
-
-  '&[aria-selected="true"]': {
-    background: '#ededed',
-    color: '$gray10',
-  },
-
-  '&:active': {
-    background: '$gray2',
-  },
-
-  '&:first-child': {
-    marginTop: 8,
-  },
-
-  '& + &': {
-    marginTop: 4,
-  },
-});
-
-const StyledList = styled(CmdkCommand.List, {
-  px: 8,
-  paddingBottom: 40,
-  overflow: 'auto',
-  // TODO: radix scroll area로 변경
-  overscrollBehavior: 'contain',
-});
-
-const StyledDivider = styled('hr', {
-  border: 0,
-  width: '100%',
-  left: 0,
-  height: 1,
-  background: '$gray2',
-  position: 'relative',
-  overflow: 'visible',
-  display: 'block',
-  marginTop: '12px',
-  marginBottom: '12px',
-});
+function StyledDivider({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'hr'>) {
+  return (
+    <hr
+      className={cn(
+        'border-0 w-full left-0 h-px bg-gray-2 relative overflow-visible block my-3',
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
 export const Command = Object.assign({}, StyledCommand, {
   Input: StyledInput,

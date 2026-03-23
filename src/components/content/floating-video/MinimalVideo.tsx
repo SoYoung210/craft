@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { ReactNode } from 'react';
 
-import { css, styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import { MaximizeIcon } from '../../material/icon/MaximizeIcon';
 
 import { useViewportDragLimit } from './hooks/useViewportDragLimit';
@@ -33,14 +33,11 @@ export function MinimalVideo(props: MinimalVideoProps) {
   return (
     <VideoController
       asChild
-      className={css({
-        height,
-        width,
-        willChange: 'transform',
-        borderRadius: 12,
-        boxShadow: 'rgba(0, 0, 0, 0.12) 0px 0px 24px',
-        overflow: 'hidden',
-      })()}
+      className={cn(
+        'will-change-transform rounded-xl',
+        'shadow-[rgba(0,0,0,0.12)_0px_0px_24px] overflow-hidden'
+      )}
+      style={{ height, width }}
     >
       <motion.div
         ref={dragRef}
@@ -77,7 +74,10 @@ export function MinimalVideo(props: MinimalVideoProps) {
         }}
       >
         {children}
-        <FloatingIconRoot css={{ size: 30 }} asChild>
+        <FloatingIconRoot
+          className="w-[30px] h-[30px]"
+          asChild
+        >
           <VideoController.PlayControl
             playing={playing}
             onPlayingChange={onPlayingChange}
@@ -87,28 +87,19 @@ export function MinimalVideo(props: MinimalVideoProps) {
           />
         </FloatingIconRoot>
         <FloatingIconRoot asChild>
-          <MaximizeButton onClick={onExpand}>
+          <button
+            className={cn(
+              'reset-button inline-flex w-[30px] h-[30px]',
+              'absolute top-1.5 right-2.5 z-[1]',
+              '[&_svg]:transition-transform [&_svg]:duration-200 [&_svg]:ease-in-out',
+              'active:[&_svg]:scale-110'
+            )}
+            onClick={onExpand}
+          >
             <MaximizeIcon size={20} color="white" />
-          </MaximizeButton>
+          </button>
         </FloatingIconRoot>
       </motion.div>
     </VideoController>
   );
 }
-
-const MaximizeButton = styled('button', {
-  resetButton: 'inline-flex',
-  size: 30,
-  position: 'absolute',
-  top: 6,
-  right: 10,
-  zIndex: 1,
-  svg: {
-    transition: 'transform 0.2s ease-in-out',
-  },
-  '&:active': {
-    svg: {
-      transform: 'scale(1.1)',
-    },
-  },
-});

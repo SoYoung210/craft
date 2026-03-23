@@ -1,7 +1,7 @@
 import { Root, List, Trigger, Content, TabsProps } from '@radix-ui/react-tabs';
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react';
 
-import { styled } from '../../../stitches.config';
+import { cn } from '@/utils/cn';
 import { createContext } from '../utility/createContext';
 
 import Figure from './Figure';
@@ -18,15 +18,22 @@ export interface FigureTabsProps extends TabsProps {
   theme: Theme;
 }
 const FigureTabsImpl = forwardRef<TabsElement, FigureTabsProps>(
-  (props, ref) => {
+  ({ className, ...props }, ref) => {
     const { theme, children, ...tabRootProps } = props;
 
     return (
       <FigureTabsProvider theme={theme}>
         <Figure theme={theme}>
-          <StyledRoot ref={ref} {...tabRootProps}>
+          <Root
+            ref={ref}
+            className={cn(
+              'grid grid-rows-[1fr_max-content] min-h-[36rem]',
+              className
+            )}
+            {...tabRootProps}
+          >
             {children}
-          </StyledRoot>
+          </Root>
         </Figure>
       </FigureTabsProvider>
     );
@@ -34,23 +41,38 @@ const FigureTabsImpl = forwardRef<TabsElement, FigureTabsProps>(
 );
 
 type TabsListElement = ElementRef<typeof List>;
-export type FigureTabsListProps = ComponentPropsWithoutRef<typeof StyledList>;
+export type FigureTabsListProps = ComponentPropsWithoutRef<typeof List> & {
+  className?: string;
+};
 const FigureTabsList = forwardRef<TabsListElement, FigureTabsListProps>(
-  (props, ref) => {
-    return <StyledList ref={ref} {...props} />;
+  ({ className, ...props }, ref) => {
+    return <List ref={ref} className={cn('flex', className)} {...props} />;
   }
 );
 
 type TabsTriggerElement = ElementRef<typeof Trigger>;
-export type FigureTabsTriggerProps = ComponentPropsWithoutRef<
-  typeof StyledTrigger
->;
+export type FigureTabsTriggerProps = ComponentPropsWithoutRef<typeof Trigger> & {
+  className?: string;
+};
 const FigureTabsTrigger = forwardRef<
   TabsTriggerElement,
   FigureTabsTriggerProps
->((props, ref) => {
+>(({ className, ...props }, ref) => {
   useFigureTabsContext('FigureTabs.Trigger');
-  return <StyledTrigger ref={ref} {...props} />;
+  return (
+    <Trigger
+      ref={ref}
+      className={cn(
+        'text-gray-5 px-4 py-1 rounded-full bg-transparent leading-[1.5] cursor-pointer',
+        '[&+&]:ml-1',
+        'hover:text-gray-3',
+        'data-[state=active]:text-gray-0 data-[state=active]:bg-gray-9',
+        'transition-[color,background-color] duration-150 ease-in-out',
+        className
+      )}
+      {...props}
+    />
+  );
 });
 
 const FigureTabs = Object.assign({}, FigureTabsImpl, {
@@ -59,40 +81,4 @@ const FigureTabs = Object.assign({}, FigureTabsImpl, {
   Content,
 });
 
-const StyledRoot = styled(Root, {
-  display: 'grid',
-  gridTemplateRows: '1fr max-content',
-  minHeight: '36rem',
-});
-
-const StyledList = styled(List, {
-  display: 'flex',
-});
-
-const StyledTrigger = styled(Trigger, {
-  color: '$gray5',
-  px: 16,
-  py: 4,
-  br: 9999,
-  backgroundColor: 'transparent',
-  lineHeight: 1.5,
-  cursor: 'pointer',
-
-  '& + &': {
-    marginLeft: 4,
-  },
-
-  '&:hover': {
-    color: '$gray3',
-  },
-
-  [`&[data-state='active']`]: {
-    color: '$gray0',
-    backgroundColor: '$gray9',
-  },
-
-  transitionProperty: 'color, background-color',
-  transitionDuration: '0.15s',
-  transitionTimingFunction: 'ease-in-out',
-});
 export default FigureTabs;

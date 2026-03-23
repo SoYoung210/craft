@@ -1,18 +1,46 @@
 import {
   ComponentPropsWithoutRef,
+  CSSProperties,
   ElementRef,
   forwardRef,
   ReactNode,
 } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
+import { cva } from 'class-variance-authority';
 
 import { getColor, ColorType } from '../../utils/color';
-import { styled } from '../../../stitches.config';
+import { cn } from '../../utils/cn';
 import { createContext } from '../utility/createContext';
 import WhenValidGrandChildren from '../utility/WhenValidGrandChildren';
 
-type PrimitiveButtonProps = ComponentPropsWithoutRef<typeof StyledButton>;
+const buttonVariants = cva(
+  [
+    'appearance-none outline-none border-none cursor-pointer',
+    'rounded-lg text-sm inline-flex items-center justify-center font-bold',
+    'interactivity-medium',
+    'min-h-[34px] px-2.5',
+  ],
+  {
+    variants: {
+      variant: {
+        outline:
+          'shadow-[0px_2px_6px_rgba(0,0,0,0.02),inset_0px_-1px_0px_rgba(0,0,0,0.06),inset_0px_0px_0px_1px_rgba(0,0,0,0.08)]',
+        ghost: 'shadow-none',
+      },
+      size: {
+        xsmall: '',
+        small: '',
+        medium: '',
+        large: 'px-3.5',
+        xlarge: 'px-4',
+      },
+    },
+  }
+);
+
 type Size = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
+
+type PrimitiveButtonProps = ComponentPropsWithoutRef<typeof Primitive.button>;
 export interface ButtonProps extends PrimitiveButtonProps {
   color?: ColorType;
   leftSlot?: ReactNode;
@@ -36,7 +64,7 @@ type ButtonElement = ElementRef<typeof Primitive.button>;
 
 const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
   const {
-    css,
+    className,
     color = 'white',
     leftSlot,
     rightSlot,
@@ -44,97 +72,56 @@ const ButtonImpl = forwardRef<ButtonElement, ButtonProps>((props, ref) => {
     size,
     type = 'button',
     variant = 'outline',
+    style: styleFromProps,
     ...buttonProps
   } = props;
   const space = size === 'xsmall' ? 2 : size === 'small' ? 4 : 6;
 
+  const style: CSSProperties = {
+    ...styleFromProps,
+    backgroundColor: getColor(color),
+  };
+
   return (
     <ButtonProvider space={space}>
-      <StyledButton
+      <Primitive.button
         ref={ref}
         {...buttonProps}
-        variant={variant}
-        css={{
-          ...css,
-          backgroundColor: getColor(color),
-        }}
+        className={cn(buttonVariants({ variant, size }), className)}
+        style={style}
         type={type}
-        size={size}
       >
         <WhenValidGrandChildren>
           <ButtonLeftSlotRoot>{leftSlot}</ButtonLeftSlotRoot>
         </WhenValidGrandChildren>
         {children}
         {rightSlot}
-      </StyledButton>
+      </Primitive.button>
     </ButtonProvider>
   );
 });
 
-const StyledButton = styled(Primitive.button, {
-  appearance: 'none',
-  outline: 'none',
-  border: 'none',
-  cursor: 'pointer',
-
-  borderRadius: 8,
-  fontSize: '14px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 700,
-
-  interactivity: 'medium',
-
-  minHeight: 34,
-  px: 10,
-
-  variants: {
-    variant: {
-      outline: {
-        boxShadow:
-          '0px 2px 6px rgba(0, 0, 0, 0.02), inset 0px -1px 0px rgba(0, 0, 0, 0.06), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
-      },
-      ghost: {
-        boxShadow: 'none',
-      },
-    },
-    size: {
-      xsmall: {},
-      small: {},
-      medium: {},
-      large: {
-        px: 14,
-      },
-      xlarge: {
-        px: 16,
-      },
-    },
-  },
-});
-
 export interface ButtonSlotRootProps
-  extends ComponentPropsWithoutRef<typeof PrimitiveDiv> {
+  extends ComponentPropsWithoutRef<'div'> {
   side: 'left' | 'right';
 }
 const ButtonSlotRoot = ({
-  css: cssFromProps,
+  className,
   side,
+  style: styleFromProps,
   ...props
 }: ButtonSlotRootProps) => {
   const { space } = useButtonContext('Button.SlotRoot');
+  const slotStyle = getSlotSpaceStyle({ side, space });
 
   return (
-    <PrimitiveDiv
+    <Primitive.div
       {...props}
-      css={{ ...cssFromProps, ...getSlotSpaceStyle({ side, space }) }}
+      className={cn('flex', className)}
+      style={{ ...styleFromProps, ...slotStyle }}
     />
   );
 };
-
-const PrimitiveDiv = styled(Primitive.div, {
-  display: 'flex',
-});
 
 const ButtonLeftSlotRoot = (props: Omit<ButtonSlotRootProps, 'side'>) => {
   return <ButtonSlotRoot {...props} side="left" />;
@@ -144,15 +131,17 @@ const ButtonRightSlotRoot = (props: Omit<ButtonSlotRootProps, 'side'>) => {
   return <ButtonSlotRoot {...props} side="right" />;
 };
 
-function getSlotSpaceStyle(params: { space: number; side: 'left' | 'right' }) {
+function getSlotSpaceStyle(params: {
+  space: number;
+  side: 'left' | 'right';
+}): CSSProperties {
   const { space, side } = params;
-  const marginKey = side === 'left' ? 'marginRight' : 'marginLeft';
-
-  return {
-    '& > *:first-child': {
-      [marginKey]: `${space}px`,
-    },
-  };
+  // The original used nested CSS selectors for `& > *:first-child`.
+  // Since inline styles can't target children, we apply the margin directly
+  // as a simple style. The slot root wraps a single element, so this works.
+  const marginKey =
+    side === 'left' ? 'marginRight' : 'marginLeft';
+  return { [marginKey]: `${space}px` };
 }
 
 const Button = Object.assign({}, ButtonImpl, {

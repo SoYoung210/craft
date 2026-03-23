@@ -1,7 +1,6 @@
-import { Primitive } from '@radix-ui/react-primitive';
 import { forwardRef, HTMLAttributes } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import {
   HEXColor,
   hexToRGBA,
@@ -33,6 +32,8 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
       children,
       borderWidth = 1,
       gradientColor = 'rgb(255,255,255)',
+      className,
+      style: styleFromProps,
       ...restProps
     } = props;
 
@@ -49,21 +50,36 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
 
     return (
       <ListItemProvider borderWidth={borderWidth}>
-        <Li
+        <li
           ref={ref}
           {...listGlowItemAttribute}
-          css={{
-            '&::before': {
-              background: glowBackground(beforeColor, 900),
-            },
-            '&::after': {
-              background: glowBackground(alphaColor, 500),
-            },
+          className={cn(
+            'bg-white/[0.12] h-[280px] relative transition-[background] duration-100 isolate rounded-xl',
+            // safari >= 15.4
+            '[contain:strict]',
+            // shared pseudo-element styles
+            'after:rounded-[inherit] after:content-[""] after:h-full after:left-0 after:opacity-0 after:absolute after:top-0 after:transition-opacity after:duration-500 after:w-full after:pointer-events-none',
+            'before:rounded-[inherit] before:content-[""] before:h-full before:left-0 before:opacity-0 before:absolute before:top-0 before:transition-opacity before:duration-500 before:w-full before:pointer-events-none',
+            className
+          )}
+          style={{
+            ...styleFromProps,
+            // @ts-expect-error CSS custom properties
+            '--li-before-bg': glowBackground(beforeColor, 900),
+            '--li-after-bg': glowBackground(alphaColor, 500),
           }}
           {...restProps}
         >
+          <style>{`
+            [data-craft-list-glow-item]::before {
+              background: var(--li-before-bg, radial-gradient(800px circle at ${getVar(listGlowX)} ${getVar(listGlowY)}, rgba(255,255,255,0.3), transparent 40%));
+            }
+            [data-craft-list-glow-item]::after {
+              background: var(--li-after-bg, radial-gradient(400px circle at ${getVar(listGlowX)} ${getVar(listGlowY)}, rgba(255,255,255,0.1), transparent 40%));
+            }
+          `}</style>
           {children}
-        </Li>
+        </li>
       </ListItemProvider>
     );
   }
@@ -81,47 +97,11 @@ function glowBackground(colors: string[], size: number) {
     ${colors.join(',')}, transparent 40%)`;
 }
 
-const Li = styled('li', {
-  background: 'rgba(255, 255, 255, 0.12)',
-  height: 280,
-  position: 'relative',
-  transition: 'background 0.1s',
-  isolation: 'isolate',
-  borderRadius: '12px',
-  // safari >= 15.4 🥹
-  contain: 'strict',
-
-  '&::after, &::before': {
-    borderRadius: 'inherit',
-    content: '""',
-    height: '100%',
-    left: '0px',
-    opacity: '0',
-    position: 'absolute',
-    top: '0px',
-    transition: 'opacity 500ms',
-    width: '100%',
-    pointerEvents: 'none',
-  },
-
-  '&::after': {
-    background: `radial-gradient(
-      400px circle at ${getVar(listGlowX)} ${getVar(listGlowY)},
-      rgba(255,255,255,0.1), transparent 40%)`, // zIndex: 1,
-  },
-
-  '&::before': {
-    background: `radial-gradient(
-      800px circle at ${getVar(listGlowX)} ${getVar(listGlowY)},
-      rgba(255,255,255,0.3), transparent 40%)`,
-  },
-});
-
 export const ListItemContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
-  const { children, style: styleFromProps, ...restProps } = props;
+  const { children, style: styleFromProps, className, ...restProps } = props;
   const { borderWidth } = useListItemContext('ListItemContent');
 
   const style = {
@@ -133,19 +113,16 @@ export const ListItemContent = forwardRef<
   };
 
   return (
-    <PrimitiveDiv ref={ref} style={style} {...restProps}>
+    <div
+      ref={ref}
+      className={cn(
+        'absolute rounded-[inherit] bg-[rgb(19,19,21)] flex flex-col justify-center p-6',
+        className
+      )}
+      style={style}
+      {...restProps}
+    >
       {children}
-    </PrimitiveDiv>
+    </div>
   );
-});
-
-const PrimitiveDiv = styled(Primitive.div, {
-  position: 'absolute',
-  borderRadius: 'inherit',
-  backgroundColor: 'rgb(19, 19, 21)',
-
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: 24,
 });
