@@ -6,13 +6,13 @@ import {
   HTMLAttributes,
 } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 
 import { listGlowItemSelector, listGlowX, listGlowY } from './constants';
 import { ListItem, ListItemContent } from './ListItem';
 
 export function GlowCursorList(props: HTMLAttributes<HTMLUListElement>) {
-  const { children, onPointerMove, ...restProps } = props;
+  const { children, onPointerMove, className, ...restProps } = props;
   const listRef = useRef<HTMLUListElement>(null);
   const updateCursor: PointerEventHandler<HTMLUListElement> = useCallback(
     ({ clientX, clientY }) => {
@@ -34,34 +34,21 @@ export function GlowCursorList(props: HTMLAttributes<HTMLUListElement>) {
   );
 
   return (
-    <Ul
+    <ul
       ref={listRef}
       onPointerMove={composeEventHandlers(onPointerMove, updateCursor)}
+      className={cn(
+        'p-0 m-0 list-none w-full grid grid-cols-3 gap-2',
+        'hover:[&_[data-craft-list-glow-item]]:after:opacity-100',
+        'hover:[&_[data-craft-list-glow-item]]:before:opacity-100',
+        className
+      )}
       {...restProps}
     >
       {children}
-    </Ul>
+    </ul>
   );
 }
-
-const Ul = styled('ul', {
-  padding: 0,
-  margin: 0,
-  listStyle: 'none',
-  width: '100%',
-
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  gap: 8,
-
-  '&:hover': {
-    [`${listGlowItemSelector}`]: {
-      '&::after, &::before': {
-        opacity: 1,
-      },
-    },
-  },
-});
 
 GlowCursorList.Item = ListItem;
 GlowCursorList.ItemContent = ListItemContent;

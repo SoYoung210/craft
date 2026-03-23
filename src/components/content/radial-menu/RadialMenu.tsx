@@ -15,7 +15,7 @@ import { Key } from 'w3c-keys';
 import { createPortal } from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import useHotKey from '../../../hooks/useHotKey';
 import { usePrevious } from '../../../hooks/usePrevious';
 import { getDistanceBetween } from '../../../utils/math';
@@ -53,6 +53,7 @@ export function RadialMenu(props: RadialMenuProps) {
 
 const ROTATE_X_VAR = '--rotateX';
 const ROTATE_Y_VAR = '--rotateY';
+const SKEW = 45;
 
 const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   (props, ref) => {
@@ -199,8 +200,11 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
       >
         <AnimatePresence>
           {menuVisible && (
-            <Root
+            <div
+              className="absolute"
               style={{
+                width: SIZE,
+                height: SIZE,
                 left: position.x - SIZE / 2,
                 top: position.y - SIZE / 2,
                 transform: `rotateX(var(${ROTATE_X_VAR})) rotateY(var(${ROTATE_Y_VAR}))`,
@@ -219,7 +223,10 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
               >
                 {/* 선택된 아이템의 활성 흰색 아이템 (가장 바깥에 있는) */}
                 <Shadow style={{ background }} />
-                <Menu>
+                <div
+                  className="relative rounded-[999px] overflow-hidden bg-white"
+                  style={{ width: SIZE, height: SIZE }}
+                >
                   <RadialMenuProvider
                     labelTrackElement={labelTrackElementRef.current}
                     // TODO: 이게 꼭.. 상태 + context여야 할까.....?
@@ -236,10 +243,13 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
                     })}
                   </RadialMenuProvider>
                   <InnerCircle />
-                </Menu>
-                <LabelContainer ref={labelTrackElementRef} />
+                </div>
+                <div
+                  ref={labelTrackElementRef}
+                  className="flex justify-center items-center mt-6"
+                />
               </motion.div>
-            </Root>
+            </div>
           )}
         </AnimatePresence>
         {position != null ? (
@@ -255,12 +265,12 @@ const RadialMenuImpl = forwardRef<HTMLDivElement, RadialMenuProps>(
   }
 );
 
-interface MenuItemProps extends ComponentPropsWithoutRef<typeof Item> {
+interface MenuItemProps extends ComponentPropsWithoutRef<'div'> {
   children: React.ReactNode;
   onSelect?: VoidFunction;
   label?: string;
 }
-const SKEW = 45;
+
 export function RadialMenuItem(props: MenuItemProps) {
   const { index } = useRadialMenuItemContext('RadialMenuItem');
   const { labelTrackElement, selectedIndex, active, selectedLabel } =
@@ -274,6 +284,7 @@ export function RadialMenuItem(props: MenuItemProps) {
     onSelect,
     style: styleFromProps,
     label,
+    className,
     ...restProps
   } = props;
 
@@ -295,9 +306,14 @@ export function RadialMenuItem(props: MenuItemProps) {
   return (
     <Collection.ItemSlot scope={undefined} label={label ?? null}>
       <div>
-        <Item
+        <div
           role="menuitem"
           aria-selected={index === selectedIndex}
+          className={cn(
+            'absolute bottom-1/2 right-1/2 border-r border-r-[rgba(0,0,0,0.09)]',
+            'w-[200px] h-[200px] origin-[100%_100%_0] select-none',
+            className
+          )}
           style={{
             ...styleFromProps,
             transform: `rotate(${angle}deg) skew(${SKEW}deg)`,
@@ -313,9 +329,20 @@ export function RadialMenuItem(props: MenuItemProps) {
               height: 32,
             }}
           >
-            <ItemContent>{children}</ItemContent>
+            <div
+              className={cn(
+                'radial-item-content',
+                selected
+                  ? 'opacity-80'
+                  : 'grayscale saturate-[0.9] brightness-[0.9] opacity-[0.26]',
+                'h-full flex items-center justify-center'
+              )}
+              style={{ transform: `skew(${SKEW * -1}deg)` }}
+            >
+              {children}
+            </div>
           </div>
-        </Item>
+        </div>
         {shouldRenderLabel
           ? createPortal(
               <LabelMotion shouldAnimate={shouldAnimate} selected={selected}>
@@ -353,72 +380,24 @@ function LabelMotion({
         damping: 55,
       }}
     >
-      {selected ? <LabelContent>{children}</LabelContent> : null}
+      {selected ? (
+        <div
+          className={cn(
+            'bg-white/90 px-1.5 py-1 rounded-md',
+            'shadow-[0_4px_6px_-1px_rgba(0,0,0,.1),0_2px_4px_-1px_rgba(0,0,0,.06)]',
+            'text-[rgb(23,23,23)] text-xs'
+          )}
+          style={{
+            fontVariationSettings: '"wght" 540',
+            fontWeight: 530,
+          }}
+        >
+          {children}
+        </div>
+      ) : null}
     </motion.div>
   );
 }
-
-const Root = styled('div', {
-  position: 'absolute',
-  width: SIZE,
-  height: SIZE,
-});
-
-const Menu = styled('div', {
-  width: SIZE,
-  height: SIZE,
-  position: 'relative',
-  borderRadius: 999,
-  overflow: 'hidden',
-  background: 'white',
-});
-
-const ItemContent = styled('div', {
-  transform: `skew(${SKEW * -1}deg)`,
-  filter: 'grayscale(1) saturate(0.9) brightness(0.9)',
-  opacity: 0.26,
-  height: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const Item = styled('div', {
-  position: 'absolute',
-  bottom: '50%',
-  right: '50%',
-  borderRight: '1px solid rgba(0, 0, 0, 0.09)',
-  width: 200,
-  height: 200,
-  transformOrigin: '100% 100% 0',
-  userSelect: 'none',
-
-  '&[aria-selected="true"]': {
-    [`& ${ItemContent}`]: {
-      filter: 'grayscale(0)',
-      opacity: 0.8,
-    },
-  },
-});
-
-const LabelContainer = styled('div', {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: 24,
-});
-
-const LabelContent = styled('div', {
-  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  padding: '4px 6px',
-  borderRadius: 6,
-  boxShadow: '0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)',
-  color: 'rgb(23, 23, 23)',
-  fontVariationSettings: '"wght" 540',
-  // fallback
-  fontWeight: 530,
-  fontSize: 12,
-});
 
 function getRotateValue(
   currentPosition: Position,

@@ -1,249 +1,171 @@
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import { If } from '../../utility/If';
 
 const IMessageComponent = ({ children }: { children: ReactNode }) => {
-  return <Container>{children}</Container>;
+  return <div className="mx-auto w-full max-[800px]:p-2">{children}</div>;
 };
 
-const Container = styled('div', {
-  margin: '0 auto',
-  width: '100%',
+const IMessage = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn(
+        'flex flex-col rounded bg-white border border-[#e5e5ea] p-6 text-xl',
+        "font-['SanFrancisco',sans-serif]",
+        'max-[800px]:text-[1.05rem] max-[800px]:px-3.5 max-[800px]:py-1',
+        className
+      )}
+      {...props}
+    />
+  );
+};
 
-  '@media screen and (max-width: 800px)': {
-    padding: '0.5rem',
-  },
-});
+interface MessageBubbleProps {
+  from: 'me' | 'them';
+  emoji?: boolean;
+  noTail?: boolean;
+  marginBottom?: 'none' | 'one';
+  marginTop?: 'one';
+  children?: ReactNode;
+  className?: string;
+}
 
-const IMessage = styled('div', {
-  backgroundColor: '#fff',
-  border: '1px solid #e5e5ea',
-  borderRadius: '0.25rem',
-  display: 'flex',
-  flexDirection: 'column',
-  fontFamily: '"SanFrancisco", sans-serif',
-  fontSize: '1.25rem',
-  padding: '1.5rem',
+const MessageBubble = ({
+  from,
+  emoji,
+  noTail,
+  marginBottom,
+  marginTop,
+  children,
+  className,
+}: MessageBubbleProps) => {
+  return (
+    <div
+      className={cn(
+        'rounded-[1.15rem] leading-[1.25] max-w-[75%] px-3.5 py-2 relative break-words w-fit',
+        from === 'me' && [
+          'ml-auto bg-[#248bf5] text-white',
+          '[&+&]:mt-1',
+          'last-of-type:mb-2',
+        ],
+        from === 'them' && 'self-start bg-[#e5e5ea] text-black',
+        emoji && "bg-none text-[3.5rem] before:content-none",
+        noTail && 'before:hidden',
+        marginBottom === 'none' && 'mb-0',
+        marginBottom === 'one' && 'mb-4',
+        marginTop === 'one' && 'mt-4',
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+};
 
-  '@media screen and (max-width: 800px)': {
-    fontSize: '1.05rem',
-    padding: '0.25rem 0.875rem',
-  },
-});
+interface MessageBubbleTail1Props {
+  from: 'me' | 'them';
+}
+const MessageBubbleTail1 = ({ from }: MessageBubbleTail1Props) => {
+  return (
+    <div
+      className={cn(
+        'absolute -bottom-[0.1rem] h-4 w-4',
+        from === 'me' &&
+          'bg-[#248bf5] -right-[0.35rem] translate-y-[-0.1rem] rounded-bl-[0.8rem_0.7rem]',
+        from === 'them' &&
+          'bg-[#e5e5ea] -left-[0.35rem] translate-y-[-0.1rem] rounded-br-[0.8rem_0.7rem]'
+      )}
+    />
+  );
+};
 
-const MessageBubble = styled('div', {
-  borderRadius: '1.15rem',
-  lineHeight: 1.25,
-  maxWidth: '75%',
-  padding: '0.5rem 0.875rem',
-  position: 'relative',
-  wordWrap: 'break-word',
-  width: 'fit-content',
+interface TapbackBubbleImplProps extends React.HTMLAttributes<HTMLDivElement> {
+  from?: 'me' | 'them';
+  isVisible?: boolean;
+}
+const TapbackBubbleImpl = forwardRef<HTMLDivElement, TapbackBubbleImplProps>(
+  ({ from, isVisible, className, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'absolute top-0 border-2 border-white visible rounded-full h-9 w-9 p-2 flex items-center',
+          'opacity-0 transition-[opacity,transform] duration-200 ease-linear',
+          // pseudo-elements for bubble tails
+          'before:content-[""] before:rounded-full before:absolute before:-bottom-2 before:w-5 before:h-5 before:scale-[0.28] before:origin-center',
+          'after:content-[""] after:rounded-full after:absolute after:-bottom-[5px] after:w-3 after:h-3 after:scale-[0.84] after:origin-center',
+          from === 'me' && [
+            'left-0 -translate-x-5 -translate-y-[58%] bg-[#e5e5ea] text-[#808080]',
+            'before:-left-2.5 before:-bottom-4 before:bg-[#e5e5ea]',
+            'after:left-0 after:bg-[#e5e5ea]',
+          ],
+          from === 'them' && [
+            'right-0 translate-x-5 -translate-y-[58%] text-white bg-[#44B2FB]',
+            'before:-right-[13px] before:-bottom-3 before:bg-[#44B2FB]',
+            'after:-right-0.5 after:-bottom-0.5 after:bg-[#44B2FB]',
+          ],
+          isVisible && 'opacity-100',
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);
 
-  variants: {
-    from: {
-      me: {
-        marginLeft: 'auto',
-        backgroundColor: '#248bf5',
-        color: '#fff',
+const TapbackOption = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn('text-sm leading-none', className)}
+      {...props}
+    />
+  );
+};
 
-        '& + &': {
-          marginTop: '0.25rem',
-        },
+interface MessageBubbleTail2Props {
+  from: 'me' | 'them';
+}
+const MessageBubbleTail2 = ({ from }: MessageBubbleTail2Props) => {
+  return (
+    <div
+      className={cn(
+        'absolute -bottom-[0.1rem] h-4 w-2.5 bg-white',
+        from === 'me' &&
+          'rounded-bl-[0.5rem] -right-10 -translate-x-[30px] -translate-y-0.5',
+        from === 'them' &&
+          'rounded-br-[0.5rem] left-5 -translate-x-[30px] -translate-y-0.5'
+      )}
+    />
+  );
+};
 
-        '&:last-of-type': {
-          marginBottom: '0.5rem',
-        },
-      },
-      them: {
-        alignSelf: 'flex-start',
-        backgroundColor: '#e5e5ea',
-        color: '#000',
-      },
-    },
-    emoji: {
-      true: {
-        background: 'none',
-        fontSize: '3.5rem',
+const MessageBubbleWrapper = ({
+  className,
+  style,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn(
+        'relative p-2 group',
+        className
+      )}
+      style={style}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
-        '&::before': {
-          content: 'none',
-        },
-      },
-    },
-    noTail: {
-      true: {
-        '&::before': {
-          display: 'none',
-        },
-      },
-    },
-    marginBottom: {
-      none: {
-        marginBottom: '0',
-      },
-      one: {
-        marginBottom: '1rem',
-      },
-    },
-    marginTop: {
-      one: {
-        marginTop: '1rem',
-      },
-    },
-  },
-});
-
-const MessageBubbleTail1 = styled('div', {
-  bottom: '-0.1rem',
-  height: '1rem',
-  width: '1rem',
-  position: 'absolute',
-
-  variants: {
-    from: {
-      me: {
-        backgroundColor: '#248bf5',
-        right: '-0.35rem',
-        transform: 'translate(0, -0.1rem)',
-        borderBottomLeftRadius: '0.8rem 0.7rem',
-      },
-      them: {
-        borderBottomRightRadius: '0.8rem 0.7rem',
-        backgroundColor: '#e5e5ea',
-        left: '-0.35rem',
-        transform: 'translate(0, -0.1rem)',
-      },
-    },
-  },
-});
-
-const TapbackBubbleImpl = styled('div', {
-  position: 'absolute',
-  top: 0,
-
-  border: '2px solid white',
-  visibility: 'visible',
-  borderRadius: 999,
-  height: 36,
-  width: 36,
-  padding: '8px',
-  display: 'flex',
-  alignItems: 'center',
-
-  opacity: 0,
-  transition: 'opacity 200ms ease, transform 200ms ease',
-
-  '&::before': {
-    content: '""',
-    borderRadius: '999px',
-    position: 'absolute',
-    bottom: '-8px',
-    width: '20px',
-    height: '20px',
-    transform: 'scale(0.28)',
-    transformOrigin: 'center',
-  },
-
-  '&::after': {
-    content: '""',
-    borderRadius: '999px',
-    position: 'absolute',
-    bottom: '-5px',
-    width: '12px',
-    height: '12px',
-    transform: 'scale(0.84)',
-    transformOrigin: 'center',
-  },
-
-  variants: {
-    from: {
-      me: {
-        left: 0,
-        // transform: 'translateX(-20px) translateY(-65%)',
-        transform: 'translateX(-20px) translateY(-58%)',
-        backgroundColor: '#e5e5ea',
-        color: '#808080',
-        '&::before': {
-          left: '-10px',
-          bottom: '-16px',
-          backgroundColor: '#e5e5ea',
-        },
-        '&::after': {
-          left: 0,
-          backgroundColor: '#e5e5ea',
-        },
-      },
-      them: {
-        right: '0',
-        // transform: 'translateX(20px) translateY(-65%)',
-        transform: 'translateX(20px) translateY(-58%)',
-        color: 'white',
-        backgroundColor: '#44B2FB',
-        '&::before': {
-          right: '-13px',
-          bottom: '-12px',
-          backgroundColor: '#44B2FB',
-        },
-        '&::after': {
-          right: '-2px',
-          bottom: '-2px',
-          backgroundColor: '#44B2FB',
-        },
-      },
-    },
-    isVisible: {
-      true: {
-        opacity: 1,
-      },
-    },
-  },
-});
-const TapbackOption = styled('div', {
-  fontSize: '14px',
-  lineHeight: 0,
-});
-
-const MessageBubbleTail2 = styled('div', {
-  bottom: '-0.1rem',
-  height: '1rem',
-  width: '10px',
-  position: 'absolute',
-  backgroundColor: '#fff',
-
-  variants: {
-    from: {
-      me: {
-        borderBottomLeftRadius: '0.5rem',
-        right: '-40px',
-        transform: 'translate(-30px, -2px)',
-      },
-      them: {
-        borderBottomRightRadius: '0.5rem',
-        left: '20px',
-        transform: 'translate(-30px, -2px)',
-      },
-    },
-  },
-});
-const MessageBubbleWrapper = styled('div', {
-  position: 'relative',
-  padding: '0.5rem',
-
-  '&:hover': {
-    [`& ${TapbackBubbleImpl}`]: {
-      opacity: 1,
-    },
-
-    [`& ${TapbackBubbleImpl}[data-variant="me"]`]: {
-      transform: 'translateX(-20px) translateY(-65%)',
-    },
-    [`& ${TapbackBubbleImpl}[data-variant="them"]`]: {
-      transform: 'translateX(20px) translateY(-65%)',
-    },
-  },
-});
 interface MessageBubbleImplProps {
   from: 'me' | 'them';
   children: React.ReactNode;
@@ -286,13 +208,18 @@ const MessageBubbleImpl = (props: MessageBubbleImplProps) => {
 
 const TapbackBubble = forwardRef<
   HTMLDivElement,
-  ComponentPropsWithoutRef<typeof TapbackBubbleImpl>
+  TapbackBubbleImplProps
 >(({ from, ...restProps }, ref) => {
   return (
     <TapbackBubbleImpl
       ref={ref}
       from={from}
       data-variant={from}
+      className={cn(
+        'group-hover:opacity-100',
+        from === 'me' && 'group-hover:-translate-x-5 group-hover:-translate-y-[65%]',
+        from === 'them' && 'group-hover:translate-x-5 group-hover:-translate-y-[65%]'
+      )}
       {...restProps}
     />
   );

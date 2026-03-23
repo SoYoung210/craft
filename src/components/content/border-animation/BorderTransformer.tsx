@@ -1,7 +1,5 @@
 import { ReactNode, useMemo } from 'react';
 
-import { keyframes, styled } from '../../../../stitches.config';
-
 import { useBorderAnimationContext } from './context';
 
 interface Props {
@@ -9,14 +7,6 @@ interface Props {
   children: ReactNode;
 }
 
-const spin = keyframes({
-  from: {
-    transform: 'translateY(-50%) rotate(0)',
-  },
-  to: {
-    transform: 'translateY(-50%) rotate(360deg)',
-  },
-});
 export default function BorderTransformer(props: Props) {
   const { duration, children } = props;
   const { maskElement } = useBorderAnimationContext(
@@ -42,21 +32,14 @@ export default function BorderTransformer(props: Props) {
         height: '100%',
       }}
     >
-      <AnimationDiv
+      <div
+        className="w-full h-[400%] [animation-name:border-spin] [animation-timing-function:linear] [animation-iteration-count:infinite]"
         style={{
           animationDuration: `${duration}ms`,
         }}
       >
         {children}
-      </AnimationDiv>
+      </div>
     </div>
   );
 }
-
-const AnimationDiv = styled('div', {
-  width: '100%',
-  height: '400%',
-  animationName: spin.toString(),
-  animationTimingFunction: 'linear',
-  animationIterationCount: 'infinite',
-});

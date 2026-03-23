@@ -46,8 +46,9 @@ export default function RandomText({
           .filter(isValidElement)
           .filter(isRandomTextBlockElement)
           .map((child, index) => {
-            return cloneElement(child, {
-              ...child.props,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return cloneElement(child as ReactElement<any>, {
+              ...(child.props as Record<string, unknown>),
               __index: index,
             });
           })}

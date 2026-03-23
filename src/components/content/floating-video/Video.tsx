@@ -1,6 +1,5 @@
 import VideoPlayer, { ReactPlayerProps } from 'react-player/lazy';
 import { useInView } from 'react-intersection-observer';
-import { GatsbyImage } from 'gatsby-plugin-image';
 import { useState } from 'react';
 
 import { Slider } from './Slider';
@@ -17,9 +16,10 @@ interface ProgressData {
 
 interface VideoProps extends ReactPlayerProps {
   aspectRatio: string;
+  posterSrc?: string;
 }
 export function Video(props: VideoProps) {
-  const { controls = false, aspectRatio, poster, ...restProps } = props;
+  const { controls = false, aspectRatio, posterSrc, ...restProps } = props;
   const { ref, inView: originVideoInView } = useInView({
     threshold: 0,
   });
@@ -41,20 +41,22 @@ export function Video(props: VideoProps) {
 
   return (
     <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12 }}>
-      <GatsbyImage
-        alt=""
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          height: 'auto',
-          aspectRatio,
-          width: '100%',
-          filter: 'blur(32px)',
-          transform: 'translateZ(0px)',
-        }}
-        image={poster}
-      />
+      {posterSrc && (
+        <img
+          alt=""
+          src={posterSrc}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: 'auto',
+            aspectRatio,
+            width: '100%',
+            filter: 'blur(32px)',
+            transform: 'translateZ(0px)',
+          }}
+        />
+      )}
       <VideoController
         ref={ref}
         style={{ pointerEvents: ready ? 'auto' : 'none' }}
@@ -69,7 +71,7 @@ export function Video(props: VideoProps) {
           onPlay={() => onPlayingChange(true)}
           onPause={() => onPlayingChange(false)}
           style={{ aspectRatio }}
-          onReady={player => {
+          onReady={() => {
             setReady(true);
           }}
           onProgress={(state: ProgressData) => {

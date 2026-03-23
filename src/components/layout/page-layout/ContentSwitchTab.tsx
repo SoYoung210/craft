@@ -1,13 +1,13 @@
 import { MediaHTMLAttributes, useRef } from 'react';
-import { Link } from 'gatsby';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 
-import CardVideo from '../../../images/video/card-demo_2.mp4';
-import GlowCursorVideo from '../../../images/video/glow-cursor.mp4';
-import PipVideo from '../../../images/video/floating-video.mp4';
-import ToastVideo from '../../../images/video/toast.mp4';
+const CardVideo = '/images/video/card-demo_2.mp4';
+const GlowCursorVideo = '/images/video/glow-cursor.mp4';
+const PipVideo = '/images/video/floating-video.mp4';
+const ToastVideo = '/images/video/toast.mp4';
 import { THUMBNAILS } from '../../content/switch-tab/constants';
-import { css, styled } from '../../../../stitches.config';
+import { cn } from '@/utils/cn';
 import { ContentBox } from '../content-box/ContentBox';
 import { SwitchTab } from '../../content/switch-tab/SwitchTab';
 import { If } from '../../utility/If';
@@ -101,7 +101,6 @@ export function ContentSwitchTab({
         return (
           <div key={content.title} style={{ position: 'relative' }}>
             <SwitchTabItem
-              // ref={item}
               value={content.title}
               to={content.linkTo}
               title={content.title}
@@ -187,17 +186,12 @@ const HomeSquircleIcon = () => {
           left: '10%',
           rotate: rotate,
         }}
-        className={css({
-          '& > div': {
-            backgroundColor: 'transparent',
-          },
-        })()}
+        className="[&>div]:bg-transparent"
       />
       <Squircle
         size={60}
         style={{
           position: 'absolute',
-          // warning: Safari >= 14.1
           rotate,
           top: '50%',
           left: '50%',
@@ -227,7 +221,8 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
   const isLoaded = useRef(false);
 
   return (
-    <StyledItem
+    <SwitchTab.Item
+      className="grayscale focus:grayscale-0 focus-visible:grayscale-0"
       value={value}
       onFocus={() => {
         if (isLoaded.current === true) {
@@ -252,8 +247,12 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
       }}
       asChild
     >
-      <BlockLink to={to}>
-        <SwitchTabContentBox title={title} dots={false}>
+      <Link href={to} className="block">
+        <ContentBox
+          title={title}
+          dots={false}
+          className="h-full [&>div:nth-child(2)]:relative"
+        >
           <img
             src={imgSrc}
             style={{
@@ -278,28 +277,8 @@ const SwitchTabItem = (props: SwitchTabItemProps) => {
               src={videoSrc}
             />
           </If>
-        </SwitchTabContentBox>
-      </BlockLink>
-    </StyledItem>
+        </ContentBox>
+      </Link>
+    </SwitchTab.Item>
   );
 };
-
-const StyledItem = styled(SwitchTab.Item, {
-  filter: 'grayscale(1)',
-
-  '&:focus, &:focus-visible': {
-    filter: 'grayscale(0)',
-  },
-});
-
-const SwitchTabContentBox = styled(ContentBox, {
-  height: '100%',
-
-  '& div:nth-child(2)': {
-    position: 'relative',
-  },
-});
-
-const BlockLink = styled(Link, {
-  display: 'block',
-});

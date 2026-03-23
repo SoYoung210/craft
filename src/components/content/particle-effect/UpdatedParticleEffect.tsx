@@ -465,15 +465,11 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
         <bufferAttribute
           attach="attributes-a_ParticleIndex"
-          count={particles.length}
-          array={particles}
-          itemSize={1}
+          args={[particles, 1]}
         />
       </bufferGeometry>
       {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}

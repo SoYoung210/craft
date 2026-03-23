@@ -1,13 +1,11 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { CSSProperties, forwardRef } from 'react';
 
-import { styled } from '../../../stitches.config';
-import useMergeCss from '../../hooks/useMergeCss';
+import { cn } from '../../utils/cn';
 import { PrimitiveValue } from '../../utils/type';
 
-import Flex from './Flex';
+import Flex, { FlexProps } from './Flex';
 
-export interface StackProps
-  extends Omit<ComponentPropsWithRef<typeof StackStyleDiv>, 'direction'> {
+export interface StackProps extends Omit<FlexProps, 'direction'> {
   gap: PrimitiveValue;
   selector?: string;
 }
@@ -17,40 +15,51 @@ export const HStack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const {
     gap,
     selector = defaultSelector,
-    css: cssFromProps,
+    className,
+    style: styleFromProps,
     ...hStackProps
   } = props;
-  const css = useMergeCss(
-    {
-      [`& > ${selector} + ${selector}`]: {
-        marginLeft: gap,
-      },
-    },
-    cssFromProps
-  );
 
-  return <StackStyleDiv ref={ref} css={css} direction="row" {...hStackProps} />;
+  // Use CSS custom property for gap-based margin on adjacent children
+  const style: CSSProperties = {
+    ...styleFromProps,
+    // @ts-expect-error CSS custom property
+    '--stack-gap': typeof gap === 'number' ? `${gap}px` : gap,
+  };
+
+  return (
+    <Flex
+      ref={ref}
+      className={cn('hstack', className)}
+      style={style}
+      direction="row"
+      {...hStackProps}
+    />
+  );
 });
 
 export const VStack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const {
     gap,
     selector = defaultSelector,
-    css: cssFromProps,
-    ...hStackProps
+    className,
+    style: styleFromProps,
+    ...vStackProps
   } = props;
-  const css = useMergeCss(
-    {
-      [`& > ${selector} + ${selector}`]: {
-        marginTop: gap,
-      },
-    },
-    cssFromProps
-  );
+
+  const style: CSSProperties = {
+    ...styleFromProps,
+    // @ts-expect-error CSS custom property
+    '--stack-gap': typeof gap === 'number' ? `${gap}px` : gap,
+  };
 
   return (
-    <StackStyleDiv ref={ref} css={css} direction="column" {...hStackProps} />
+    <Flex
+      ref={ref}
+      className={cn('vstack', className)}
+      style={style}
+      direction="column"
+      {...vStackProps}
+    />
   );
 });
-
-const StackStyleDiv = styled(Flex);

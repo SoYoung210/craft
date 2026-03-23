@@ -1,7 +1,4 @@
 module.exports = {
-  globals: {
-    __PATH_PREFIX__: true,
-  },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'prettier'],
   extends: [
@@ -14,7 +11,6 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
-    'plugin:react/jsx-runtime',
   ],
   env: {
     browser: true,
@@ -23,6 +19,11 @@ module.exports = {
   settings: {
     react: {
       version: 'detect',
+    },
+    'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
     },
   },
   rules: {

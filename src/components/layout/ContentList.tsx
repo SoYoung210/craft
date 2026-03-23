@@ -2,17 +2,16 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import {
   ComponentPropsWithoutRef,
-  ElementRef,
   forwardRef,
   useMemo,
   useState,
 } from 'react';
 
-import { styled } from '../../../stitches.config';
+import { cn } from '@/utils/cn';
 import { createContext } from '../utility/createContext';
 import useId from '../../hooks/useId';
 
-type ContentItemElement = ElementRef<typeof StyledItem>;
+type ContentItemElement = HTMLLIElement;
 
 interface ContentListContextValue {
   activeItem: ContentItemElement | null;
@@ -22,10 +21,10 @@ interface ContentListContextValue {
 const [ContentListProvider, useContentListContext] =
   createContext<ContentListContextValue>('ContentList');
 
-type ContentListElement = ElementRef<typeof StyledList>;
-type ContentListProps = ComponentPropsWithoutRef<typeof StyledList>;
+type ContentListElement = HTMLUListElement;
+type ContentListProps = ComponentPropsWithoutRef<'ul'>;
 const ContentListImpl = forwardRef<ContentListElement, ContentListProps>(
-  (props, ref) => {
+  ({ className, ...props }, ref) => {
     const [activeItem, setActiveItem] = useState<ContentItemElement | null>(
       null
     );
@@ -35,17 +34,24 @@ const ContentListImpl = forwardRef<ContentListElement, ContentListProps>(
         activeItem={activeItem}
         onActiveItemChange={setActiveItem}
       >
-        <StyledList ref={ref} {...props} />
+        <ul
+          ref={ref}
+          className={cn(
+            'flex flex-col gap-5 list-none ps-0',
+            className
+          )}
+          {...props}
+        />
       </ContentListProvider>
     );
   }
 );
 
-interface ContentItemProps extends ComponentPropsWithoutRef<typeof StyledItem> {
+interface ContentItemProps extends ComponentPropsWithoutRef<'li'> {
   active?: boolean;
 }
 const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
-  ({ active, ...props }, forwardedRef) => {
+  ({ active, className, style, ...props }, forwardedRef) => {
     const id = useId(props.id);
 
     const [itemElement, setItemElement] = useState<ContentItemElement | null>(
@@ -66,51 +72,34 @@ const ContentItemImpl = forwardRef<ContentItemElement, ContentItemProps>(
       return !itemActivated && activeItem != null;
     }, [activeItem, itemActivated]);
 
+    const isActivate = itemActivated || (active && activeItem == null);
+
+    const blurValue = haveToBlur ? '2px' : '0';
+    const grayScaleValue = isActivate ? '0' : '1';
+
     return (
-      <StyledItem
+      <li
         ref={composedRefs}
+        className={cn(
+          'transition-[filter] duration-500 ease-linear translate-z-0',
+          className
+        )}
+        style={{
+          ...style,
+          filter: `grayscale(${grayScaleValue}) blur(${blurValue})`,
+        }}
         {...props}
         id={id}
         onMouseEnter={composeEventHandlers(props.onMouseEnter, () =>
           onActiveItemChange(itemElement)
         )}
-        onMouseLeave={(props.onMouseLeave, () => onActiveItemChange(null))}
-        blurred={haveToBlur}
-        activate={itemActivated || (active && activeItem == null)}
+        onMouseLeave={composeEventHandlers(props.onMouseLeave, () =>
+          onActiveItemChange(null)
+        )}
       />
     );
   }
 );
-
-const StyledList = styled('ul', {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 20,
-  listStyle: 'none',
-  paddingInlineStart: 0,
-});
-
-const StyledItem = styled('li', {
-  transition: 'filter 0.5s ease',
-
-  $$blur: 0,
-  $$grayScale: 1,
-  filter: 'grayscale($$grayScale) blur($$blur)',
-  transform: 'translateZ(0px)',
-
-  variants: {
-    blurred: {
-      true: {
-        $$blur: '2px',
-      },
-    },
-    activate: {
-      true: {
-        $$grayScale: 0,
-      },
-    },
-  },
-});
 
 const ContentList = Object.assign({}, ContentListImpl, {
   Item: ContentItemImpl,

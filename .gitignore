@@ -1,7 +1,26 @@
+# dependencies
 node_modules/
-.cache/
-public
-src/gatsby-types.d.ts
 
-# Local Netlify folder
-.netlify
+# next.js
+.next/
+out/
+
+# gatsby
+.cache/
+
+# misc
+.DS_Store
+*.pem
+.env
+.env*.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# vercel
+.vercel
+
+tsconfig.tsbuildinfo

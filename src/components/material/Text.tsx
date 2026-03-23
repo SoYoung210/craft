@@ -1,16 +1,13 @@
-import { forwardRef, ComponentProps, CSSProperties } from 'react';
+import { forwardRef, CSSProperties, ComponentPropsWithoutRef } from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
-import type * as Radix from '@radix-ui/react-primitive';
-import type * as Stitches from '@stitches/react';
 
-import { PresetColorType, styled } from '../../../stitches.config';
 import { LiteralUnion } from '../../utils/type';
 import { getColor } from '../../utils/color';
+import { cn } from '../../utils/cn';
+import { PresetColorType } from '../../utils/colors';
 
-type PrimitiveTextProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-export interface TextProps
-  extends Omit<ComponentProps<typeof StyledText>, 'paragraph'>,
-    PrimitiveTextProps {
+type PrimitiveSpanProps = ComponentPropsWithoutRef<typeof Primitive.span>;
+export interface TextProps extends PrimitiveSpanProps {
   color: LiteralUnion<PresetColorType, string>;
   size?: string | number;
   weight?: CSSProperties['fontWeight'];
@@ -21,6 +18,7 @@ export interface TextProps
    **/
   ellipsis?: boolean | { lineClamp: number };
   monospace?: boolean;
+  inherit?: boolean;
 }
 
 type TextElement = React.ElementRef<typeof Primitive.span>;
@@ -29,40 +27,50 @@ const Text = forwardRef<TextElement, TextProps>(function Text(
     children,
     color: colorFromProps,
     weight,
-    css: cssFromProps,
+    className,
+    style: styleFromProps,
     size,
     ellipsis,
     lineHeight,
     monospace = false,
+    inherit,
     ...props
   },
   forwardedRef
 ) {
   const color = colorFromProps != null ? getColor(colorFromProps) : undefined;
 
+  const lineClampStyle = getLineClampStyle(ellipsis);
+
+  const style: CSSProperties = {
+    ...styleFromProps,
+    color,
+    fontSize: size,
+    fontWeight: weight,
+    lineHeight:
+      lineHeight === 'paragraph' ? 1.5 : lineHeight ?? 'inherit',
+    ...lineClampStyle,
+  };
+
   return (
-    <StyledText
+    <Primitive.span
       ref={forwardedRef}
-      css={{
-        ...cssFromProps,
-        color,
-        fontSize: size,
-        fontWeight: weight,
-        lineHeight: lineHeight !== 'paragraph' ? lineHeight : undefined,
-        ...getLineClampStyle(ellipsis),
-      }}
-      paragraph={lineHeight === 'paragraph'}
-      monospace={monospace}
+      className={cn(
+        inherit && 'text-[inherit] font-[inherit]',
+        monospace && 'tabular-nums',
+        className
+      )}
+      style={style}
       {...props}
     >
       {children}
-    </StyledText>
+    </Primitive.span>
   );
 });
 
 function getLineClampStyle(
   ellipsis?: boolean | { lineClamp: number }
-): Stitches.CSS | null {
+): CSSProperties | null {
   if (ellipsis === false || ellipsis == null) {
     return null;
   }
@@ -74,33 +82,9 @@ function getLineClampStyle(
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     wordBreak: 'break-all',
-    lineClamp,
-    '-webkit-box-orient': 'vertical',
-    '-webkit-line-clamp': lineClamp,
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: lineClamp,
   };
 }
-const StyledText = styled(Primitive.span, {
-  lineHeight: 'inherit',
-  variants: {
-    inherit: {
-      true: {
-        fontSize: 'inherit',
-        fontWeight: 'inherit',
-      },
-    },
-    paragraph: {
-      true: {
-        '&&': {
-          lineHeight: 1.5,
-        },
-      },
-    },
-    monospace: {
-      true: {
-        fontFeature: 'monospace',
-      },
-    },
-  },
-});
 
 export default Text;

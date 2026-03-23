@@ -9,8 +9,6 @@ import * as RadixPortal from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
-import { styled } from '../../../stitches.config';
-
 import { createContext } from './createContext';
 
 interface ContextValue {
@@ -51,9 +49,10 @@ function Root(props: PortalProps) {
     </RadixPortal.Root>
   );
 }
-export type PortalContainerElement = ElementRef<typeof StyledPortalContainer>;
+
+export type PortalContainerElement = ElementRef<typeof Primitive.div>;
 export type PortalContainerProps = ComponentPropsWithoutRef<
-  typeof StyledPortalContainer
+  typeof Primitive.div
 >;
 
 const PortalContainer = forwardRef<
@@ -63,11 +62,13 @@ const PortalContainer = forwardRef<
   const { onContainerElementChange } = usePortalContext('Portal.Container');
   const composedRef = useComposedRefs(ref, onContainerElementChange);
 
-  return <StyledPortalContainer {...props} ref={composedRef} />;
-});
-
-export const StyledPortalContainer = styled(Primitive.div, {
-  position: 'relative',
+  return (
+    <Primitive.div
+      {...props}
+      ref={composedRef}
+      style={{ position: 'relative', ...props.style }}
+    />
+  );
 });
 
 Portal.Root = Root;

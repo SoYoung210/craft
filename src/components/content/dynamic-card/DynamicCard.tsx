@@ -1,10 +1,11 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, CSSProperties } from 'react';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import html2Canvas from 'html2canvas';
 import { gsap } from 'gsap';
 
 import { keys } from '../../../utils/object';
-import { styled, theme } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
+import { colors } from '../../../utils/colors';
 import Text from '../../material/Text';
 import Button from '../../material/Button';
 import { BoltIcon } from '../../material/icon/Bolt';
@@ -169,44 +170,67 @@ export default function DynamicCard() {
     }
   }, [q, shuffleButtonIcon]);
 
+  const cardStyle: CSSProperties = {
+    background: bgColor,
+  };
+
+  const svgGradientStyle: CSSProperties = {
+    // Gradient stop colors are set via the SVG linearGradient element directly
+  };
+
+  const holographicStyle: CSSProperties = {
+    maskImage: getBase64Url(ILLUST_DATA_URL[illust], 'svg'),
+    width: ILLUST_SIZE[illust],
+    height: ILLUST_SIZE[illust],
+  };
+
   return (
-    <Root>
-      <CardContentRoot
+    <div className="bg-white backdrop-blur-[10px] flex items-center justify-center flex-col pt-[50px]">
+      <style>{`
+        .dc-card-hover:hover .dc-holographic {
+          visibility: visible;
+        }
+        .dc-card svg {
+          fill: url(#${ILLUST_LINEAR_GRADIENT_ID});
+        }
+        .dc-card linearGradient > stop:nth-child(1) {
+          stop-color: ${ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][0]};
+        }
+        .dc-card linearGradient > stop:nth-child(2) {
+          stop-color: ${ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][1]};
+        }
+        .dc-card linearGradient > stop:nth-child(3) {
+          stop-color: ${ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][2]};
+        }
+        .dc-card linearGradient > stop:nth-child(4) {
+          stop-color: ${ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][3]};
+        }
+      `}</style>
+      <div
         ref={setRootElement}
         onMouseMove={setTransformVariable}
         onMouseLeave={clearTransformVariable}
-        css={{
-          '&:hover': {
-            [`${Holographic}`]: {
-              visibility: 'visible',
-            },
-          },
-        }}
+        className="dc-card-hover relative p-[50px]"
+        style={{ perspective: 800 }}
       >
-        <Card
+        <div
           data-role="card-root"
           ref={setCardElement}
-          css={{
-            background: bgColor,
-            '& svg': {
-              fill: `url(#${ILLUST_LINEAR_GRADIENT_ID})`,
-
-              '& linearGradient > stop:nth-child(1)': {
-                stopColor: ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][0],
-              },
-              '& linearGradient > stop:nth-child(2)': {
-                stopColor: ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][1],
-              },
-              '& linearGradient > stop:nth-child(3)': {
-                stopColor: ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][2],
-              },
-              '& linearGradient > stop:nth-child(4)': {
-                stopColor: ILLUST_LINEAR_GRADIENT_COLOR_SET[gradientColorId][3],
-              },
-            },
-          }}
+          className={cn(
+            'dc-card',
+            'flex flex-col',
+            'shadow-[0px_24px_72px_rgba(36,42,48,0.3),inset_0px_0px_0px_1px_rgba(0,0,0,0.08)]',
+            'rounded-2xl w-[320px] h-[490px]',
+            'px-6 pt-[34px] pb-6',
+            'relative',
+            'transition-[transform,box-shadow,background] duration-300 ease-out'
+          )}
+          style={cardStyle}
         >
-          <IllustRoot data-role="illust-root">
+          <div
+            data-role="illust-root"
+            className="flex justify-center items-center pb-2 h-[214px] relative"
+          >
             <IconSample type={illust}>
               <defs>
                 <linearGradient
@@ -224,17 +248,56 @@ export default function DynamicCard() {
                 </linearGradient>
               </defs>
             </IconSample>
-            <Holographic
-              className="effect"
+            <div
+              className={cn(
+                'dc-holographic effect',
+                'invisible z-[2]',
+                'absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[calc(-50%-4px)]',
+                `${NO_PSEUDO_ELEMENT_CLASS_NAME}:hidden`
+              )}
               data-role="holographic"
-              css={{
-                maskImage: getBase64Url(ILLUST_DATA_URL[illust], 'svg'),
-                width: ILLUST_SIZE[illust],
-                height: ILLUST_SIZE[illust],
+              style={{
+                ...holographicStyle,
+                WebkitMaskRepeat: 'no-repeat',
+                backgroundImage: `
+                  url(https://res.cloudinary.com/simey/image/upload/Dev/PokemonCards/illusion.webp),
+                  repeating-linear-gradient( 0deg,
+                    rgb(255, 119, 115) calc(5% * 1),
+                    rgba(255,237,95,1) calc(5% * 2),
+                    rgba(168,255,95,1) calc(5% * 3),
+                    rgba(131,255,247,1) calc(5% * 4),
+                    rgba(120,148,255,1) calc(5% * 5),
+                    rgb(216, 117, 255) calc(5% * 6),
+                    rgb(255, 119, 115) calc(5% * 7)
+                  ),
+                  repeating-linear-gradient(
+                    133deg,
+                    #0e152e 0%,
+                    hsl(180, 10%, 60%) 3.8%,
+                    hsl(180, 29%, 66%) 4.5%,
+                    hsl(180, 10%, 60%) 5.2%,
+                    #0e152e 10% ,
+                    #0e152e 12%
+                  ),
+                  radial-gradient(
+                    farthest-corner circle
+                    at var(--mx) var(--my),
+                    rgba(0, 0, 0, .1) 12%,
+                    rgba(0, 0, 0, .15) 20%,
+                    rgba(0, 0, 0, .25) 120%
+                  )
+                `,
+                backgroundPosition:
+                  'center center, 0% var(--posy), var(--posx) var(--posy), var(--posx) var(--posy)',
+                backgroundSize: '50% 42%, 200% 700%, 300% 100%, 200% 100%',
+                backgroundBlendMode: 'screen, difference, normal',
+                filter:
+                  'brightness(calc((var(--hyp)*0.3) + 0.5)) contrast(2) saturate(1.5)',
+                opacity: 0.2,
               }}
             />
-          </IllustRoot>
-          <PersonalContent>
+          </div>
+          <div className="flex items-center flex-col text-white pt-[34px]">
             <Text color="white" weight={800} size={26}>
               Soyoung
             </Text>
@@ -255,7 +318,7 @@ export default function DynamicCard() {
             >
               2022. 12. 23
             </Text>
-          </PersonalContent>
+          </div>
           <div
             style={{
               display: 'flex',
@@ -263,13 +326,29 @@ export default function DynamicCard() {
               marginTop: 'auto',
             }}
           >
-            <IdFrame>ID No.435</IdFrame>
+            <div
+              className="rounded-full text-[11px] leading-[13px]"
+              style={{
+                paddingLeft: 10,
+                paddingRight: 10,
+                paddingTop: 4,
+                paddingBottom: 4,
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '0.5px solid rgba(255, 255, 255, 0.3)',
+                color: colors.white080,
+              }}
+            >
+              ID No.435
+            </div>
           </div>
-          <Glow css={{ backgroundImage: glowBackgroundImage }} />
-        </Card>
-      </CardContentRoot>
-      <ControlRoot>
-        <RandomButton
+          <div
+            className="absolute w-full h-full left-0 top-0 rounded-2xl"
+            style={{ backgroundImage: glowBackgroundImage }}
+          />
+        </div>
+      </div>
+      <div className="flex justify-center gap-2">
+        <Button
           color="white"
           size="small"
           onMouseEnter={onRandomButtonEnter}
@@ -281,20 +360,27 @@ export default function DynamicCard() {
               type="fill"
               size={18}
               style={{
-                stroke: theme.colors.gold3.value,
+                stroke: colors.gold3,
               }}
               ref={setShuffleButtonIcon}
             />
           }
           onClick={generateRandomColor}
+          className="font-medium rounded-[46px] before:hidden"
+          style={{
+            color: colors.gray7,
+            paddingLeft: 16,
+            paddingRight: 16,
+            minHeight: 34,
+          }}
         >
           Shuffle Color
-        </RandomButton>
+        </Button>
         <Button
           color="white"
           size="small"
           aria-label="save card as image"
-          css={{ height: 34, width: 34, borderRadius: '50%' }}
+          className="h-[34px] w-[34px] rounded-full"
           onClick={() => {
             const root = document.createElement('div');
 
@@ -334,169 +420,10 @@ export default function DynamicCard() {
         >
           <DownloadIcon />
         </Button>
-      </ControlRoot>
-    </Root>
+      </div>
+    </div>
   );
 }
-
-const Root = styled('div', {
-  backgroundColor: '$white',
-  backdropFilter: 'blur(10px)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'column',
-
-  paddingTop: 50,
-});
-
-const IllustRoot = styled('div', {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingBottom: 8,
-
-  height: 214,
-
-  position: 'relative',
-});
-
-const Holographic = styled('div', {
-  visibility: 'hidden',
-
-  $$space: '5%',
-
-  zIndex: 2,
-  backgroundImage: `
-      url(https://res.cloudinary.com/simey/image/upload/Dev/PokemonCards/illusion.webp),
-      repeating-linear-gradient( 0deg,
-        rgb(255, 119, 115) calc($$space * 1),
-        rgba(255,237,95,1) calc($$space * 2),
-        rgba(168,255,95,1) calc($$space * 3),
-        rgba(131,255,247,1) calc($$space * 4),
-        rgba(120,148,255,1) calc($$space * 5),
-        rgb(216, 117, 255) calc($$space * 6),
-        rgb(255, 119, 115) calc($$space * 7)
-      ),
-      repeating-linear-gradient(
-        133deg,
-        #0e152e 0%,
-        hsl(180, 10%, 60%) 3.8%,
-        hsl(180, 29%, 66%) 4.5%,
-        hsl(180, 10%, 60%) 5.2%,
-        #0e152e 10% ,
-        #0e152e 12%
-        ),
-      radial-gradient(
-        farthest-corner circle
-        at var(--mx) var(--my),
-        rgba(0, 0, 0, .1) 12%,
-        rgba(0, 0, 0, .15) 20%,
-        rgba(0, 0, 0, .25) 120%
-      )
-    `,
-
-  backgroundPosition:
-    'center center, 0% var(--posy), var(--posx) var(--posy), var(--posx) var(--posy)',
-  backgroundSize: '50% 42%, 200% 700%, 300% 100%, 200% 100%',
-  backgroundBlendMode: 'screen, difference, normal',
-  filter: 'brightness(calc((var(--hyp)*0.3) + 0.5)) contrast(2) saturate(1.5)',
-  opacity: 0.2,
-
-  '-webkit-mask-repeat': 'no-repeat',
-
-  content: '',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, calc(-50% - 4px))',
-
-  [`&.${NO_PSEUDO_ELEMENT_CLASS_NAME}`]: {
-    display: 'none',
-  },
-});
-
-const CardContentRoot = styled('div', {
-  position: 'relative',
-
-  perspective: 800,
-  padding: 50,
-});
-
-const Card = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-
-  // canvas rendering시 이슈 발생
-  boxShadow:
-    '0px 24px 72px rgba(36, 42, 48, 0.3), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
-  borderRadius: 16,
-  width: 320,
-  height: 490,
-
-  px: 24,
-  paddingTop: 34,
-  paddingBottom: 24,
-
-  // glow relative
-  position: 'relative',
-
-  transitionDuration: '0.3s',
-  transitionProperty: 'transform, box-shadow, background',
-  transitionTimingFunction: 'ease-out',
-});
-
-const PersonalContent = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  flexDirection: 'column',
-
-  color: '$white',
-  paddingTop: 34,
-});
-
-const Glow = styled('div', {
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  left: 0,
-  top: 0,
-
-  backgroundImage: 'radial-gradient(circle at 50% -20%, #ffffff22, #0000000f)',
-  // card radius
-  borderRadius: 16,
-});
-
-const ControlRoot = styled('div', {
-  display: 'flex',
-  justifyContent: 'center',
-  gap: 8,
-});
-
-const RandomButton = styled(Button, {
-  color: '$gray7',
-  fontWeight: 500,
-
-  px: 16,
-  minHeight: 34,
-  borderRadius: 46,
-
-  '&::before': {
-    display: 'none',
-  },
-});
-
-const IdFrame = styled('div', {
-  px: 10,
-  py: 4,
-
-  background: 'rgba(255, 255, 255, 0.1)',
-  border: '0.5px solid rgba(255, 255, 255, 0.3)',
-  borderRadius: '100px',
-  color: '$white080',
-  fontSize: 11,
-  lineHeight: '13px',
-});
 
 function downloadFileFromUrl(params: { url: string; name: string }) {
   const { url, name } = params;

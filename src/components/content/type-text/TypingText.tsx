@@ -8,7 +8,6 @@ import {
   useRef,
 } from 'react';
 
-import { css } from '../../../../stitches.config';
 import { withUnit } from '../../../utils/css';
 
 import { splitText } from './splitText';
@@ -102,7 +101,6 @@ export default function TypingText({
 
   return (
     <div
-      ref={el => el}
       style={{
         position: 'relative',
         height: `calc(${withUnit(fontSize)} * ${LINE_HEIGHT})`,
@@ -157,12 +155,12 @@ const Bar = forwardRef<HTMLDivElement, BarProps>((props, ref) => {
     <span
       ref={ref}
       role="presentation"
-      className={css({
+      style={{
         width: '3px',
         height: `calc(${fontSize} * ${LINE_HEIGHT})`,
         position: 'absolute',
         top: -1,
-      })()}
+      }}
       {...restProps}
     />
   );

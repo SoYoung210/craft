@@ -1,9 +1,9 @@
 import { Portal } from '@radix-ui/react-portal';
-import { ReactNode, useCallback, useRef } from 'react';
+import { ComponentPropsWithoutRef, ReactNode, useCallback, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import { HStack, VStack } from '../../material/Stack';
 import { InfoIcon } from '../../material/icon/Info';
 import { AlertTriangleIcon } from '../../material/icon/AlertTriangle';
@@ -38,11 +38,11 @@ export function ToastProvider({
     (content: ToastContent, options: ToastOptions = {}) => {
       const {
         leftSlot = (
-          <IconFrame>
-            <IconBgFrame type="info">
+          <div className="w-9 h-9 rounded-lg bg-white shrink-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#60A5FA]">
               <InfoIcon color="white" size={22} />
-            </IconBgFrame>
-          </IconFrame>
+            </div>
+          </div>
         ),
         type = 'background',
         ...rest
@@ -63,11 +63,11 @@ export function ToastProvider({
     (errorContent: ToastContent, errorToastOptions: ToastOptions = {}) => {
       const {
         leftSlot = (
-          <IconFrame>
-            <IconBgFrame type="error">
+          <div className="w-9 h-9 rounded-lg bg-white shrink-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#F87171]">
               <AlertOctagonIcon color="white" size={22} />
-            </IconBgFrame>
-          </IconFrame>
+            </div>
+          </div>
         ),
         type = 'foreground',
         ...rest
@@ -87,11 +87,11 @@ export function ToastProvider({
     (warningContent: ToastContent, errorToastProps: ToastOptions = {}) => {
       const {
         leftSlot = (
-          <IconFrame>
-            <IconBgFrame type="warning">
+          <div className="w-9 h-9 rounded-lg bg-white shrink-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#F59E0B]">
               <AlertTriangleIcon color="white" size={22} />
-            </IconBgFrame>
-          </IconFrame>
+            </div>
+          </div>
         ),
         type = 'foreground',
         ...rest
@@ -111,11 +111,11 @@ export function ToastProvider({
     (successContent: ToastContent, successToastProps: ToastOptions = {}) => {
       const {
         leftSlot = (
-          <IconFrame>
-            <IconBgFrame type="success">
+          <div className="w-9 h-9 rounded-lg bg-white shrink-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#10B981]">
               <CheckIcon color="white" size={22} />
-            </IconBgFrame>
-          </IconFrame>
+            </div>
+          </div>
         ),
         type = 'background',
         ...rest
@@ -155,16 +155,11 @@ export function ToastProvider({
       update={update}
     >
       <Portal>
-        <Ol
+        <ol
+          className="fixed top-5 right-5 w-[340px]"
           onMouseEnter={handlePause}
           onMouseLeave={handleResume}
           style={{
-            /**
-             * 아이템 사이 간격에 커서가 있을때 의도치 않게 resume이 불리는 것을 방지한다.
-             * item요소에서 dom을 하나 더 두고 paddingTop을 처리하는 방법은 애니메이션과 layout shift측면에서 좋지 않음.
-             * 이 컴포넌트는 토스트의 래퍼이니 화면에 채워줘서 이벤트 영역을 적절히 판단한다.
-             * 더 나은 방법으로는 현재 토스트 아이템의 개수를 세서 height를 동적으로 늘려주는 방법.
-             */
             height:
               TOAST_HEIGHT * toasts.length +
               SPACING * Math.max(toasts.length - 1, 0),
@@ -178,7 +173,7 @@ export function ToastProvider({
               const removeToastItem = () => remove(toast.id);
 
               return (
-                <ToastContentItem
+                <AnimationItem
                   role="status"
                   aria-live={
                     toast.type === 'foreground' ? 'assertive' : 'polite'
@@ -191,107 +186,57 @@ export function ToastProvider({
                   order={inverseIndex}
                   remove={removeToastItem}
                   autoClose={toast.autoClose ?? autoClose}
-                  ref={el => el != null && (itemRefs.current[index] = el)}
+                  ref={el => { if (el != null) itemRefs.current[index] = el; }}
+                  className="group/toast"
                 >
                   <HStack gap="13px" alignItems="center">
                     {toast.leftSlot}
                     <VStack gap="3px">{toast.content}</VStack>
                   </HStack>
-                  {/** 전체삭제랑 개별삭제 따로 두어야 할듯? */}
                   {hasMultipleToasts && isLatestElement ? (
-                    <StyledCloseAllButton />
+                    <CloseAllButton className="opacity-0 transition-opacity duration-[0.18s] ease-in-out group-hover/toast:opacity-100" />
                   ) : (
-                    <StyledCloseIconButton toastId={toast.id} />
+                    <CloseIconButton
+                      toastId={toast.id}
+                      className="opacity-0 transition-opacity duration-[0.18s] ease-in-out group-hover/toast:opacity-100"
+                    />
                   )}
-                </ToastContentItem>
+                </AnimationItem>
               );
             })}
           </AnimatePresence>
-        </Ol>
+        </ol>
       </Portal>
       {children}
     </ToastContextProvider>
   );
 }
-const Ol = styled('ol', {
-  position: 'fixed',
-  top: 20,
-  right: 20,
-  // FIXME: same as toast defaultWidth(320) + offset 40
-  width: 340,
-});
-const IconFrame = styled('div', {
-  width: 36,
-  height: 36,
-  borderRadius: 8,
-  backgroundColor: '$white',
 
-  flexShrink: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
+const ToastTitle = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof Primitive.div> & { className?: string }) => (
+  <Primitive.div
+    className={cn(
+      'font-bold text-[13px] leading-[17px] tracking-[-0.2px] text-[#232526]',
+      className
+    )}
+    {...props}
+  />
+);
 
-const IconBgFrame = styled('div', {
-  width: 32,
-  height: 32,
-  borderRadius: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  variants: {
-    type: {
-      info: {
-        backgroundColor: '#60A5FA',
-      },
-      success: {
-        backgroundColor: '#10B981',
-      },
-      warning: {
-        backgroundColor: '#F59E0B',
-      },
-      error: {
-        backgroundColor: '#F87171',
-      },
-    },
-  },
-});
-
-const ToastTitle = styled(Primitive.div, {
-  fontWeight: 700,
-  fontSize: 13,
-  lineHeight: '17px',
-  letterSpacing: '-0.2px',
-  color: '#232526',
-});
-
-const ToastDescription = styled(Primitive.div, {
-  fontWeight: 400,
-  fontSize: 13,
-  lineHeight: '16px',
-  letterSpacing: '-0.1px',
-  color: '#232526',
-});
-
-const StyledCloseAllButton = styled(CloseAllButton, {
-  opacity: 0,
-  transition: 'opacity 0.18s ease',
-});
-const StyledCloseIconButton = styled(CloseIconButton, {
-  opacity: 0,
-  transition: 'opacity 0.18s ease',
-});
-const ToastContentItem = styled(AnimationItem, {
-  '&:hover': {
-    [`& ${StyledCloseAllButton}`]: {
-      opacity: 1,
-    },
-    [`& ${StyledCloseIconButton}`]: {
-      opacity: 1,
-    },
-  },
-});
+const ToastDescription = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof Primitive.div> & { className?: string }) => (
+  <Primitive.div
+    className={cn(
+      'font-normal text-[13px] leading-4 tracking-[-0.1px] text-[#232526]',
+      className
+    )}
+    {...props}
+  />
+);
 
 export const useToast = () => useToastContext('Toast');
 

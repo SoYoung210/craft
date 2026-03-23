@@ -1,7 +1,7 @@
 import chroma, { InterpolationMode } from 'chroma-js';
 import { easingCoordinates } from 'easing-coordinates';
 
-import { colors, PresetColorType } from '../../stitches.config';
+import { colors, PresetColorType } from './colors';
 
 import { LiteralUnion } from './type';
 

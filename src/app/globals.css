@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+@theme {
+  /* Grays */
+  --color-gray-0: #f8f9fa;
+  --color-gray-1: #f4f5f6;
+  --color-gray-2: #e9ecef;
+  --color-gray-3: #dee2e6;
+  --color-gray-4: #ced4da;
+  --color-gray-5: #adb5bd;
+  --color-gray-6: #868e96;
+  --color-gray-7: #495057;
+  --color-gray-8: #343a40;
+  --color-gray-9: #212529;
+  --color-gray-10: #171717;
+
+  /* Gold */
+  --color-gold-0: #fffcf2;
+  --color-gold-1: #ffeebd;
+  --color-gold-2: #ffd454;
+  --color-gold-3: #fab300;
+  --color-gold-4: #b57700;
+  --color-gold-5: #704300;
+
+  /* White opacity variants */
+  --color-white-096: rgba(255, 255, 255, 0.96);
+  --color-white-088: rgba(255, 255, 255, 0.88);
+  --color-white-080: rgba(255, 255, 255, 0.8);
+  --color-white-072: rgba(255, 255, 255, 0.72);
+  --color-white-064: rgba(255, 255, 255, 0.64);
+  --color-white-056: rgba(255, 255, 255, 0.56);
+  --color-white-048: rgba(255, 255, 255, 0.48);
+  --color-white-040: rgba(255, 255, 255, 0.4);
+  --color-white-032: rgba(255, 255, 255, 0.32);
+  --color-white-028: rgba(255, 255, 255, 0.28);
+  --color-white-024: rgba(255, 255, 255, 0.24);
+  --color-white-020: rgba(255, 255, 255, 0.2);
+  --color-white-016: rgba(255, 255, 255, 0.16);
+  --color-white-012: rgba(255, 255, 255, 0.12);
+  --color-white-010: rgba(255, 255, 255, 0.1);
+  --color-white-008: rgba(255, 255, 255, 0.08);
+  --color-white-006: rgba(255, 255, 255, 0.06);
+  --color-white-004: rgba(255, 255, 255, 0.04);
+  --color-white-003: rgba(255, 255, 255, 0.03);
+  --color-white-002: rgba(255, 255, 255, 0.02);
+  --color-white-001: rgba(255, 255, 255, 0.01);
+
+  /* Shadows */
+  --shadow-sm: 0 5px 10px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 30px 60px rgba(0, 0, 0, 0.12);
+
+  /* Fonts */
+  --font-sans: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-nanum: "Nanum Pen Script";
+
+  /* Easings */
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Global resets */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *::selection {
+    background: #95a5ac40;
+  }
+
+  html {
+    height: 100%;
+    font-size: 16px;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+  body {
+    height: 100%;
+    font-size: 14px;
+  }
+
+  @supports (font-variation-settings: normal) {
+    html,
+    body {
+      font-family: "Inter Variable", sans-serif;
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  ul,
+  ol {
+    padding-inline-start: 1.4rem;
+  }
+
+  button {
+    border: 0;
+    padding: 0;
+  }
+
+  @font-face {
+    font-family: "Nanum Pen Script";
+    font-display: block;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(212, 212, 216) transparent;
+  }
+
+  .scrollbar-dark {
+    scrollbar-color: #404040 transparent;
+  }
+
+  /* Custom font */
+  @font-face {
+    font-family: "Berthold Akzidenz Grotesk BE";
+    src: url("/fonts/akzidenz-grotesk-be-bold-condensed-webfont.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+}
+
+/* Component classes */
+@layer components {
+  .interactivity-medium {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--color-gray-9);
+      opacity: 0;
+      border-radius: inherit;
+    }
+    &:hover::before {
+      opacity: 0.025;
+    }
+    &:active::before {
+      opacity: 0.05;
+    }
+  }
+
+  .interactivity-strong {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--color-gray-9);
+      opacity: 0;
+      border-radius: inherit;
+    }
+    &:hover::before {
+      opacity: 0.15;
+    }
+    &:active::before {
+      opacity: 0.2;
+    }
+  }
+
+  .reset-button {
+    appearance: none;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    border: 0 solid transparent;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .hstack {
+    & > *:not([style*="display: none"]):not([hidden]) + *:not([style*="display: none"]):not([hidden]) {
+      margin-left: var(--stack-gap);
+    }
+  }
+
+  .vstack {
+    & > *:not([style*="display: none"]):not([hidden]) + *:not([style*="display: none"]):not([hidden]) {
+      margin-top: var(--stack-gap);
+    }
+  }
+
+  .squircle-root::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    background-image: var(--squircle-border-image);
+    background-size: cover;
+  }
+}
+
+/* Keyframes */
+@keyframes background-rotate {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(270deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+}
+
+@keyframes bulb-swing {
+  from {
+    transform: rotate(3deg);
+  }
+  to {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes bulb-glow {
+  0% {
+    background-position: 10% 0%;
+  }
+  50% {
+    background-position: 91% 100%;
+  }
+  100% {
+    background-position: 10% 0%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes border-spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

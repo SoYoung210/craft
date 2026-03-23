@@ -12,14 +12,14 @@ import {
 } from 'react';
 import type { MotionProps, TargetAndTransition } from 'motion/react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 import useTimeout from '../../../hooks/useTimeout';
 
 export interface AnimationItemRef {
   pause: VoidFunction;
   resume: VoidFunction;
 }
-interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
+interface Props extends ComponentPropsWithoutRef<typeof motion.li> {
   children: ReactNode;
   onOpen?: VoidFunction;
   remove: VoidFunction;
@@ -27,6 +27,7 @@ interface Props extends ComponentPropsWithoutRef<typeof StyledItem> {
   total: number;
   animation: 'slideIn' | 'scaleDown';
   autoClose: false | number;
+  className?: string;
 }
 const STACKING_OVERLAP = 0.85;
 export const SPACING = 10;
@@ -50,6 +51,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
     remove,
     total,
     order,
+    className,
     ...restProps
   } = props;
   const { start, clear, pause, resume } = useTimeout(() => {
@@ -108,9 +110,23 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
   }, [animation, paused]);
 
   return (
-    <StyledItem
+    <motion.li
       {...restProps}
       {...animationVariants}
+      className={cn(
+        'list-none absolute top-0 backdrop-blur-[16px] [-webkit-backdrop-filter:blur(16px)]',
+        'bg-[rgba(245,245,245,0.7)] border border-[rgba(0,0,0,0.06)]',
+        'px-4 drop-shadow-[0px_2px_10px_rgba(0,0,0,0.1)]',
+        'rounded-xl min-w-[320px]',
+        className
+      )}
+      style={{
+        minHeight: TOAST_HEIGHT,
+        paddingTop: 14,
+        paddingBottom: 14,
+        paddingLeft: 12,
+        paddingRight: 10,
+      }}
       drag="x"
       whileDrag={{ cursor: 'grabbing' }}
       dragSnapToOrigin={true}
@@ -129,7 +145,7 @@ const AnimationItem = forwardRef<AnimationItemRef, Props>((props, ref) => {
       }}
     >
       {children}
-    </StyledItem>
+    </motion.li>
   );
 });
 
@@ -196,23 +212,5 @@ const slideInVariants: MotionProps = {
     ease: [0.07, 0.19, 0.27, 1],
   },
 };
-
-const StyledItem = styled(motion.li, {
-  listStyle: 'none',
-  position: 'absolute',
-  top: 0,
-  backdropFilter: 'blur(16px)',
-  '-webkit-backdrop-filter': 'blur(16px)',
-  background: 'rgba(245, 245, 245, 0.7)',
-  border: '1px solid rgba(0, 0, 0, 0.06)',
-  padding: '0 1rem',
-  filter: 'drop-shadow(0px 2px 10px rgba(0, 0, 0, 0.1))',
-  borderRadius: '12px',
-  minHeight: TOAST_HEIGHT,
-  minWidth: 320,
-  py: 14,
-  paddingLeft: 12,
-  paddingRight: 10,
-});
 
 export default AnimationItem;

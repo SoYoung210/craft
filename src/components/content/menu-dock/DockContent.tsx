@@ -1,9 +1,9 @@
 // like radix-ui Tab.Content
 
 import { AnimatePresence, motion, Variants } from 'motion/react';
-import { forwardRef, ReactElement } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 
 import { useMenuDockContext } from './context';
 
@@ -12,6 +12,7 @@ export interface DockContentProps {
   children: React.ReactNode;
   index: number;
   bottomAddon?: ReactElement;
+  className?: string;
 }
 const xAmount = 290;
 const yAmount = 40;
@@ -63,7 +64,7 @@ const variants: Variants = {
 };
 export const DockContentImpl = forwardRef<HTMLDivElement, DockContentProps>(
   (props, ref) => {
-    const { children, index, bottomAddon, ...restProps } = props;
+    const { children, index, bottomAddon, className, ...restProps } = props;
     const { activeIndex, direction } = useMenuDockContext('DockContent');
     const visible = activeIndex === index;
     const animationDirection = direction === 'clockwise' ? 1 : -1;
@@ -74,7 +75,7 @@ export const DockContentImpl = forwardRef<HTMLDivElement, DockContentProps>(
         custom={{ direction: animationDirection }}
       >
         {visible ? (
-          <MotionRoot
+          <motion.div
             ref={ref}
             key={index}
             custom={{ direction: animationDirection }}
@@ -87,69 +88,57 @@ export const DockContentImpl = forwardRef<HTMLDivElement, DockContentProps>(
               duration: 0.6,
               bounce: 0.1,
             }}
+            className={cn(
+              'h-[240px] w-[240px] absolute rounded-[32px] flex items-center',
+              'shadow-[0_0_8px_rgba(177,177,177,0.25)]',
+              'after:content-[""] after:w-full after:h-full after:absolute after:top-0 after:left-0',
+              'after:shadow-[inset_0_0_1px_rgba(0,0,0,0.12)] after:rounded-[inherit]',
+              className
+            )}
             {...restProps}
           >
             {children}
-            <Fog>{bottomAddon}</Fog>
-          </MotionRoot>
+            <div
+              className={cn(
+                'w-full h-[46%] z-[1] absolute bottom-0 left-0 rounded-[0px_0px_32px_32px]',
+                'bg-[linear-gradient(transparent,rgba(255,255,255,0.416)_58%,rgba(255,255,255,0.52)_100%)]'
+              )}
+            >
+              {bottomAddon}
+            </div>
+          </motion.div>
         ) : null}
       </AnimatePresence>
     );
   }
 );
 
-const BottomAddonRoot = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-end',
-  height: '100%',
-  padding: '0 0 26px 26px',
-  color: 'rgb(29,29,31)',
-  fontSize: '14px',
-});
+const BottomAddonRoot = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'div'> & { className?: string }) => (
+  <div
+    className={cn(
+      'flex flex-col justify-end h-full pb-[26px] pl-[26px] text-[rgb(29,29,31)] text-sm',
+      className
+    )}
+    {...props}
+  />
+);
 
-const Title = styled('div', {
-  fontWeight: 600,
-});
+const Title = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'div'> & { className?: string }) => (
+  <div className={cn('font-semibold', className)} {...props} />
+);
 
-const Caption = styled('div', {
-  marginTop: 4,
-});
-
-const Fog = styled('div', {
-  width: '100%',
-  height: '46%',
-  zIndex: 1,
-
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  borderRadius: '0px 0px 32px 32px',
-
-  background:
-    'linear-gradient(transparent, rgba(255, 255, 255, 0.416) 58%, rgb(255, 255, 255, 0.52) 100%)',
-});
-
-const MotionRoot = styled(motion.div, {
-  height: 240,
-  width: 240,
-  position: 'absolute',
-  borderRadius: 32,
-  display: 'flex',
-  alignItems: 'center',
-  boxShadow: '0 0 8px rgba(177, 177, 177, 0.25)',
-
-  '&::after': {
-    content: '',
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    boxShadow: 'inset 0 0 1px rgba(0,0,0,0.12)',
-    borderRadius: 'inherit',
-  },
-});
+const Caption = ({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'div'> & { className?: string }) => (
+  <div className={cn('mt-1', className)} {...props} />
+);
 
 export const DockContent = Object.assign(DockContentImpl, {
   BottomAddonRoot,

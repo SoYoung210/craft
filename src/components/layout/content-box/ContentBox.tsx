@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactNode } from 'react';
 
-import { styled } from '../../../../stitches.config';
+import { cn } from '@/utils/cn';
 import { If } from '../../utility/If';
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -13,79 +13,28 @@ export function ContentBox({
   title,
   children,
   dots = true,
+  className,
   ...restProps
 }: Props) {
   return (
-    <Root {...restProps}>
-      <Header>
+    <div
+      className={cn(
+        'group/contentbox flex flex-col bg-white shadow-md overflow-hidden rounded-lg h-[300px]',
+        className
+      )}
+      {...restProps}
+    >
+      <div className="flex bg-gray-1 min-h-[50px] items-center px-4 text-gray-7">
         <If condition={dots}>
-          <Dot />
-          <Dot />
-          <Dot />
+          <div className="rounded-full bg-[#dee2e6] w-2 h-2 mr-1.5 transition-colors duration-150 ease-linear group-hover/contentbox:bg-[#FF5F57]" />
+          <div className="rounded-full bg-[#dee2e6] w-2 h-2 mr-1.5 transition-colors duration-150 ease-linear group-hover/contentbox:bg-[#FEBC2E]" />
+          <div className="rounded-full bg-[#dee2e6] w-2 h-2 mr-1.5 transition-colors duration-150 ease-linear group-hover/contentbox:bg-[#28C840]" />
         </If>
-        <TitleBar>{title}</TitleBar>
-      </Header>
-      <ContentRoot>{children}</ContentRoot>
-    </Root>
+        <div className="ml-2 bg-white rounded px-4 py-2 grow">{title}</div>
+      </div>
+      <div className="h-[calc(100%-50px)] flex items-center justify-center">
+        {children}
+      </div>
+    </div>
   );
 }
-
-const Dot = styled('div', {
-  borderRadius: '50%',
-  backgroundColor: '#dee2e6',
-
-  width: 8,
-  height: 8,
-
-  marginRight: 6,
-  transition: 'background-color 0.15s ease',
-});
-
-const ContentRoot = styled('div', {
-  height: 'calc(100% - 50px)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const Root = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-
-  backgroundColor: '$white',
-  boxShadow: '$medium',
-  overflow: 'hidden',
-  borderRadius: '8px',
-  height: 300,
-
-  '&:hover': {
-    [`${Dot}:nth-child(1)`]: {
-      backgroundColor: '#FF5F57',
-    },
-    [`${Dot}:nth-child(2)`]: {
-      backgroundColor: '#FEBC2E',
-    },
-    [`${Dot}:nth-child(3)`]: {
-      backgroundColor: '#28C840',
-    },
-  },
-});
-
-const Header = styled('div', {
-  display: 'flex',
-  backgroundColor: '$gray1',
-  minHeight: 50,
-  alignItems: 'center',
-  padding: '0 16px',
-  color: '$gray7',
-});
-
-const TitleBar = styled('div', {
-  marginLeft: 8,
-  backgroundColor: '$white',
-  borderRadius: 4,
-  px: 16,
-  py: 8,
-
-  flexGrow: 1,
-});

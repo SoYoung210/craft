@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef, forwardRef } from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 
 import XIcon from '../../../images/icons/x.svg';
-import { styled } from '../../../../stitches.config';
+import { cn } from '../../../utils/cn';
 
 import { useToastContext } from './context';
 interface ToastCloseButtonProps
@@ -38,90 +38,72 @@ export const CloseAll = forwardRef<
   );
 });
 
+const iconButtonStyles =
+  'absolute -top-2 -left-2.5 flex items-center justify-center w-[22px] h-[22px] bg-[#F5F5F5] border border-[rgba(0,0,0,0.06)] rounded-[11px]';
+
 interface ToastCloseIconButtonProps
-  extends ComponentPropsWithoutRef<typeof StyledIconButton> {
+  extends ComponentPropsWithoutRef<typeof Primitive.button> {
   toastId: string;
+  className?: string;
 }
 export const CloseIconButton = forwardRef<
   HTMLButtonElement,
   ToastCloseIconButtonProps
->(({ toastId, ...props }, ref) => {
+>(({ toastId, className, ...props }, ref) => {
   return (
-    <StyledIconButton
+    <Primitive.button
       {...props}
       ref={ref}
+      className={cn(iconButtonStyles, className)}
       aria-label="toast close button"
       asChild
     >
       <Close toastId={toastId}>
         <XIcon />
       </Close>
-    </StyledIconButton>
+    </Primitive.button>
   );
 });
 
-const StyledIconButton = styled(Primitive.button, {
-  position: 'absolute',
-  top: -8,
-  left: -10,
+interface CloseAllButtonProps extends ComponentPropsWithoutRef<typeof Primitive.button> {
+  className?: string;
+}
 
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  width: 22,
-  height: 22,
-  background: '#F5F5F5',
-  border: '1px solid rgba(0, 0, 0, 0.06)',
-  borderRadius: 11,
-});
-
-export const CloseAllButton = (
-  props: ComponentPropsWithoutRef<typeof ExpandAnimationIconButton>
-) => {
+export const CloseAllButton = (props: CloseAllButtonProps) => {
+  const { className, ...restProps } = props;
   return (
-    <ExpandAnimationIconButton {...props} asChild>
+    <Primitive.button
+      {...restProps}
+      className={cn(
+        iconButtonStyles,
+        'justify-start transition-[width] duration-[0.35s] ease-linear overflow-hidden',
+        'group/closeall',
+        'hover:w-[71px] focus:w-[71px] focus-visible:w-[71px]',
+        className
+      )}
+      asChild
+    >
       <CloseAll>
-        <StyledXIcon />
-        <ButtonText>모두 지우기</ButtonText>
+        <XIcon
+          className={cn(
+            'transition-[opacity,transform] duration-[0.15s] ease-linear shrink-0 translate-x-1',
+            'group-hover/closeall:opacity-0 group-hover/closeall:-translate-x-2.5',
+            'group-focus/closeall:opacity-0 group-focus/closeall:-translate-x-2.5',
+            'group-focus-visible/closeall:opacity-0 group-focus-visible/closeall:-translate-x-2.5'
+          )}
+        />
+        <span
+          className={cn(
+            'opacity-0 transition-[opacity,transform] duration-[0.29s] ease-linear block shrink-0 w-[71px]',
+            'text-[#626A72] font-semibold text-[10px] leading-[1.2]',
+            'group-hover/closeall:opacity-100 group-hover/closeall:-translate-x-[13px]',
+            'group-focus/closeall:opacity-100 group-focus/closeall:-translate-x-[13px]',
+            'group-focus-visible/closeall:opacity-100 group-focus-visible/closeall:-translate-x-[13px]'
+          )}
+        >
+          모두 지우기
+        </span>
       </CloseAll>
-    </ExpandAnimationIconButton>
+    </Primitive.button>
   );
 };
-
-const StyledXIcon = styled(XIcon, {
-  transition: 'opacity 0.15s linear, transform 0.25s linear',
-  flexShrink: 0,
-  transform: 'translateX(4px)',
-});
-const ButtonText = styled('span', {
-  opacity: 0,
-  transition: 'opacity 0.29s linear, transform 0.29s linear',
-  display: 'block',
-  flexShrink: 0,
-  width: 71,
-  color: '#626A72',
-  fontWeight: 600,
-  fontSize: 10,
-  lineHeight: 1.2,
-});
-
-const ExpandAnimationIconButton = styled(StyledIconButton, {
-  justifyContent: 'flex-start',
-  transition: 'width 0.35s linear',
-
-  overflow: 'hidden',
-
-  '&:hover, &:focus,  &:focus-visible': {
-    width: 71,
-
-    [`${ButtonText}`]: {
-      opacity: 1,
-      transform: 'translateX(-13px)',
-    },
-    [`${StyledXIcon}`]: {
-      opacity: 0,
-      transform: 'translateX(-10px)',
-    },
-  },
-});

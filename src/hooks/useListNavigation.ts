@@ -2,7 +2,7 @@ import { RefObject, KeyboardEvent, useState } from 'react';
 
 interface Params {
   itemSelector?: string;
-  listRef: RefObject<HTMLElement>;
+  listRef: RefObject<HTMLElement | null>;
   loop?: boolean;
 }
 
