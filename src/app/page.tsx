@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+
 import IndexClient from './page.client';
 
 export const metadata: Metadata = {
