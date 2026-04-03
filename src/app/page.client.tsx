@@ -5,7 +5,7 @@ import { CraftGrid } from '../components/craft-grid/CraftGrid';
 function SocialLinks({ className }: { className?: string }) {
   return (
     <div
-      className={`flex items-center gap-3 text-[10px] font-mono tracking-widest text-black/40 uppercase${className ? ` ${className}` : ''}`}
+      className={`flex items-center gap-1.5 text-[10px] font-mono tracking-widest text-black/40 uppercase${className ? ` ${className}` : ''}`}
     >
       <a
         href="https://x.com/soyoung__ee"
@@ -15,6 +15,7 @@ function SocialLinks({ className }: { className?: string }) {
       >
         X
       </a>
+      <span aria-hidden="true" className="text-black/20">·</span>
       <a
         href="https://github.com/soyoung210"
         target="_blank"
@@ -23,6 +24,7 @@ function SocialLinks({ className }: { className?: string }) {
       >
         Github
       </a>
+      <span aria-hidden="true" className="text-black/20">·</span>
       <a
         href="mailto:me@so-so.dev"
         className="touch-target transition-colors hover:text-black/60"
