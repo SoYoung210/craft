@@ -15,7 +15,9 @@ function SocialLinks({ className }: { className?: string }) {
       >
         X
       </a>
-      <span aria-hidden="true" className="text-black/20">·</span>
+      <span aria-hidden="true" className="text-black/20">
+        ·
+      </span>
       <a
         href="https://github.com/soyoung210"
         target="_blank"
@@ -24,7 +26,9 @@ function SocialLinks({ className }: { className?: string }) {
       >
         Github
       </a>
-      <span aria-hidden="true" className="text-black/20">·</span>
+      <span aria-hidden="true" className="text-black/20">
+        ·
+      </span>
       <a
         href="mailto:me@so-so.dev"
         className="touch-target transition-colors hover:text-black/60"
