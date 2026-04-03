@@ -206,6 +206,15 @@
     }
   }
 
+  .touch-target {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -8px;
+    }
+  }
+
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
