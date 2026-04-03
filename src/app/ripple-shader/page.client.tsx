@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Leva, useControls } from 'leva';
+import { DialRoot, useDialKit } from 'dialkit';
 import { RotateCcw } from 'lucide-react';
 
 import { ShineImageShader } from '../../components/content/ripple-shader/shine-image-shader';
@@ -11,94 +11,23 @@ const IMAGE_URL = '/thumbnails/ripple_og.webp';
 export default function RippleShaderClient() {
   const [replayKey, setReplayKey] = useState(0);
 
-  const params = useControls('Shine Image Shader', {
-    duration: {
-      value: 3.5,
-      min: 0.3,
-      max: 5.0,
-      step: 0.1,
-      label: 'Duration (s)',
-    },
-    delay: {
-      value: 0,
-      min: 0,
-      max: 3.0,
-      step: 0.1,
-      label: 'Delay (s)',
-    },
-    spread: {
-      value: 0.15,
-      min: 0.01,
-      max: 0.5,
-      step: 0.01,
-      label: 'Spread',
-    },
-    glowColor: {
-      value: '#ffffff',
-      label: 'Glow Color',
-    },
-    glowIntensity: {
-      value: 1.0,
-      min: 0,
-      max: 3.0,
-      step: 0.1,
-      label: 'Glow Intensity',
-    },
-    objectFit: {
-      value: 'cover',
-      options: ['cover', 'contain'],
-      label: 'Object Fit',
-    },
-    objectPosition: {
-      value: 'top',
-      options: ['center', 'top'],
-      label: 'Object Position',
-    },
-    borderRadius: {
-      value: 32,
-      min: 0,
-      max: 64,
-      step: 1,
-      label: 'Border Radius',
-    },
-    chromaticAberration: {
-      value: 1.0,
-      min: 0,
-      max: 5.0,
-      step: 0.1,
-      label: 'Chromatic Aberration',
-    },
-    iridescence: {
-      value: 1.0,
-      min: 0,
-      max: 1.0,
-      step: 0.05,
-      label: 'Iridescence',
-    },
-    causticIntensity: {
-      value: 0.5,
-      min: 0,
-      max: 2.0,
-      step: 0.05,
-      label: 'Caustic Intensity',
-    },
+  const params = useDialKit('Shine Image Shader', {
+    duration: [3.5, 0.3, 5.0, 0.1],
+    delay: [0, 0, 3.0, 0.1],
+    spread: [0.15, 0.01, 0.5, 0.01],
+    glowColor: '#ffffff',
+    glowIntensity: [1.0, 0, 3.0, 0.1],
+    objectFit: { type: 'select', options: ['cover', 'contain'], default: 'cover' },
+    objectPosition: { type: 'select', options: ['center', 'top'], default: 'top' },
+    borderRadius: [32, 0, 64, 1],
+    chromaticAberration: [1.0, 0, 5.0, 0.1],
+    iridescence: [1.0, 0, 1.0, 0.05],
+    causticIntensity: [0.5, 0, 2.0, 0.05],
   });
 
   return (
     <>
-      <Leva
-        titleBar={{ drag: true }}
-        collapsed={false}
-        theme={{
-          sizes: {
-            rootWidth: '280px',
-            controlWidth: '120px',
-          },
-          space: {
-            sm: '6px',
-          },
-        }}
-      />
+      <DialRoot />
       <div
         style={{
           minHeight: '100vh',

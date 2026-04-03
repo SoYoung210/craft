@@ -1,7 +1,16 @@
 import '@fontsource-variable/inter';
 import '@fontsource/nanum-pen-script';
 import './globals.css';
+
+import { JetBrains_Mono } from 'next/font/google';
 import { GoogleAnalytics } from '@next/third-parties/google';
+
+import { CrtOverlay } from '../components/CrtOverlay';
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export const metadata = {
   title: { default: 'craft', template: '%s — craft' },
@@ -21,8 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>{children}</body>
+    <html lang="ko" className={`${jetbrainsMono.variable}`}>
+      <body>
+        <CrtOverlay />
+        {children}
+      </body>
       <GoogleAnalytics gaId="G-FB1K3CJYRD" />
     </html>
   );

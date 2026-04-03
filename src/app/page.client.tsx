@@ -1,230 +1,86 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import { CraftGrid } from '../components/craft-grid/CraftGrid';
 
-import { ContentBox } from '../components/layout/content-box/ContentBox';
-import PageLayout from '../components/layout/page-layout/PageLayout';
-import ContentList from '../components/layout/ContentList';
+function SocialLinks({ className }: { className?: string }) {
+  return (
+    <div
+      className={`flex items-center gap-1.5 text-[10px] font-mono tracking-widest text-black/40 uppercase${className ? ` ${className}` : ''}`}
+    >
+      <a
+        href="https://x.com/soyoung__ee"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="touch-target transition-colors hover:text-black/60"
+      >
+        X
+      </a>
+      <span aria-hidden="true" className="text-black/20">·</span>
+      <a
+        href="https://github.com/soyoung210"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="touch-target transition-colors hover:text-black/60"
+      >
+        Github
+      </a>
+      <span aria-hidden="true" className="text-black/20">·</span>
+      <a
+        href="mailto:me@so-so.dev"
+        className="touch-target transition-colors hover:text-black/60"
+      >
+        Email
+      </a>
+    </div>
+  );
+}
 
 export default function IndexClient() {
   return (
-    <PageLayout theme="gradient">
-      <PageLayout.Title>Craft</PageLayout.Title>
-      <ContentList>
-        <ContentList.Item active>
-          <Link href="/ripple-shader">
-            <ContentBox
-              title="Ripple Shader"
-              style={{ backgroundColor: '#0a0a0a' }}
-            >
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/ripple_og.webp"
-                  alt="Ripple Shader preview"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/particles-loop">
-            <ContentBox
-              title="Particles Loop"
-              style={{ backgroundColor: 'black' }}
-            >
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/particles-loop.webp"
-                  alt="Particles Loop"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/pixel-ripple">
-            <ContentBox title="Pixel Ripple">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/pixel-ripple.png"
-                  alt="Pixel Ripple"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/timezone-clock">
-            <ContentBox title="Timezone Clock">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/clock-thumbanil-5.webp"
-                  alt="Timezone Clock"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/dynamic-island-toc">
-            <ContentBox title="Dynamic Island TOC">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/dynamic-island-toc.webp"
-                  alt="Dynamic Island TOC"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/particle-effect">
-            <ContentBox title="Particle Effect">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/particle-effect.webp"
-                  alt="Particle Effect"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/radial-menu">
-            <ContentBox title="Radial Menu">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/radial-menu.jpeg"
-                  alt="Radial Menu with Content"
-                  fill
-                  quality={70}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+    <div className="flex flex-col lg:flex-row h-[100dvh] w-screen overflow-hidden bg-white text-black">
+      {/* Header / Sidebar Area */}
+      <div className="relative z-20 flex w-full lg:w-[320px] shrink-0 flex-col justify-between border-b lg:border-b-0 lg:border-r border-black/5 bg-[#FFF] p-6 lg:p-8 overflow-hidden">
+        {/* Animated Aurora Gradient */}
+        <div
+          className="pointer-events-none absolute -top-[50%] lg:-top-[25%] left-1/2 -z-10 h-[200%] w-[200%] lg:h-[150%] lg:w-[150%] animate-[background-rotate_20s_linear_infinite] opacity-15"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 50% 20%, rgba(131, 58, 180, 0.8) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(253, 29, 29, 0.6) 0%, transparent 50%),
+              radial-gradient(circle at 20% 50%, rgba(32, 226, 215, 0.8) 0%, transparent 50%),
+              radial-gradient(circle at 50% 80%, rgba(252, 176, 69, 0.6) 0%, transparent 50%)
+            `,
+            filter: 'blur(80px) saturate(100%)',
+          }}
+        />
 
-        <ContentList.Item>
-          <Link href="/switch-tab">
-            <ContentBox title="Switch Tab">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/switch-tab-1.jpg"
-                  alt="Mac, Arc Style Switch Tab (use Space + Tab)"
-                  fill
-                  quality={70}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/glow-cursor-list">
-            <ContentBox title="Glow Cursor List">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/glow-cursor.jpg"
-                  alt="Glow Cursor List content preview"
-                  fill
-                  quality={70}
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/floating-video">
-            <ContentBox title="floating video">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/floating-video.jpg"
-                  alt="Video Player Arc Browser style"
-                  fill
-                  quality={70}
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
+        <div className="relative z-10 flex flex-col gap-2 lg:block">
+          <div className="flex items-end justify-between lg:block">
+            <h1 className="text-3xl lg:text-4xl font-semibold tracking-tighter">
+              Craft
+            </h1>
+            <div className="lg:hidden text-[10px] font-mono tracking-widest text-black/30 uppercase">
+              © 2026 SOYOUNG
+            </div>
+          </div>
+          <p className="lg:mt-6 text-sm leading-relaxed text-black/50">
+            A collection of interfaces, visual interactions, and frontend
+            experiments.
+          </p>
+          <SocialLinks className="lg:hidden" />
+        </div>
+        <div className="hidden lg:flex relative z-10 flex-col gap-3">
+          <SocialLinks />
+          <div className="text-[10px] font-mono tracking-widest text-black/30 uppercase">
+            © 2026 SOYOUNG
+          </div>
+        </div>
+      </div>
 
-        <ContentList.Item>
-          <Link href="/link-preview">
-            <ContentBox title="link preview">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/link_preview.jpg"
-                  alt="link Preview content preview"
-                  fill
-                  quality={100}
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-
-        <ContentList.Item>
-          <Link href="/dynamic-card">
-            <ContentBox title="dynamic card">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/dynamic-card.png"
-                  alt="dynamic card content preview"
-                  fill
-                  quality={100}
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-        <ContentList.Item>
-          <Link href="/border-animation">
-            <ContentBox title="border-animation">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/border-animation.jpg"
-                  alt="Button Border Animation Preview Image"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-
-        <ContentList.Item>
-          <Link href="/blurred-logo">
-            <ContentBox title="blurred-logo">
-              <div className="relative w-full h-full">
-                <Image
-                  src="/thumbnails/blurred-logo.png"
-                  alt="blurred logo content preview"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            </ContentBox>
-          </Link>
-        </ContentList.Item>
-      </ContentList>
-    </PageLayout>
+      {/* Main Grid Area */}
+      <div className="relative flex-1 overflow-hidden bg-[#FEFEFD]">
+        <CraftGrid />
+      </div>
+    </div>
   );
 }

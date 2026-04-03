@@ -6,12 +6,10 @@ const eventListerOptions = {
   passive: true,
 };
 
-const browser = typeof window !== 'undefined';
-
 export function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
-    width: browser ? window.innerWidth : 0,
-    height: browser ? window.innerHeight : 0,
+    width: 0,
+    height: 0,
   });
 
   const setSize = useCallback(() => {

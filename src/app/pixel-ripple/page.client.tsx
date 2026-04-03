@@ -1,6 +1,6 @@
 'use client';
 
-import { Leva, useControls, folder } from 'leva';
+import { DialRoot, useDialKit } from 'dialkit';
 
 import {
   PixelRipple,
@@ -10,95 +10,46 @@ import PageLayout from '../../components/layout/page-layout/PageLayout';
 import { HoverEffectType } from '../../components/content/pixel-ripple/constants';
 
 export default function PixelRippleClient() {
-  const { useCanvas, ...params } = useControls('Pixel Ripple Controls', {
-    useCanvas: {
-      value: true,
-      label: 'Canvas',
-    },
-    pixelColor: {
-      value: '#ffffff',
-      label: 'Pixel Color',
-    },
-    gridSize: {
-      value: 30,
-      min: 10,
-      max: 100,
-      step: 1,
-      label: 'Counts',
-    },
-    animationDuration: {
-      value: 600,
-      min: 100,
-      max: 2000,
-      step: 50,
-      label: 'Duration (ms)',
-    },
-    density: {
-      value: 100,
-      min: 10,
-      max: 100,
-      step: 1,
-      label: 'Density (%)',
-    },
-    'Hover Effects': folder({
-      hoverEffect: {
-        value: 'scanlines',
-        options: ['scanlines', 'color fringing', 'fuzzy', 'none'],
-        label: 'Effect Type',
+  const raw = useDialKit('Pixel Ripple Controls', {
+    useCanvas: true,
+    pixelColor: '#ffffff',
+    gridSize: [30, 10, 100, 1],
+    animationDuration: [600, 100, 2000, 50],
+    density: [100, 10, 100, 1],
+    'Hover Effects': {
+      hoverEffect: { type: 'select', options: ['scanlines', 'color fringing', 'fuzzy', 'none'], default: 'scanlines' },
+      Scanlines: {
+        _collapsed: true,
+        enableScanlines: true,
+        scanlineColor: { type: 'select', options: ['white', 'green', 'amber', 'none'], default: 'white' },
       },
-      Scanlines: folder(
-        {
-          enableScanlines: {
-            value: true,
-            label: 'Enable',
-          },
-          scanlineColor: {
-            value: 'white',
-            options: ['white', 'green', 'amber', 'none'],
-            label: 'Color',
-          },
-        },
-        { collapsed: true }
-      ),
-      'Color Fringing': folder(
-        {
-          intensity: {
-            value: 'medium',
-            options: ['low', 'medium', 'high'],
-            label: 'Intensity',
-          },
-          noise: {
-            value: true,
-            label: 'Noise',
-          },
-          glitch: {
-            value: true,
-            label: 'Glitch',
-          },
-        },
-        { collapsed: true }
-      ),
-    }),
+      'Color Fringing': {
+        _collapsed: true,
+        intensity: { type: 'select', options: ['low', 'medium', 'high'], default: 'medium' },
+        noise: true,
+        glitch: true,
+      },
+    },
   });
+
+  const useCanvas = raw.useCanvas;
+  const hoverEffects = raw['Hover Effects'];
+  const params = {
+    pixelColor: raw.pixelColor,
+    gridSize: raw.gridSize,
+    animationDuration: raw.animationDuration,
+    density: raw.density,
+    hoverEffect: hoverEffects?.hoverEffect,
+    enableScanlines: hoverEffects?.Scanlines?.enableScanlines,
+    scanlineColor: hoverEffects?.Scanlines?.scanlineColor,
+    intensity: hoverEffects?.['Color Fringing']?.intensity,
+    noise: hoverEffects?.['Color Fringing']?.noise,
+    glitch: hoverEffects?.['Color Fringing']?.glitch,
+  };
 
   return (
     <>
-      <Leva
-        titleBar={{
-          drag: true,
-        }}
-        collapsed={false}
-        hidden={false}
-        theme={{
-          sizes: {
-            rootWidth: '280px',
-            controlWidth: '120px',
-          },
-          space: {
-            sm: '6px',
-          },
-        }}
-      />
+      <DialRoot />
       <PageLayout>
         <PageLayout.Title>Pixel Ripple</PageLayout.Title>
         <PageLayout.Details>
