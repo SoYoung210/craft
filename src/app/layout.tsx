@@ -4,6 +4,7 @@ import './globals.css';
 
 import { JetBrains_Mono } from 'next/font/google';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { Analytics } from '@vercel/analytics/next';
 
 import { CrtOverlay } from '../components/CrtOverlay';
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         {children}
       </body>
       <GoogleAnalytics gaId="G-FB1K3CJYRD" />
+      <Analytics />
     </html>
   );
 }

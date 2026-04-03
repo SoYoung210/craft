@@ -36,6 +36,7 @@
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
+    "@vercel/analytics": "^2.0.1",
     "animejs": "^3.2.2",
     "canvas-confetti": "^1.9.4",
     "chroma-js": "^2.6.0",
