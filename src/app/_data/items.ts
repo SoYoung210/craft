@@ -23,7 +23,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/particles-loop.webp',
     aspectRatio: '2/1',
     backgroundColor: '#000',
-    date: 'Mar 2026',
+    date: 'Dec 2025',
   },
   {
     title: 'Pixel Ripple',
@@ -32,7 +32,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '5/2',
     backgroundColor: '#d6dbdc',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Nov 2025',
   },
   {
     title: 'Timezone Clock',
@@ -41,7 +41,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '2/1',
     backgroundColor: '#f5f5f7',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Jun 2025',
   },
   {
     title: 'Dynamic Island TOC',
@@ -49,7 +49,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/dynamic-island-toc.webp',
     aspectRatio: '5/2',
     backgroundColor: '#ffffff',
-    date: 'Mar 2026',
+    date: 'Mar 2025',
   },
   {
     title: 'Particle Effect',
@@ -58,7 +58,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '16/9',
     backgroundColor: '#f5f5f5',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Oct 2024',
   },
   {
     title: 'Radial Menu',
@@ -66,7 +66,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/radial-menu.jpeg',
     aspectRatio: '16/9',
     backgroundColor: '#f8f8f8',
-    date: 'Mar 2026',
+    date: 'Aug 2024',
   },
   {
     title: 'Switch Tab',
@@ -74,7 +74,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/switch-tab-1.jpg',
     aspectRatio: '5/2',
     backgroundColor: '#eff0f5',
-    date: 'Mar 2026',
+    date: 'Sep 2023',
   },
   {
     title: 'Glow Cursor List',
@@ -82,7 +82,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/glow-cursor.jpg',
     aspectRatio: '8/3',
     backgroundColor: '#f4f4f5',
-    date: 'Mar 2026',
+    date: 'Jul 2023',
   },
   {
     title: 'Floating Video',
@@ -91,7 +91,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '8/5',
     backgroundColor: '#a3b1c6',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Jun 2023',
   },
   {
     title: 'Link Preview',
@@ -100,7 +100,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '16/9',
     backgroundColor: '#e5e5e5',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Apr 2023',
   },
   {
     title: 'Dynamic Card',
@@ -109,7 +109,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '3/2',
     backgroundColor: '#f0f0f0',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Nov 2022',
   },
   {
     title: 'Border Animation',
@@ -117,7 +117,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '/thumbnails/border-animation.jpg',
     aspectRatio: '5/3',
     backgroundColor: '#1a1a1a',
-    date: 'Mar 2026',
+    date: 'Jan 2023',
   },
   {
     title: 'Blurred Logo',
@@ -126,7 +126,7 @@ export const ITEMS: CraftItem[] = [
     aspectRatio: '8/5',
     backgroundColor: '#fafafa',
     objectFit: 'contain',
-    date: 'Mar 2026',
+    date: 'Oct 2022',
   },
 ];
 
