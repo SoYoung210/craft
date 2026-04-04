@@ -244,7 +244,7 @@ void main() {
   vec2 leadDisp = normalize(uv - center) * leadProfile * leadFade * 0.012;
 
   float edgeProximity = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-  float edgeFade = pow(smoothstep(0.0, 0.2, edgeProximity), 0.6);
+  float edgeFade = smoothstep(0.0, 0.03, edgeProximity);
 
   vec2 displacedUV = uv + (disp + leadDisp) * edgeFade * fadeEnvelope;
 
