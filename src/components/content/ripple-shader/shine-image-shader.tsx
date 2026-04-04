@@ -243,8 +243,8 @@ void main() {
   float leadFade = smoothstep(0.0, 0.1, uProgress) * smoothstep(1.0, 0.5, uProgress);
   vec2 leadDisp = normalize(uv - center) * leadProfile * leadFade * 0.012;
 
-  float edgeProximity = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-  float edgeFade = smoothstep(0.0, 0.03, edgeProximity);
+  float sideEdge = min(uv.x, 1.0 - uv.x);
+  float edgeFade = smoothstep(0.0, 0.03, sideEdge) * smoothstep(0.0, 0.3, uv.y);
 
   vec2 displacedUV = uv + (disp + leadDisp) * edgeFade * fadeEnvelope;
 
