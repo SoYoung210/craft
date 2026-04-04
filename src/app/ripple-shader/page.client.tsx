@@ -6,7 +6,7 @@ import { RotateCcw } from 'lucide-react';
 
 import { ShineImageShader } from '../../components/content/ripple-shader/shine-image-shader';
 
-const IMAGE_URL = '/thumbnails/ripple_og.webp';
+const IMAGE_URL = '/thumbnails/ripple_clean.webp';
 
 export default function RippleShaderClient() {
   const [replayKey, setReplayKey] = useState(0);
@@ -64,6 +64,7 @@ export default function RippleShaderClient() {
               chromaticAberration={params.chromaticAberration}
               iridescence={params.iridescence}
               causticIntensity={params.causticIntensity}
+              autoPlay={replayKey > 0}
             />
             <button
               onClick={() => setReplayKey(k => k + 1)}
