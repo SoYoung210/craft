@@ -296,7 +296,6 @@ export function ShineImageShader({
   imageUrl,
   scale = 10.0,
   sharpness = 0.7,
-  spread = 0.15,
   duration = 1.2,
   delay = 0,
   className = '',
@@ -317,9 +316,21 @@ export function ShineImageShader({
   const [isTextureLoaded, setIsTextureLoaded] = useState(false);
   const hasAnimatedRef = useRef(false);
   const onLoadRef = useRef(onLoad);
+  const durationRef = useRef(duration);
+  const delayRef = useRef(delay);
+  const autoPlayRef = useRef(autoPlay);
   useEffect(() => {
     onLoadRef.current = onLoad;
   }, [onLoad]);
+  useEffect(() => {
+    durationRef.current = duration;
+  }, [duration]);
+  useEffect(() => {
+    delayRef.current = delay;
+  }, [delay]);
+  useEffect(() => {
+    autoPlayRef.current = autoPlay;
+  }, [autoPlay]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -353,9 +364,6 @@ export function ShineImageShader({
       generateMipmaps: false,
     });
 
-    const glowVec3 = hexToVec3(glowColor);
-    const bgVec3 = backgroundColor ? hexToVec3(backgroundColor) : [0, 0, 0];
-
     const geometry = new Triangle(gl);
     const program = new Program(gl, {
       vertex,
@@ -363,24 +371,20 @@ export function ShineImageShader({
       uniforms: {
         iResolution: { value: new Float32Array([1, 1]) },
         uProgress: { value: 0 },
-        uScale: { value: scale },
-        uSharpness: { value: sharpness },
+        uScale: { value: 1.0 },
+        uSharpness: { value: 1.0 },
         uTexture: { value: placeholderTexture },
         uImageAspect: { value: 1.0 },
-        uObjectFit: { value: objectFit === 'contain' ? 1.0 : 0.0 },
-        uObjectPosition: { value: objectPosition === 'top' ? 1.0 : 0.5 },
-        uBorderRadius: { value: borderRadius ?? 0 },
-        uGlowIntensity: { value: glowIntensity },
-        uGlowColor: {
-          value: new Float32Array(glowVec3),
-        },
-        uBackgroundColor: {
-          value: new Float32Array(bgVec3),
-        },
-        uHasBackground: { value: backgroundColor ? 1.0 : 0.0 },
-        uChromaticAberration: { value: chromaticAberration },
-        uIridescence: { value: iridescence },
-        uCausticIntensity: { value: causticIntensity },
+        uObjectFit: { value: 0.0 },
+        uObjectPosition: { value: 0.5 },
+        uBorderRadius: { value: 0 },
+        uGlowIntensity: { value: 1.0 },
+        uGlowColor: { value: new Float32Array([1, 1, 1]) },
+        uBackgroundColor: { value: new Float32Array([0, 0, 0]) },
+        uHasBackground: { value: 0.0 },
+        uChromaticAberration: { value: 1.0 },
+        uIridescence: { value: 1.0 },
+        uCausticIntensity: { value: 0.5 },
         uTime: { value: 0 },
       },
     });
@@ -415,11 +419,11 @@ export function ShineImageShader({
       });
 
       // Start one-time ripple animation when texture loads
-      if (!hasAnimatedRef.current && autoPlay) {
+      if (!hasAnimatedRef.current && autoPlayRef.current) {
         hasAnimatedRef.current = true;
         animate(0, 1, {
-          duration,
-          delay,
+          duration: durationRef.current,
+          delay: delayRef.current,
           ease: [0.4, 0.0, 0.2, 1],
           onUpdate: value => {
             if (programRef.current) {
@@ -466,13 +470,29 @@ export function ShineImageShader({
         // Ignore
       }
     };
+  }, [imageUrl]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useEffect(() => {
+    const p = programRef.current;
+    if (!p) return;
+    (p.uniforms.uScale as any).value = scale;
+    (p.uniforms.uSharpness as any).value = sharpness;
+    (p.uniforms.uObjectFit as any).value = objectFit === 'contain' ? 1.0 : 0.0;
+    (p.uniforms.uObjectPosition as any).value = objectPosition === 'top' ? 1.0 : 0.5;
+    (p.uniforms.uBorderRadius as any).value = borderRadius ?? 0;
+    (p.uniforms.uGlowIntensity as any).value = glowIntensity;
+    const gv = hexToVec3(glowColor);
+    (p.uniforms.uGlowColor as any).value = new Float32Array(gv);
+    const bgv = backgroundColor ? hexToVec3(backgroundColor) : [0, 0, 0];
+    (p.uniforms.uBackgroundColor as any).value = new Float32Array(bgv);
+    (p.uniforms.uHasBackground as any).value = backgroundColor ? 1.0 : 0.0;
+    (p.uniforms.uChromaticAberration as any).value = chromaticAberration;
+    (p.uniforms.uIridescence as any).value = iridescence;
+    (p.uniforms.uCausticIntensity as any).value = causticIntensity;
   }, [
-    imageUrl,
     scale,
     sharpness,
-    spread,
-    duration,
-    delay,
     objectFit,
     objectPosition,
     borderRadius,
@@ -482,7 +502,6 @@ export function ShineImageShader({
     chromaticAberration,
     iridescence,
     causticIntensity,
-    autoPlay,
   ]);
 
   return (

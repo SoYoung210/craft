@@ -72,7 +72,7 @@ export default function RippleShaderClient() {
               chromaticAberration={params.chromaticAberration}
               iridescence={params.iridescence}
               causticIntensity={params.causticIntensity}
-              autoPlay={replayKey > 0}
+              autoPlay
             />
             <button
               onClick={() => setReplayKey(k => k + 1)}
