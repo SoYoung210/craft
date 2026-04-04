@@ -1,3 +1,5 @@
+import { type CSSProperties } from 'react';
+
 export interface CraftItem {
   title: string;
   href: string;
@@ -7,18 +9,20 @@ export interface CraftItem {
   objectFit?: 'cover' | 'contain';
   date?: string;
   videoSrc?: string;
+  videoStyle?: CSSProperties;
   external?: boolean;
 }
 
 export const ITEMS: CraftItem[] = [
   {
-    title: 'Transition',
-    href: 'https://pika.me/login',
+    title: 'Production',
+    href: 'https://pika.me/onboarding',
     thumbnail: '',
     aspectRatio: '76/45',
     backgroundColor: '#0a0a0a',
     videoSrc:
       'https://ztkbknlwbelvi25x.public.blob.vercel-storage.com/onboarding_arc_no_padding.mp4',
+    videoStyle: { scale: '1.05' },
     external: true,
     date: 'Mar 2026',
   },
