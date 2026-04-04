@@ -30,6 +30,8 @@ interface ShineImageShaderProps {
   iridescence?: number;
   /** Caustic noise intensity in the ripple band (default 0.5, 0 = off) */
   causticIntensity?: number;
+  /** Whether to auto-play the animation on mount (default true) */
+  autoPlay?: boolean;
 }
 
 function hexToVec3(hex: string): [number, number, number] {
@@ -208,8 +210,8 @@ void main() {
 
   vec4 color = texture(uTexture, textureUV);
 
-  // No effect during delay
-  if (uProgress < 0.001) {
+  float fadeEnvelope = smoothstep(0.0, 0.15, uProgress) * smoothstep(1.0, 0.65, uProgress);
+  if (uProgress < 0.001 || fadeEnvelope < 0.001) {
     fragColor = color;
     return;
   }
@@ -241,13 +243,10 @@ void main() {
   float leadFade = smoothstep(0.0, 0.1, uProgress) * smoothstep(1.0, 0.5, uProgress);
   vec2 leadDisp = normalize(uv - center) * leadProfile * leadFade * 0.012;
 
-  // Fade envelope: ramp in and fade out so image returns to original
-  float fadeEnvelope = smoothstep(0.0, 0.15, uProgress) * smoothstep(1.0, 0.65, uProgress);
-
   float edgeProximity = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
   float edgeFade = pow(smoothstep(0.0, 0.2, edgeProximity), 0.6);
 
-  vec2 displacedUV = uv + (disp + leadDisp) * edgeFade;
+  vec2 displacedUV = uv + (disp + leadDisp) * edgeFade * fadeEnvelope;
 
   // --- Caustic UV displacement: fluid refraction near the ring ---
   if (uCausticIntensity > 0.0) {
@@ -268,7 +267,8 @@ void main() {
   finalUV = clamp(finalUV, vec2(0.0), vec2(1.0));
 
   // Chromatic aberration: offset R/G/B along radial direction, tight to ring only
-  float abStrength = scaleDiff * uChromaticAberration * 0.008 * edgeFade;
+  float abMask = smoothstep(spread * 0.2, 0.0, abs(dist - safeFront));
+  float abStrength = abMask * uChromaticAberration * 0.008 * edgeFade * fadeEnvelope;
   vec2 abDir = normalize(uv - center);
   vec2 uvR = clamp(finalUV + abDir * abStrength, vec2(0.0), vec2(1.0));
   vec2 uvB = clamp(finalUV - abDir * abStrength, vec2(0.0), vec2(1.0));
@@ -310,6 +310,7 @@ export function ShineImageShader({
   chromaticAberration = 1.0,
   iridescence = 1.0,
   causticIntensity = 0.5,
+  autoPlay = true,
 }: ShineImageShaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const programRef = useRef<Program | null>(null);
@@ -414,7 +415,7 @@ export function ShineImageShader({
       });
 
       // Start one-time ripple animation when texture loads
-      if (!hasAnimatedRef.current) {
+      if (!hasAnimatedRef.current && autoPlay) {
         hasAnimatedRef.current = true;
         animate(0, 1, {
           duration,
@@ -481,6 +482,7 @@ export function ShineImageShader({
     chromaticAberration,
     iridescence,
     causticIntensity,
+    autoPlay,
   ]);
 
   return (
