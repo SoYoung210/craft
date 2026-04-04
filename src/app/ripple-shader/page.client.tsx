@@ -17,8 +17,16 @@ export default function RippleShaderClient() {
     spread: [0.15, 0.01, 0.5, 0.01],
     glowColor: '#ffffff',
     glowIntensity: [1.0, 0, 3.0, 0.1],
-    objectFit: { type: 'select', options: ['cover', 'contain'], default: 'cover' },
-    objectPosition: { type: 'select', options: ['center', 'top'], default: 'top' },
+    objectFit: {
+      type: 'select',
+      options: ['cover', 'contain'],
+      default: 'cover',
+    },
+    objectPosition: {
+      type: 'select',
+      options: ['center', 'top'],
+      default: 'top',
+    },
     borderRadius: [32, 0, 64, 1],
     chromaticAberration: [1.0, 0, 5.0, 0.1],
     iridescence: [1.0, 0, 1.0, 0.05],

@@ -241,6 +241,39 @@
   }
 }
 
+.video-placeholder {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  video[autoplay] {
+    display: none;
+  }
+  .video-placeholder {
+    display: block;
+  }
+}
+
+/* Scroll-linked blur reveal */
+@keyframes scroll-blur-reveal {
+  from {
+    filter: blur(12px);
+    opacity: 0.5;
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+.scroll-blur-item {
+  @supports (animation-timeline: view()) {
+    animation: scroll-blur-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+}
+
 /* Keyframes */
 @keyframes background-rotate {
   0% {
