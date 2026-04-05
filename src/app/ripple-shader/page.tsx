@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Ripple Shader',
   description: 'WebGL image shader with ripple/shine animation.',
   openGraph: {
-    images: ['/thumbnails/ripple_og.png'],
+    images: ['/thumbnails/ripple_og2.png'],
   },
 };
 
