@@ -407,9 +407,9 @@ export function ShineImageShader({
         wrapT: gl.CLAMP_TO_EDGE,
         flipY: true,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (program.uniforms.uTexture as any).value = texture;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (program.uniforms.uImageAspect as any).value =
         img.naturalWidth / img.naturalHeight;
       setIsTextureLoaded(true);
@@ -427,7 +427,6 @@ export function ShineImageShader({
           ease: [0.4, 0.0, 0.2, 1],
           onUpdate: value => {
             if (programRef.current) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (programRef.current.uniforms.uProgress as any).value = value;
             }
           },
@@ -452,7 +451,6 @@ export function ShineImageShader({
     let raf = 0;
     const startTime = performance.now();
     const loop = () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (program.uniforms.uTime as any).value =
         (performance.now() - startTime) / 1000;
       renderer.render({ scene: mesh });
@@ -472,14 +470,14 @@ export function ShineImageShader({
     };
   }, [imageUrl]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useEffect(() => {
     const p = programRef.current;
     if (!p) return;
     (p.uniforms.uScale as any).value = scale;
     (p.uniforms.uSharpness as any).value = sharpness;
     (p.uniforms.uObjectFit as any).value = objectFit === 'contain' ? 1.0 : 0.0;
-    (p.uniforms.uObjectPosition as any).value = objectPosition === 'top' ? 1.0 : 0.5;
+    (p.uniforms.uObjectPosition as any).value =
+      objectPosition === 'top' ? 1.0 : 0.5;
     (p.uniforms.uBorderRadius as any).value = borderRadius ?? 0;
     (p.uniforms.uGlowIntensity as any).value = glowIntensity;
     const gv = hexToVec3(glowColor);
