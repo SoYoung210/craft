@@ -2,7 +2,7 @@ import { type CSSProperties } from 'react';
 
 export interface CraftItem {
   title: string;
-  href: string;
+  href?: string;
   thumbnail: string;
   aspectRatio: string;
   backgroundColor?: string;
@@ -14,6 +14,16 @@ export interface CraftItem {
 }
 
 export const ITEMS: CraftItem[] = [
+  {
+    title: 'Production',
+    href: 'https://pika.art',
+    thumbnail: '',
+    aspectRatio: '229/180',
+    backgroundColor: '#0a0a0a',
+    videoSrc: 'https://cdn.so-so.dev/pika/audio_editor.mp4',
+    external: true,
+    date: 'Apr 2026',
+  },
   {
     title: 'Production',
     href: 'https://pika.me/onboarding',
