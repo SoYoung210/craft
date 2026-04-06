@@ -10,9 +10,10 @@ import { CraftCard } from '../craft-card/CraftCard';
 interface Props {
   items: CraftItem[];
   className?: string;
+  onPreview?: (item: CraftItem, previewId: string) => void;
 }
 
-export function InfiniteColumn({ items, className }: Props) {
+export function InfiniteColumn({ items, className, onPreview }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   useInfiniteScroll(columnRef);
 
@@ -32,6 +33,8 @@ export function InfiniteColumn({ items, className }: Props) {
               key={`${setIndex}-${i}`}
               item={item}
               priority={i === 0}
+              onPreview={onPreview}
+              previewId={!item.href ? `preview-${setIndex}-${i}` : undefined}
             />
           ))}
         </div>

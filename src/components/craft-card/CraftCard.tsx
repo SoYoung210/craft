@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'motion/react';
 
 import { type CraftItem } from '@/app/_data/items';
 
@@ -21,6 +24,8 @@ function ArrowUpRightIcon({ className }: { className?: string }) {
 interface Props {
   item: CraftItem;
   priority?: boolean;
+  previewId?: string;
+  onPreview?: (item: CraftItem, previewId: string) => void;
 }
 
 function getLuma(hex: string) {
@@ -41,7 +46,7 @@ function getLuma(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-export function CraftCard({ item, priority }: Props) {
+export function CraftCard({ item, priority, previewId, onPreview }: Props) {
   const bgColor = item.backgroundColor ?? '#f5f5f5';
   const isDark = getLuma(bgColor) < 128;
   const textColor = isDark ? 'text-white/90' : 'text-black/80';
@@ -51,9 +56,18 @@ export function CraftCard({ item, priority }: Props) {
 
   const isVideo = !!item.videoSrc;
 
+  const MediaContainer = previewId ? motion.div : 'div';
+  const mediaContainerProps = previewId
+    ? {
+        layoutId: previewId,
+        transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
+      }
+    : {};
+
   const card = (
     <div className="group/card relative overflow-hidden rounded-xl border border-black/5 bg-black/2 shadow-sm transition-all duration-300 hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-      <div
+      <MediaContainer
+        {...mediaContainerProps}
         className="relative w-full overflow-hidden"
         style={{
           aspectRatio: item.aspectRatio,
@@ -116,7 +130,7 @@ export function CraftCard({ item, priority }: Props) {
             </div>
           </>
         )}
-      </div>
+      </MediaContainer>
 
       {isVideo && (
         <div className="flex items-center justify-between px-4 py-3">
@@ -133,7 +147,30 @@ export function CraftCard({ item, priority }: Props) {
   );
 
   if (!item.href) {
-    return <div className={wrapperClassName}>{card}</div>;
+    const isPreviewable = !!(onPreview && previewId);
+    const handleClick = isPreviewable
+      ? () => onPreview(item, previewId)
+      : undefined;
+    const handleKeyDown = isPreviewable
+      ? (e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onPreview(item, previewId);
+          }
+        }
+      : undefined;
+
+    return (
+      <div
+        className={`${wrapperClassName}${isPreviewable ? ' cursor-pointer' : ''}`}
+        role={isPreviewable ? 'button' : undefined}
+        tabIndex={isPreviewable ? 0 : undefined}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+      >
+        {card}
+      </div>
+    );
   }
 
   if (item.external) {
