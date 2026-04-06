@@ -2,6 +2,8 @@
 
 import { type CSSProperties, useRef, useState } from 'react';
 
+import { VIDEO_POSTERS } from '@/app/_data/video-posters';
+
 interface CraftVideoPlayerProps {
   src: string;
   objectFit?: 'cover' | 'contain';
@@ -42,6 +44,9 @@ export function CraftVideoPlayer({
 }: CraftVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  const poster = VIDEO_POSTERS[src];
 
   const togglePlayback = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,6 +66,19 @@ export function CraftVideoPlayer({
 
   return (
     <>
+      {poster && (
+        <img
+          aria-hidden="true"
+          src={`data:image/png;base64,${poster}`}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+          style={{
+            filter: 'blur(32px)',
+            transform: 'scale(1.1) translateZ(0)',
+            opacity: videoLoaded ? 0 : 1,
+          }}
+        />
+      )}
       <video
         ref={videoRef}
         src={src}
@@ -68,12 +86,13 @@ export function CraftVideoPlayer({
         muted
         loop
         playsInline
-        className="absolute inset-0 h-full w-full"
-        style={{ objectFit, ...videoStyle }}
-      />
-      <div
-        className="video-placeholder absolute inset-0 h-full w-full"
-        style={{ backgroundColor: 'inherit' }}
+        className="absolute inset-0 h-full w-full transition-opacity duration-700"
+        style={{
+          objectFit,
+          ...videoStyle,
+          opacity: videoLoaded ? 1 : 0,
+        }}
+        onLoadedData={() => setVideoLoaded(true)}
       />
       <button
         onClick={togglePlayback}
