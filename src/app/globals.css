@@ -58,6 +58,7 @@
 
   /* Easings */
   --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Global resets */
@@ -324,10 +325,4 @@
   to {
     transform: translateY(-50%) rotate(360deg);
   }
-}
-
-/* CRT Effects */
-.crt-screen {
-  clip-path: url(#crt-screen);
-  background-color: var(--color-gray-10);
 }
