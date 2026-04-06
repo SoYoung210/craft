@@ -16,6 +16,15 @@ export interface CraftItem {
 export const ITEMS: CraftItem[] = [
   {
     title: 'Production',
+    thumbnail: '',
+    aspectRatio: '503/315',
+    backgroundColor: '#0a0a0a',
+    videoSrc: 'https://cdn.so-so.dev/pika/imessage.mp4',
+    videoStyle: { scale: '1.05' },
+    date: 'Feb 2026',
+  },
+  {
+    title: 'Production',
     href: 'https://pika.art',
     thumbnail: '',
     aspectRatio: '229/180',
