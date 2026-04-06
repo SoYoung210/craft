@@ -39,8 +39,7 @@ export const ITEMS: CraftItem[] = [
     thumbnail: '',
     aspectRatio: '76/45',
     backgroundColor: '#0a0a0a',
-    videoSrc:
-      'https://ztkbknlwbelvi25x.public.blob.vercel-storage.com/onboarding_arc_no_padding.mp4',
+    videoSrc: 'https://cdn.so-so.dev/pika/onboarding_arc_no_padding_half.mp4',
     videoStyle: { scale: '1.05' },
     external: true,
     date: 'Mar 2026',
