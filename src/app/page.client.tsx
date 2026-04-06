@@ -144,18 +144,18 @@ export default function IndexClient() {
           {
             opacity: 0,
             WebkitMaskImage:
-              'linear-gradient(to bottom, rgba(0,0,0,1) -50%, rgba(0,0,0,0) 0%)',
+              'radial-gradient(circle at 0% 0%, rgba(0,0,0,1) -50%, rgba(0,0,0,0) 0%)',
             maskImage:
-              'linear-gradient(to bottom, rgba(0,0,0,1) -50%, rgba(0,0,0,0) 0%)',
+              'radial-gradient(circle at 0% 0%, rgba(0,0,0,1) -50%, rgba(0,0,0,0) 0%)',
           } as any
         }
         animate={
           {
             opacity: 1,
             WebkitMaskImage:
-              'linear-gradient(to bottom, rgba(0,0,0,1) 100%, rgba(0,0,0,0) 150%)',
+              'radial-gradient(circle at 0% 0%, rgba(0,0,0,1) 150%, rgba(0,0,0,0) 200%)',
             maskImage:
-              'linear-gradient(to bottom, rgba(0,0,0,1) 100%, rgba(0,0,0,0) 150%)',
+              'radial-gradient(circle at 0% 0%, rgba(0,0,0,1) 150%, rgba(0,0,0,0) 200%)',
           } as any
         }
         transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}

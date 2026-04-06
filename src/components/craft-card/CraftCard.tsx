@@ -132,6 +132,10 @@ export function CraftCard({ item, priority }: Props) {
     </div>
   );
 
+  if (!item.href) {
+    return <div className={wrapperClassName}>{card}</div>;
+  }
+
   if (item.external) {
     return (
       <a
