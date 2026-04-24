@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+
 import BlurredLogoClient from './page.client';
 
 export const metadata: Metadata = {
