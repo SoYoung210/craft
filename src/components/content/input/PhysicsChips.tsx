@@ -32,6 +32,7 @@ function randomGradient() {
 
 const CHIP_HEIGHT = 48;
 const WALL_THICKNESS = 40;
+const WALL_INSET = 12;
 
 const DEFAULT_SELECTED = ['typography', 'responsive', 'animation'];
 
@@ -125,20 +126,20 @@ export function PhysicsChips() {
 
       const floor = Matter.Bodies.rectangle(
         width / 2,
-        height + WALL_THICKNESS / 2,
+        height - WALL_INSET + WALL_THICKNESS / 2,
         width * 2,
         WALL_THICKNESS,
         { isStatic: true, friction: 0.8, restitution: 0.1 }
       );
       const leftWall = Matter.Bodies.rectangle(
-        -WALL_THICKNESS / 2,
+        WALL_INSET - WALL_THICKNESS / 2,
         height / 2,
         WALL_THICKNESS,
         height * 3,
         { isStatic: true, friction: 0.3 }
       );
       const rightWall = Matter.Bodies.rectangle(
-        width + WALL_THICKNESS / 2,
+        width - WALL_INSET + WALL_THICKNESS / 2,
         height / 2,
         WALL_THICKNESS,
         height * 3,
