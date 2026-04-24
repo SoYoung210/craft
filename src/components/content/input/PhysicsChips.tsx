@@ -12,9 +12,22 @@ interface ChipBody {
   slug: string;
   label: string;
   isCustom: boolean;
+  gradient?: string;
+  textColor?: string;
   body: Matter.Body;
   width: number;
   height: number;
+}
+
+function randomGradient() {
+  const hue = Math.floor(Math.random() * 360);
+  const hue2 = hue + 25 + Math.floor(Math.random() * 30);
+  const x = 20 + Math.floor(Math.random() * 60);
+  const y = 20 + Math.floor(Math.random() * 60);
+  return {
+    gradient: `radial-gradient(ellipse at ${x}% ${y}%, hsl(${hue} 75% 95%), hsl(${hue2} 65% 92%))`,
+    textColor: `hsl(${hue + 10} 55% 40%)`,
+  };
 }
 
 const CHIP_HEIGHT = 48;
@@ -69,10 +82,13 @@ export function PhysicsChips() {
       });
 
       Matter.World.add(engine.world, body);
+      const colors = randomGradient();
       chipBodiesRef.current.set(slug, {
         slug,
         label,
         isCustom,
+        gradient: colors.gradient,
+        textColor: colors.textColor,
         body,
         width: chipWidth,
         height: CHIP_HEIGHT,
@@ -235,7 +251,7 @@ export function PhysicsChips() {
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden rounded-2xl bg-gray-0"
-      style={{ height: 600 }}
+      style={{ aspectRatio: '16 / 9' }}
     >
       <div className="relative z-10 flex flex-col items-center gap-6 px-6 pt-10">
         <div className="flex max-w-[704px] flex-wrap items-center justify-center gap-2">
@@ -271,25 +287,17 @@ export function PhysicsChips() {
           const pos = positions.get(slug);
           if (!pos) return null;
 
-          const colorIndex = DEFAULT_TAGS.findIndex(t => t.slug === slug);
-
           return (
             <div
               key={slug}
-              className={cn(
-                'pointer-events-auto absolute flex h-12 cursor-pointer items-center gap-2 rounded-full px-5 text-[17px] font-medium shadow-md',
-                chip.isCustom
-                  ? 'bg-violet-200 text-gray-8'
-                  : CHIP_COLORS[
-                      ((colorIndex % CHIP_COLORS.length) + CHIP_COLORS.length) %
-                        CHIP_COLORS.length
-                    ]
-              )}
+              className="pointer-events-auto absolute flex h-12 cursor-pointer items-center gap-2 rounded-full px-5 text-[17px] font-medium shadow-md"
               style={{
                 left: pos.x - chip.width / 2,
                 top: pos.y - chip.height / 2,
                 transform: `rotate(${pos.angle}rad)`,
                 willChange: 'transform, left, top',
+                background: chip.gradient,
+                color: chip.textColor,
               }}
               onClick={() => {
                 if (chip.isCustom) {
@@ -327,16 +335,3 @@ export function PhysicsChips() {
     </div>
   );
 }
-
-const CHIP_COLORS = [
-  'bg-violet-100 text-violet-700',
-  'bg-amber-100 text-amber-700',
-  'bg-sky-100 text-sky-700',
-  'bg-rose-100 text-rose-700',
-  'bg-emerald-100 text-emerald-700',
-  'bg-indigo-100 text-indigo-700',
-  'bg-orange-100 text-orange-700',
-  'bg-teal-100 text-teal-700',
-  'bg-pink-100 text-pink-700',
-  'bg-lime-100 text-lime-700',
-];

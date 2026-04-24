@@ -45,9 +45,9 @@ export const ITEMS: CraftItem[] = [
     date: 'Mar 2026',
   },
   {
-    title: 'Input',
-    href: '/input',
-    thumbnail: '/thumbnails/input.webp',
+    title: 'Chip Select',
+    href: '/chip-select',
+    thumbnail: '/thumbnails/chip-select.webp',
     aspectRatio: '16/9',
     backgroundColor: '#ffffff',
     date: 'Apr 2026',
