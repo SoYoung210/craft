@@ -15,6 +15,16 @@ export interface CraftItem {
 
 export const ITEMS: CraftItem[] = [
   {
+    title: 'Chip Select',
+    href: '/chip-select',
+    thumbnail: '/thumbnails/chip-select.png',
+    aspectRatio: '16/9',
+    backgroundColor: '#ffffff',
+    videoSrc: 'https://cdn.so-so.dev/chip-select-wo-padding.mp4',
+    videoStyle: { clipPath: 'inset(1px)' },
+    date: 'Apr 2026',
+  },
+  {
     title: 'Production',
     thumbnail: '',
     aspectRatio: '503/315',
