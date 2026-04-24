@@ -30,13 +30,22 @@ function randomGradient() {
   };
 }
 
-const CHIP_HEIGHT = 48;
+const CHIP_HEIGHT_SM = 36;
+const CHIP_HEIGHT_LG = 48;
 const WALL_THICKNESS = 40;
 const WALL_INSET = 12;
+const SM_BREAKPOINT = 640;
 
 const DEFAULT_SELECTED = ['typography', 'responsive', 'animation'];
 
+function getChipHeight() {
+  return window.innerWidth < SM_BREAKPOINT ? CHIP_HEIGHT_SM : CHIP_HEIGHT_LG;
+}
+
 function estimateChipWidth(label: string) {
+  if (window.innerWidth < SM_BREAKPOINT) {
+    return label.length * 7.5 + 28 + 12 + 8;
+  }
   return label.length * 9 + 40 + 14 + 8;
 }
 
@@ -64,12 +73,13 @@ export function PhysicsChips() {
 
       const { width } = container.getBoundingClientRect();
       const chipWidth = estimateChipWidth(label);
+      const chipHeight = getChipHeight();
 
       const x = Math.random() * (width - chipWidth - 40) + chipWidth / 2 + 20;
-      const y = -CHIP_HEIGHT - Math.random() * 60;
+      const y = -chipHeight - Math.random() * 60;
 
-      const body = Matter.Bodies.rectangle(x, y, chipWidth, CHIP_HEIGHT, {
-        chamfer: { radius: CHIP_HEIGHT / 2 },
+      const body = Matter.Bodies.rectangle(x, y, chipWidth, chipHeight, {
+        chamfer: { radius: chipHeight / 2 },
         friction: 0.6,
         frictionAir: 0.01,
         restitution: 0.15,
@@ -92,7 +102,7 @@ export function PhysicsChips() {
         textColor: colors.textColor,
         body,
         width: chipWidth,
-        height: CHIP_HEIGHT,
+        height: chipHeight,
       });
     },
     []
@@ -148,6 +158,20 @@ export function PhysicsChips() {
 
       wallsRef.current = [floor, leftWall, rightWall];
       Matter.World.add(engine.world, wallsRef.current);
+
+      chipBodiesRef.current.forEach(chip => {
+        const { x, y } = chip.body.position;
+        const halfW = chip.width / 2;
+        const clampedX = Math.max(
+          WALL_INSET + halfW,
+          Math.min(x, width - WALL_INSET - halfW)
+        );
+        const clampedY = Math.min(y, height - WALL_INSET - chip.height / 2);
+        if (clampedX !== x || clampedY !== y) {
+          Matter.Body.setPosition(chip.body, { x: clampedX, y: clampedY });
+          Matter.Sleeping.set(chip.body, false);
+        }
+      });
     };
 
     updateWalls();
@@ -251,11 +275,10 @@ export function PhysicsChips() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden rounded-2xl bg-gray-0"
-      style={{ aspectRatio: '16 / 9' }}
+      className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-gray-0 sm:aspect-video"
     >
-      <div className="relative z-10 flex flex-col items-center gap-6 px-6 pt-10">
-        <div className="flex max-w-[704px] flex-wrap items-center justify-center gap-2">
+      <div className="relative z-10 flex flex-col items-center gap-4 px-4 pt-6 sm:gap-6 sm:px-6 sm:pt-10">
+        <div className="flex max-w-[704px] flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           {allTags.map(item => {
             const isSelected = selected.has(item.slug);
             return (
@@ -268,7 +291,7 @@ export function PhysicsChips() {
                     : toggle(item.slug, item.label, item.isCustom)
                 }
                 className={cn(
-                  'flex h-12 items-center gap-2 rounded-full border px-4 text-[17px] font-medium transition-all duration-300',
+                  'flex h-9 items-center gap-2 rounded-full border px-3 text-sm font-medium transition-all duration-300 sm:h-12 sm:px-4 sm:text-[17px]',
                   isSelected || item.isCustom
                     ? 'border-gray-3 bg-gray-2 text-gray-5 line-through decoration-gray-4'
                     : 'border-gray-3 bg-white text-gray-7 hover:border-gray-4'
@@ -291,7 +314,7 @@ export function PhysicsChips() {
           return (
             <div
               key={slug}
-              className="pointer-events-auto absolute flex h-12 cursor-pointer items-center gap-2 rounded-full px-5 text-[17px] font-medium shadow-md"
+              className="pointer-events-auto absolute flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-sm font-medium shadow-md sm:h-12 sm:gap-2 sm:px-5 sm:text-[17px]"
               style={{
                 left: pos.x - chip.width / 2,
                 top: pos.y - chip.height / 2,
@@ -310,11 +333,9 @@ export function PhysicsChips() {
             >
               {chip.label}
               <svg
-                width={14}
-                height={14}
                 viewBox="0 0 24 24"
                 fill="none"
-                className="shrink-0 opacity-40"
+                className="size-3 shrink-0 opacity-40 sm:size-3.5"
               >
                 <path
                   d="M18 6L6 18"
