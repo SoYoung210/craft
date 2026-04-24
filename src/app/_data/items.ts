@@ -45,6 +45,14 @@ export const ITEMS: CraftItem[] = [
     date: 'Mar 2026',
   },
   {
+    title: 'Input',
+    href: '/input',
+    thumbnail: '/thumbnails/input.webp',
+    aspectRatio: '16/9',
+    backgroundColor: '#ffffff',
+    date: 'Apr 2026',
+  },
+  {
     title: 'Ripple Shader',
     href: '/ripple-shader',
     thumbnail: '/thumbnails/ripple_og.webp',
