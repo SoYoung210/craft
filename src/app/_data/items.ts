@@ -17,7 +17,7 @@ export const ITEMS: CraftItem[] = [
   {
     title: 'Chip Select',
     href: '/chip-select',
-    thumbnail: '/thumbnails/chip-select.webp',
+    thumbnail: '/thumbnails/chip-select.png',
     aspectRatio: '16/9',
     backgroundColor: '#ffffff',
     videoSrc: 'https://cdn.so-so.dev/chip-select-wo-padding.mp4',
