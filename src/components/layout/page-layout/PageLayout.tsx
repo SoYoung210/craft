@@ -1,5 +1,4 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
-
 import { cva } from 'class-variance-authority';
 
 import { cn } from '@/utils/cn';
@@ -10,7 +9,7 @@ import { backgroundColorMap } from './PageLayout.css';
 import { ContentSwitchTab } from './ContentSwitchTab';
 
 const mainVariants = cva(
-  'max-w-[760px] p-16 min-h-screen flex flex-col gap-8 relative mx-auto',
+  'max-w-[760px] p-4 md:p-8 lg:p-16 min-h-screen flex flex-col gap-8 relative mx-auto',
   {
     variants: {
       theme: {
