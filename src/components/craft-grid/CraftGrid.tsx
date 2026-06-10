@@ -1,19 +1,22 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { Root } from '@radix-ui/react-dialog';
 
 import { type CraftItem, distributeToColumns, ITEMS } from '@/app/_data/items';
+import { useColumnCount } from '@/hooks/useColumnCount';
 
 import { CraftCard } from '../craft-card/CraftCard';
 
-import { InfiniteColumn } from './InfiniteColumn';
 import { MediaPreviewModal } from './MediaPreviewModal';
 
-const COLUMNS = distributeToColumns(ITEMS, 3);
-
 export function CraftGrid() {
+  const columnCount = useColumnCount();
+  const columns = useMemo(
+    () => distributeToColumns(ITEMS, columnCount),
+    [columnCount]
+  );
   const [selectedItem, setSelectedItem] = useState<CraftItem | null>(null);
   const [selectedPreviewId, setSelectedPreviewId] = useState<string | null>(
     null
@@ -57,14 +60,24 @@ export function CraftGrid() {
           <div className="h-8 shrink-0" />
         </div>
 
-        <div className="h-full hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6 px-6 relative z-10">
-          <InfiniteColumn items={COLUMNS[0]} onPreview={handlePreview} />
-          <InfiniteColumn items={COLUMNS[1]} onPreview={handlePreview} />
-          <InfiniteColumn
-            className="hidden xl:block"
-            items={COLUMNS[2]}
-            onPreview={handlePreview}
-          />
+        <div className="h-full hidden lg:block overflow-y-auto scrollbar-none px-6 relative z-10">
+          <div className="h-8" />
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+            {columns.map((column, c) => (
+              <div key={c} className="flex flex-col gap-6">
+                {column.map((item, i) => (
+                  <CraftCard
+                    key={`${c}-${i}`}
+                    item={item}
+                    priority={i === 0}
+                    onPreview={handlePreview}
+                    previewId={!item.href ? `preview-${c}-${i}` : undefined}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="h-8" />
         </div>
 
         <AnimatePresence>
