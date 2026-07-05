@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import {
+  animate,
   motion,
   AnimatePresence,
   useMotionValue,
@@ -12,14 +13,17 @@ import {
 import { cn } from '@/utils/cn';
 
 const defaultNavLinks = [
-  { label: 'Introduction', href: '#introduction' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'News', href: '#news' },
+  { label: 'Career', href: '#career' },
 ];
 
 const menuLinks = [
-  { label: 'Blog', href: '#' },
-  { label: 'About', href: '#' },
+  { label: 'Gallery', href: 'https://news.verstappen.com/en/gallery' },
+  { label: 'Tickets', href: 'https://www.verstappen.com/tickets' },
 ];
+
+const shopUrl =
+  'https://store.verstappen.com/en/?_s=bm-fi-mv-prtsite-general-splashpage-190126-al';
 
 const springTransition = {
   type: 'spring' as const,
@@ -41,16 +45,13 @@ const iconTransition = {
 function LogoSymbol({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 24 16"
-      fill="none"
+      viewBox="0 0 674 336"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0Zm8 0a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z"
-      />
+      <path d="M561.703 156.65L673.914 268.775H449.493L561.703 156.65Z" />
+      <path d="M112.21 156.65L224.747 268.775H0L112.21 156.65Z" />
+      <path d="M336.957 335.725L0 0L213.33 33.475L336.957 156.65L460.584 33.475L673.914 0L336.957 335.725Z" />
     </svg>
   );
 }
@@ -59,24 +60,24 @@ function LogoWordmark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'block w-13 text-[15px] font-bold leading-4 tracking-tight whitespace-nowrap',
+        'block w-10 text-[15px] font-bold leading-4 tracking-[0.08em] whitespace-nowrap',
         className
       )}
     >
-      Acme
+      MAX
     </span>
   );
 }
 
-function AppleIcon({ className }: { className?: string }) {
+function PlayIcon({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 16 16"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01ZM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z" />
+      <path d="M5.5 3.87c0-.86.94-1.39 1.68-.95l6.88 4.13a1.1 1.1 0 0 1 0 1.9l-6.88 4.13a1.1 1.1 0 0 1-1.68-.95V3.87Z" />
     </svg>
   );
 }
@@ -155,8 +156,16 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
+function animateScrollTo(top: number) {
+  const maxTop = document.documentElement.scrollHeight - window.innerHeight;
+  animate(window.scrollY, Math.min(Math.max(top, 0), maxTop), {
+    ...menuSpring,
+    onUpdate: v => window.scrollTo(0, v),
+  });
+}
+
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  animateScrollTo(0);
 }
 
 function scrollToAnchor(href: string) {
@@ -167,8 +176,7 @@ function scrollToAnchor(href: string) {
   }
   const isScrollingDown = el.getBoundingClientRect().top > 0;
   const offset = isScrollingDown ? 0 : -80;
-  const top = el.getBoundingClientRect().top + window.scrollY + offset;
-  window.scrollTo({ top, behavior: 'smooth' });
+  animateScrollTo(el.getBoundingClientRect().top + window.scrollY + offset);
 }
 
 function useScrolled() {
@@ -242,9 +250,9 @@ function MobileNav({
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
-    e.preventDefault();
     setMobileOpen(false);
     if (href.startsWith('#') && href.length > 1) {
+      e.preventDefault();
       scrollToAnchor(href);
     }
   };
@@ -270,12 +278,18 @@ function MobileNav({
         >
           <a
             href="#"
-            className="flex w-[84px] items-center"
+            className="flex w-[84px] items-center gap-2"
             onClick={e => {
               e.preventDefault();
               scrollToTop();
             }}
           >
+            <LogoSymbol
+              className={cn(
+                'h-4 w-8 shrink-0',
+                isDark ? 'fill-white' : 'fill-black'
+              )}
+            />
             <LogoWordmark className={isDark ? 'text-white' : 'text-black'} />
           </a>
         </motion.div>
@@ -288,19 +302,20 @@ function MobileNav({
             className="mr-2"
           >
             <a
-              href="#"
-              onClick={e => e.preventDefault()}
+              href="https://www.youtube.com/watch?v=MTe12fH2xtQ"
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(
                 'flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current',
                 isDark
                   ? 'bg-white/10 text-white hover:bg-white/15'
                   : 'bg-black/5 text-black hover:bg-black/10'
               )}
-              aria-label="Get the App"
+              aria-label="Watch the 2021 Abu Dhabi GP finale"
             >
-              <AppleIcon className="size-4" />
+              <PlayIcon className="size-4" />
               <span className="text-[13px] font-medium leading-none">
-                Get the App
+                Abu Dhabi 2021
               </span>
             </a>
           </motion.div>
@@ -333,6 +348,12 @@ function MobileNav({
                 <a
                   key={link.label}
                   href={link.href}
+                  target={link.href.startsWith('#') ? undefined : '_blank'}
+                  rel={
+                    link.href.startsWith('#')
+                      ? undefined
+                      : 'noopener noreferrer'
+                  }
                   onClick={e => handleNavClick(e, link.href)}
                   className={cn(
                     'rounded-[18px] px-3 py-2.5 text-[15px] font-medium transition-colors',
@@ -346,14 +367,13 @@ function MobileNav({
               ))}
               <div className="mt-2">
                 <a
-                  href="#"
-                  onClick={e => {
-                    e.preventDefault();
-                    setMobileOpen(false);
-                  }}
+                  href={shopUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
                   className="flex w-full items-center justify-center rounded-[18px] bg-[#222] py-3 text-[15px] font-medium text-white transition-colors hover:bg-[#222]/90"
                 >
-                  Create your account
+                  Visit the Shop
                 </a>
               </div>
               <a
@@ -392,7 +412,7 @@ function DesktopNav({
   const widthTarget = useMotionValue(1024);
   const navMaxWidth = useSpring(widthTarget, { stiffness: 600, damping: 45 });
   const navMaxWidthPx = useTransform(navMaxWidth, v => `${v}px`);
-  const wordmarkWidth = useTransform(navMaxWidth, [1024, 720], [52, 0], {
+  const wordmarkWidth = useTransform(navMaxWidth, [1024, 720], [40, 0], {
     clamp: true,
   });
   const wordmarkOpacity = useTransform(navMaxWidth, [1024, 720], [1, 0], {
@@ -411,8 +431,8 @@ function DesktopNav({
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
-    e.preventDefault();
     if (href.startsWith('#') && href.length > 1) {
+      e.preventDefault();
       scrollToAnchor(href);
     }
   };
@@ -446,7 +466,7 @@ function DesktopNav({
         >
           <LogoSymbol
             className={cn(
-              'h-4 w-6 shrink-0',
+              'h-4 w-8 shrink-0',
               isDark ? 'fill-white' : 'fill-black'
             )}
           />
@@ -490,7 +510,8 @@ function DesktopNav({
             <a
               key={link.label}
               href={link.href}
-              onClick={e => handleNavClick(e, link.href)}
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(
                 'rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current',
                 isDark ? 'hover:text-white' : 'hover:text-black'
@@ -515,11 +536,12 @@ function DesktopNav({
             Login
           </a>
           <a
-            href="#"
-            onClick={e => e.preventDefault()}
+            href={shopUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex h-12 shrink-0 items-center justify-center rounded-[18px] bg-[#222] px-6 text-[15px] font-medium leading-[15px] text-white transition-colors hover:bg-[#222]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current"
           >
-            Sign Up
+            Shop
           </a>
         </div>
       </div>

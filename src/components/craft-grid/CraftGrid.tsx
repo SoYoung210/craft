@@ -62,7 +62,7 @@ export function CraftGrid() {
 
         <div className="h-full hidden lg:block overflow-y-auto scrollbar-none px-6 relative z-10">
           <div className="h-8" />
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-5 items-start">
             {columns.map((column, c) => (
               <div key={c} className="flex flex-col gap-6">
                 {column.map((item, i) => (

@@ -15,6 +15,15 @@ export interface CraftItem {
 
 export const ITEMS: CraftItem[] = [
   {
+    title: 'Navbar',
+    href: '/navbar',
+    thumbnail: '',
+    aspectRatio: '412/579',
+    backgroundColor: '#ffffff',
+    videoSrc: 'https://cdn.so-so.dev/mobile_nav.mp4',
+    date: 'Jul 2026',
+  },
+  {
     title: 'Chip Select',
     href: '/chip-select',
     thumbnail: '/thumbnails/chip-select.png',
