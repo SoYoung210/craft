@@ -77,6 +77,9 @@
     height: 100%;
     font-size: 16px;
     font-feature-settings: "liga" 1, "calt" 1;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.5) transparent;
   }
   body {
     height: 100%;
