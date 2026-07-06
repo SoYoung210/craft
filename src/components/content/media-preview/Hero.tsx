@@ -11,6 +11,8 @@ const SWAP_TRANSITION = {
   ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
 };
 
+const TILE_RADIUS = 12;
+
 function measureDelta(
   box: HTMLElement,
   target: DOMRect,
@@ -44,19 +46,24 @@ export default function Hero({
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
+  const radius = useMotionValue<number | string>('');
 
   useLayoutEffect(() => {
     const box = boxRef.current;
     if (!box || hasOpenedRef.current) return;
     hasOpenedRef.current = true;
+    const heroRadius =
+      parseFloat(getComputedStyle(box).borderRadius) || TILE_RADIUS;
     const delta = measureDelta(box, openRect, { x: 0, y: 0, scale: 1 });
     x.set(delta.x);
     y.set(delta.y);
     scale.set(delta.scale);
+    radius.set(TILE_RADIUS / delta.scale);
     animate(x, 0, SPRING);
     animate(y, 0, SPRING);
     animate(scale, 1, SPRING);
-  }, [openRect, x, y, scale]);
+    animate(radius, heroRadius, SPRING);
+  }, [openRect, x, y, scale, radius]);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -69,8 +76,9 @@ export default function Hero({
     });
     animate(x, delta.x, SPRING);
     animate(y, delta.y, SPRING);
+    animate(radius, TILE_RADIUS / delta.scale, SPRING);
     animate(scale, delta.scale, { ...SPRING, onComplete: onCloseComplete });
-  }, [closeTarget, onCloseComplete, x, y, scale]);
+  }, [closeTarget, onCloseComplete, x, y, scale, radius]);
 
   return (
     <div className="flex h-full w-full min-w-0 items-center justify-center">
@@ -84,7 +92,12 @@ export default function Hero({
         >
           <motion.div
             ref={boxRef}
-            style={{ aspectRatio: item.ratio, x, y, scale }}
+            style={{
+              aspectRatio: item.ratio,
+              x,
+              y,
+              scale,
+            }}
             className="relative flex w-full overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
           >
             <AnimatePresence mode="popLayout" initial={false}>
