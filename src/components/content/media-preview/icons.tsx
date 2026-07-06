@@ -4,14 +4,14 @@ export function ChevronLeftIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 6 10"
+      viewBox="0 0 20 20"
       fill="none"
       className={cn('size-5 shrink-0', className)}
     >
       <path
-        d="M5.2002 9L1.2002 5L5.2002 1"
+        d="M14 18L6 10L14 2"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -23,14 +23,14 @@ export function ChevronRightIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 6 10"
+      viewBox="0 0 20 20"
       fill="none"
       className={cn('size-5 shrink-0', className)}
     >
       <path
-        d="M0.799805 9L4.7998 5L0.799805 1"
+        d="M6 18L14 10L6 2"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

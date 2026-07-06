@@ -126,13 +126,13 @@ export default function MediaPreview({
         aria-label="Close"
         animate={{ opacity: isClosing ? 0 : 1 }}
         transition={{ duration: 0.15 }}
-        className="pointer-events-auto absolute top-6 right-6 z-30 flex size-11 cursor-pointer items-center justify-center rounded-full bg-[#2e2e2e]/80 transition-transform duration-150 ease-out hover:bg-[#2e2e2e] active:scale-[0.95]"
+        className="pointer-events-auto absolute top-6 right-4 z-30 flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#2e2e2e]/80 transition-transform duration-150 ease-out hover:bg-[#2e2e2e] active:scale-[0.95]"
       >
-        <CloseIcon className="opacity-60 text-white" />
+        <CloseIcon className="opacity-60 text-white size-4" />
       </motion.button>
 
       <motion.div
-        className="pointer-events-none"
+        className="pointer-events-none order-2 pb-[max(1rem,env(safe-area-inset-bottom))] min-[1200px]:order-1 min-[1200px]:pb-0"
         animate={{ opacity: isClosing ? 0 : 1, y: isClosing ? -8 : 0 }}
         transition={{ duration: 0.12 }}
       >
@@ -146,7 +146,7 @@ export default function MediaPreview({
         />
       </motion.div>
 
-      <div className="pointer-events-none relative z-10 flex min-h-0 w-full flex-1 items-center justify-center px-3 py-6 min-[1200px]:px-8">
+      <div className="pointer-events-none relative z-10 order-1 flex min-h-0 w-full flex-1 items-center justify-center px-3 pt-20 pb-6 min-[1200px]:order-2 min-[1200px]:px-8 min-[1200px]:pt-6">
         <div className="pointer-events-auto flex h-full w-full items-center justify-center">
           <Hero
             item={item}

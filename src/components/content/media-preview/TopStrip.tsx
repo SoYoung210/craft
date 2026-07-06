@@ -74,7 +74,7 @@ export default function TopStrip({
         aria-label="Previous"
         className={chevronClass}
       >
-        <ChevronLeftIcon className="opacity-60" />
+        <ChevronLeftIcon className="opacity-60 size-4" />
       </button>
 
       <div
@@ -129,7 +129,7 @@ export default function TopStrip({
         {isLoadingMore ? (
           <div className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
         ) : (
-          <ChevronRightIcon className="opacity-60" />
+          <ChevronRightIcon className="opacity-60 size-4" />
         )}
       </button>
     </motion.div>
