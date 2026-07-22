@@ -15,6 +15,14 @@ export interface CraftItem {
 
 export const ITEMS: CraftItem[] = [
   {
+    title: 'Card Frame',
+    href: '/card-frame',
+    thumbnail: '/thumbnails/card-frame.webp',
+    aspectRatio: '3/2',
+    backgroundColor: '#f8f9fa',
+    date: 'Jul 2026',
+  },
+  {
     title: 'Media Preview',
     href: '/media-preview',
     thumbnail: '',
