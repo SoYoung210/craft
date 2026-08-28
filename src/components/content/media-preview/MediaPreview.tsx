@@ -133,9 +133,21 @@ export default function MediaPreview({
         <CloseIcon className="opacity-60 text-white size-4" />
       </motion.button>
 
+      <div className="pointer-events-none relative z-10 flex min-h-0 w-full flex-1 items-center justify-center px-3 pt-20 pb-6 min-[1200px]:px-8">
+        <div className="pointer-events-auto flex h-full w-full items-center justify-center">
+          <Hero
+            item={item}
+            direction={direction}
+            openRect={openRect}
+            closeTarget={closeTarget}
+            onCloseComplete={onClosed}
+          />
+        </div>
+      </div>
+
       <motion.div
-        className="pointer-events-none order-2 pb-[max(1rem,env(safe-area-inset-bottom))] min-[1200px]:order-1 min-[1200px]:pb-0"
-        animate={{ opacity: isClosing ? 0 : 1, y: isClosing ? -8 : 0 }}
+        className="pointer-events-none pb-[max(1rem,env(safe-area-inset-bottom))]"
+        animate={{ opacity: isClosing ? 0 : 1, y: isClosing ? 8 : 0 }}
         transition={{ duration: 0.12 }}
       >
         <TopStrip
@@ -147,18 +159,6 @@ export default function MediaPreview({
           isLoadingMore={false}
         />
       </motion.div>
-
-      <div className="pointer-events-none relative z-10 order-1 flex min-h-0 w-full flex-1 items-center justify-center px-3 pt-20 pb-6 min-[1200px]:order-2 min-[1200px]:px-8 min-[1200px]:pt-6">
-        <div className="pointer-events-auto flex h-full w-full items-center justify-center">
-          <Hero
-            item={item}
-            direction={direction}
-            openRect={openRect}
-            closeTarget={closeTarget}
-            onCloseComplete={onClosed}
-          />
-        </div>
-      </div>
     </div>
   );
 }

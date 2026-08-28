@@ -13,6 +13,7 @@ const TRANSITION = {
   delay: 0.08,
 };
 
+const STRIP_WIDTH_CLASS = 'w-[min(80vw,720px)]';
 const EDGE_FADE_PX = 48;
 const STRIP_MASK = `linear-gradient(to right, transparent 0, black ${EDGE_FADE_PX}px, black calc(100% - ${EDGE_FADE_PX}px), transparent 100%)`;
 
@@ -24,7 +25,7 @@ export type StripItem = {
 };
 
 const chevronClass =
-  'pointer-events-auto flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#2e2e2e]/80 text-white transition-transform duration-150 ease-out hover:bg-[#2e2e2e] active:scale-[0.95] disabled:cursor-not-allowed disabled:opacity-50';
+  'pointer-events-auto flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#2e2e2e]/80 text-white transition-transform duration-150 ease-out hover:bg-[#2e2e2e] active:scale-[0.95] disabled:cursor-not-allowed disabled:opacity-50';
 
 export default function TopStrip({
   items,
@@ -65,25 +66,48 @@ export default function TopStrip({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, transition: { duration: 0.12 } }}
       transition={TRANSITION}
-      className="pointer-events-none relative z-20 flex w-full items-center justify-center gap-3 pt-6 pr-6 pl-6"
+      className="pointer-events-none relative z-20 flex w-full flex-col gap-3 px-4 pt-4"
     >
-      <button
-        type="button"
-        onClick={onPrev}
-        disabled={!hasPrev}
-        aria-label="Previous"
-        className={chevronClass}
+      <div
+        className={cn(
+          'pointer-events-auto mx-auto flex justify-end gap-2',
+          STRIP_WIDTH_CLASS
+        )}
       >
-        <ChevronLeftIcon className="opacity-60 size-4" />
-      </button>
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={!hasPrev}
+          aria-label="Previous"
+          className={chevronClass}
+        >
+          <ChevronLeftIcon className="opacity-60 size-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!hasNext || isLoadingMore}
+          aria-label="Next"
+          className={cn(chevronClass, 'relative')}
+        >
+          {isLoadingMore ? (
+            <div className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            <ChevronRightIcon className="opacity-60 size-3.5" />
+          )}
+        </button>
+      </div>
 
       <div
         ref={scrollerRef}
-        className="scrollbar-none pointer-events-auto flex w-[min(80vw,720px)] contain-content overflow-x-auto py-1"
+        className={cn(
+          'scrollbar-none pointer-events-auto flex self-center contain-content overflow-x-auto py-1',
+          STRIP_WIDTH_CLASS
+        )}
         style={{ maskImage: STRIP_MASK, WebkitMaskImage: STRIP_MASK }}
       >
         <div className="mx-auto flex items-center gap-1">
@@ -120,20 +144,6 @@ export default function TopStrip({
           <div className="w-12 shrink-0" aria-hidden />
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={!hasNext || isLoadingMore}
-        aria-label="Next"
-        className={cn(chevronClass, 'relative')}
-      >
-        {isLoadingMore ? (
-          <div className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-        ) : (
-          <ChevronRightIcon className="opacity-60 size-4" />
-        )}
-      </button>
     </motion.div>
   );
 }
