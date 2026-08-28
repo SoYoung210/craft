@@ -7,7 +7,7 @@ import {
   useMotionValue,
   useReducedMotion,
 } from 'motion/react';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { SPRING } from './constants';
 import type { MediaItem } from './data';
@@ -46,6 +46,9 @@ export default function Hero({
   onCloseComplete: () => void;
 }) {
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const attachBox = useCallback((element: HTMLDivElement | null) => {
+    if (element) boxRef.current = element;
+  }, []);
   const hasOpenedRef = useRef(false);
   const isClosingRef = useRef(false);
   const x = useMotionValue(0);
@@ -107,46 +110,38 @@ export default function Hero({
         className="relative flex h-full min-w-0 flex-1 items-center justify-center"
         style={{ containerType: 'size' }}
       >
-        <div
-          className="relative flex flex-col"
-          style={{ width: `min(100cqw, calc(100cqh * ${item.ratio}))` }}
-        >
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
           <motion.div
-            ref={boxRef}
-            style={{
-              aspectRatio: item.ratio,
-              x,
-              y,
-              scale,
-            }}
-            className="relative flex w-full overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
+            key={item.id}
+            custom={direction}
+            variants={mediaSwapVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.45, ease: EASE_EXPO }}
+            className="flex size-full items-center justify-center"
           >
-            <AnimatePresence
-              mode="popLayout"
-              custom={direction}
-              initial={false}
+            <motion.div
+              ref={attachBox}
+              style={{
+                aspectRatio: item.ratio,
+                width: `min(100cqw, calc(100cqh * ${item.ratio}))`,
+                x,
+                y,
+                scale,
+              }}
+              className="relative overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
             >
-              <motion.div
-                key={item.id}
-                custom={direction}
-                variants={mediaSwapVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.45, ease: EASE_EXPO }}
-                className="absolute inset-0 flex"
-              >
-                <img
-                  src={item.url}
-                  alt=""
-                  decoding="async"
-                  className="size-full select-none object-cover"
-                  draggable={false}
-                />
-              </motion.div>
-            </AnimatePresence>
+              <img
+                src={item.url}
+                alt=""
+                decoding="async"
+                className="size-full select-none object-cover"
+                draggable={false}
+              />
+            </motion.div>
           </motion.div>
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );
