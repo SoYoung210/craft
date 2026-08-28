@@ -1,15 +1,18 @@
 'use client';
 
-import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react';
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from 'motion/react';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import { SPRING } from './constants';
 import type { MediaItem } from './data';
 
-const SWAP_TRANSITION = {
-  duration: 0.2,
-  ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
-};
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
 
 const TILE_RADIUS = 12;
 
@@ -31,11 +34,13 @@ function measureDelta(
 
 export default function Hero({
   item,
+  direction,
   openRect,
   closeTarget,
   onCloseComplete,
 }: {
   item: MediaItem;
+  direction: number;
   openRect: DOMRect;
   closeTarget: DOMRect | null;
   onCloseComplete: () => void;
@@ -47,6 +52,22 @@ export default function Hero({
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
   const radius = useMotionValue<number | string>('');
+  const reduceMotion = useReducedMotion() ?? false;
+
+  const mediaSwapVariants = {
+    enter: (d: number) =>
+      reduceMotion ? { opacity: 0 } : { x: d * 40, scale: 0.97, opacity: 0 },
+    center: { x: 0, scale: 1, opacity: 1 },
+    exit: (d: number) =>
+      reduceMotion
+        ? { opacity: 0, transition: { duration: 0.3, ease: EASE_EXPO } }
+        : {
+            x: d * -40,
+            scale: 0.98,
+            opacity: 0,
+            transition: { duration: 0.3, ease: EASE_EXPO },
+          },
+  };
 
   useLayoutEffect(() => {
     const box = boxRef.current;
@@ -100,18 +121,25 @@ export default function Hero({
             }}
             className="relative flex w-full overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
           >
-            <AnimatePresence mode="popLayout" initial={false}>
+            <AnimatePresence
+              mode="popLayout"
+              custom={direction}
+              initial={false}
+            >
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={SWAP_TRANSITION}
+                custom={direction}
+                variants={mediaSwapVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.45, ease: EASE_EXPO }}
                 className="absolute inset-0 flex"
               >
                 <img
                   src={item.url}
                   alt=""
+                  decoding="async"
                   className="size-full select-none object-cover"
                   draggable={false}
                 />

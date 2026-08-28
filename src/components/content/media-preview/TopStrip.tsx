@@ -13,6 +13,9 @@ const TRANSITION = {
   delay: 0.08,
 };
 
+const EDGE_FADE_PX = 48;
+const STRIP_MASK = `linear-gradient(to right, transparent 0, black ${EDGE_FADE_PX}px, black calc(100% - ${EDGE_FADE_PX}px), transparent 100%)`;
+
 export type StripItem = {
   key: string;
   posterUrl?: string;
@@ -49,12 +52,13 @@ export default function TopStrip({
     if (!scroller || !active) return;
     const scrollerRect = scroller.getBoundingClientRect();
     const activeRect = active.getBoundingClientRect();
-    const activeCenter = activeRect.left + activeRect.width / 2;
-    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
-    const delta = activeCenter - scrollerCenter;
-    if (Math.abs(delta) > 1) {
-      scroller.scrollBy({ left: delta, behavior: 'smooth' });
-    }
+    const visibleLeft = scrollerRect.left + EDGE_FADE_PX;
+    const visibleRight = scrollerRect.right - EDGE_FADE_PX;
+    let delta = 0;
+    if (activeRect.left < visibleLeft) delta = activeRect.left - visibleLeft;
+    else if (activeRect.right > visibleRight)
+      delta = activeRect.right - visibleRight;
+    if (delta !== 0) scroller.scrollBy({ left: delta, behavior: 'smooth' });
   }, [activeKey]);
 
   if (items.length === 0 && !hasPrev && !hasNext) return null;
@@ -79,44 +83,42 @@ export default function TopStrip({
 
       <div
         ref={scrollerRef}
-        className="scrollbar-none pointer-events-auto flex max-w-[min(80vw,720px)] flex-row items-center gap-1 overflow-x-auto py-1"
-        style={{
-          maskImage:
-            'linear-gradient(to right, transparent 0, black 48px, black calc(100% - 48px), transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(to right, transparent 0, black 48px, black calc(100% - 48px), transparent 100%)',
-        }}
+        className="scrollbar-none pointer-events-auto flex w-[min(80vw,720px)] contain-content overflow-x-auto py-1"
+        style={{ maskImage: STRIP_MASK, WebkitMaskImage: STRIP_MASK }}
       >
-        <div className="w-12 shrink-0" aria-hidden />
-        {items.map(item => (
-          <button
-            key={item.key}
-            ref={item.isActive ? activeBtnRef : null}
-            type="button"
-            onClick={item.onClick}
-            aria-label="Open image"
-            aria-current={item.isActive ? 'true' : undefined}
-            className={cn(
-              'relative h-12 shrink-0 cursor-pointer overflow-hidden rounded-lg bg-white/5 transition-[width,opacity] duration-300 ease-out',
-              item.isActive
-                ? 'w-12 opacity-100 ring-2 ring-white'
-                : 'w-8 opacity-70 hover:opacity-100'
-            )}
-          >
-            {item.posterUrl ? (
-              <div className="absolute top-0 left-1/2 size-12 -translate-x-1/2">
-                <img
-                  src={item.posterUrl}
-                  alt=""
-                  loading="lazy"
-                  className="size-full select-none object-cover"
-                  draggable={false}
-                />
-              </div>
-            ) : null}
-          </button>
-        ))}
-        <div className="w-12 shrink-0" aria-hidden />
+        <div className="mx-auto flex items-center gap-1">
+          <div className="w-12 shrink-0" aria-hidden />
+          {items.map(item => (
+            <button
+              key={item.key}
+              ref={item.isActive ? activeBtnRef : null}
+              type="button"
+              onClick={item.onClick}
+              aria-label="Open image"
+              aria-current={item.isActive ? 'true' : undefined}
+              className={cn(
+                'relative h-12 shrink-0 cursor-pointer overflow-hidden rounded-lg bg-white/5 transition-[width,opacity] duration-300 ease-out-strong motion-reduce:transition-none',
+                item.isActive
+                  ? 'w-12 opacity-100 ring-2 ring-white'
+                  : 'w-8 opacity-70 hover:opacity-100'
+              )}
+            >
+              {item.posterUrl ? (
+                <div className="absolute top-0 left-1/2 size-12 -translate-x-1/2">
+                  <img
+                    src={item.posterUrl}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="size-full select-none object-cover"
+                    draggable={false}
+                  />
+                </div>
+              ) : null}
+            </button>
+          ))}
+          <div className="w-12 shrink-0" aria-hidden />
+        </div>
       </div>
 
       <button
