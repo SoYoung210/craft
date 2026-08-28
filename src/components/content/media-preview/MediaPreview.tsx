@@ -61,6 +61,7 @@ export default function MediaPreview({
   const hasNext = activeIndex < items.length - 1;
 
   const [closeTarget, setCloseTarget] = useState<DOMRect | null>(null);
+  const [direction, setDirection] = useState(1);
   const isClosing = closeTarget !== null;
 
   const requestClose = useCallback(() => {
@@ -76,9 +77,10 @@ export default function MediaPreview({
   const navigate = useCallback(
     (index: number) => {
       if (isClosing) return;
+      setDirection(index >= activeIndex ? 1 : -1);
       onNavigate(index);
     },
-    [isClosing, onNavigate]
+    [isClosing, activeIndex, onNavigate]
   );
 
   const stripItems = items.map((media, index) => ({
@@ -150,6 +152,7 @@ export default function MediaPreview({
         <div className="pointer-events-auto flex h-full w-full items-center justify-center">
           <Hero
             item={item}
+            direction={direction}
             openRect={openRect}
             closeTarget={closeTarget}
             onCloseComplete={onClosed}

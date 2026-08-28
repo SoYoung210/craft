@@ -1,15 +1,18 @@
 'use client';
 
-import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from 'motion/react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { SPRING } from './constants';
 import type { MediaItem } from './data';
 
-const SWAP_TRANSITION = {
-  duration: 0.2,
-  ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
-};
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
 
 const TILE_RADIUS = 12;
 
@@ -31,22 +34,43 @@ function measureDelta(
 
 export default function Hero({
   item,
+  direction,
   openRect,
   closeTarget,
   onCloseComplete,
 }: {
   item: MediaItem;
+  direction: number;
   openRect: DOMRect;
   closeTarget: DOMRect | null;
   onCloseComplete: () => void;
 }) {
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const attachBox = useCallback((element: HTMLDivElement | null) => {
+    if (element) boxRef.current = element;
+  }, []);
   const hasOpenedRef = useRef(false);
   const isClosingRef = useRef(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
   const radius = useMotionValue<number | string>('');
+  const reduceMotion = useReducedMotion() ?? false;
+
+  const mediaSwapVariants = {
+    enter: (d: number) =>
+      reduceMotion ? { opacity: 0 } : { x: d * 40, scale: 0.97, opacity: 0 },
+    center: { x: 0, scale: 1, opacity: 1 },
+    exit: (d: number) =>
+      reduceMotion
+        ? { opacity: 0, transition: { duration: 0.3, ease: EASE_EXPO } }
+        : {
+            x: d * -40,
+            scale: 0.98,
+            opacity: 0,
+            transition: { duration: 0.3, ease: EASE_EXPO },
+          },
+  };
 
   useLayoutEffect(() => {
     const box = boxRef.current;
@@ -86,39 +110,38 @@ export default function Hero({
         className="relative flex h-full min-w-0 flex-1 items-center justify-center"
         style={{ containerType: 'size' }}
       >
-        <div
-          className="relative flex flex-col"
-          style={{ width: `min(100cqw, calc(100cqh * ${item.ratio}))` }}
-        >
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
           <motion.div
-            ref={boxRef}
-            style={{
-              aspectRatio: item.ratio,
-              x,
-              y,
-              scale,
-            }}
-            className="relative flex w-full overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
+            key={item.id}
+            custom={direction}
+            variants={mediaSwapVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.45, ease: EASE_EXPO }}
+            className="flex size-full items-center justify-center"
           >
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={SWAP_TRANSITION}
-                className="absolute inset-0 flex"
-              >
-                <img
-                  src={item.url}
-                  alt=""
-                  className="size-full select-none object-cover"
-                  draggable={false}
-                />
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              ref={attachBox}
+              style={{
+                aspectRatio: item.ratio,
+                width: `min(100cqw, calc(100cqh * ${item.ratio}))`,
+                x,
+                y,
+                scale,
+              }}
+              className="relative overflow-hidden rounded-xl min-[1200px]:rounded-[24px]"
+            >
+              <img
+                src={item.url}
+                alt=""
+                decoding="async"
+                className="size-full select-none object-cover"
+                draggable={false}
+              />
+            </motion.div>
           </motion.div>
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );
