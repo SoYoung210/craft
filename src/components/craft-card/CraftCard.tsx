@@ -56,6 +56,28 @@ export function CraftCard({ item, priority, previewId, onPreview }: Props) {
 
   const isVideo = !!item.videoSrc;
 
+  const isPreviewable = !!(onPreview && previewId);
+  const previewTriggerProps = isPreviewable
+    ? {
+        role: 'button',
+        tabIndex: 0,
+        onClick: () => onPreview(item, previewId),
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onPreview(item, previewId);
+          }
+        },
+      }
+    : {};
+  const isSplitLink: boolean =
+    isPreviewable && isVideo && !!item.href && !!item.external;
+
+  const Footer = isSplitLink ? 'a' : 'div';
+  const footerLinkProps = isSplitLink
+    ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' }
+    : {};
+
   const MediaContainer = previewId ? motion.div : 'div';
   const mediaContainerProps = previewId
     ? {
@@ -68,7 +90,8 @@ export function CraftCard({ item, priority, previewId, onPreview }: Props) {
     <div className="group/card relative overflow-hidden rounded-xl border border-black/5 bg-black/2 shadow-sm transition-all duration-300 hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
       <MediaContainer
         {...mediaContainerProps}
-        className="relative w-full overflow-hidden"
+        {...(isSplitLink ? previewTriggerProps : {})}
+        className={`relative w-full overflow-hidden${isSplitLink ? ' cursor-pointer' : ''}`}
         style={{
           aspectRatio: item.aspectRatio,
           backgroundColor: bgColor,
@@ -133,7 +156,10 @@ export function CraftCard({ item, priority, previewId, onPreview }: Props) {
       </MediaContainer>
 
       {isVideo && (
-        <div className="flex items-center justify-between px-4 py-3">
+        <Footer
+          {...footerLinkProps}
+          className="flex items-center justify-between px-4 py-3"
+        >
           <span className="flex items-center gap-1 text-xs font-medium tracking-wide text-black/80">
             {item.title}
             {item.external && <ArrowUpRightIcon className="size-3" />}
@@ -141,36 +167,24 @@ export function CraftCard({ item, priority, previewId, onPreview }: Props) {
           <span className="font-mono text-[10px] tracking-wider uppercase text-black/40">
             {item.date}
           </span>
-        </div>
+        </Footer>
       )}
     </div>
   );
 
   if (!item.href) {
-    const isPreviewable = !!(onPreview && previewId);
-    const handleClick = isPreviewable
-      ? () => onPreview(item, previewId)
-      : undefined;
-    const handleKeyDown = isPreviewable
-      ? (e: React.KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onPreview(item, previewId);
-          }
-        }
-      : undefined;
-
     return (
       <div
         className={`${wrapperClassName}${isPreviewable ? ' cursor-pointer' : ''}`}
-        role={isPreviewable ? 'button' : undefined}
-        tabIndex={isPreviewable ? 0 : undefined}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
+        {...previewTriggerProps}
       >
         {card}
       </div>
     );
+  }
+
+  if (isSplitLink) {
+    return <div className={wrapperClassName}>{card}</div>;
   }
 
   if (item.external) {
