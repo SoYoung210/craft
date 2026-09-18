@@ -15,6 +15,17 @@ export interface CraftItem {
 
 export const ITEMS: CraftItem[] = [
   {
+    title: 'Production',
+    href: 'https://create.pika.art',
+    thumbnail: '',
+    aspectRatio: '117/60',
+    backgroundColor: '#0a0a0a',
+    videoSrc: 'https://cdn.so-so.dev/pika/welcome_2_1.mp4',
+    videoStyle: { scale: '1.05' },
+    external: true,
+    date: 'Sep 2026',
+  },
+  {
     title: 'Card Frame',
     href: '/card-frame',
     thumbnail: '/thumbnails/card-frame.webp',

@@ -11,6 +11,10 @@ import { CraftCard } from '../craft-card/CraftCard';
 
 import { MediaPreviewModal } from './MediaPreviewModal';
 
+function hasPreview(item: CraftItem): boolean {
+  return !item.href || (!!item.external && !!item.videoSrc);
+}
+
 export function CraftGrid() {
   const columnCount = useColumnCount();
   const columns = useMemo(
@@ -53,7 +57,7 @@ export function CraftGrid() {
                 item={item}
                 priority={i < 3}
                 onPreview={handlePreview}
-                previewId={!item.href ? `preview-m-${i}` : undefined}
+                previewId={hasPreview(item) ? `preview-m-${i}` : undefined}
               />
             ))}
           </div>
@@ -71,7 +75,9 @@ export function CraftGrid() {
                     item={item}
                     priority={i === 0}
                     onPreview={handlePreview}
-                    previewId={!item.href ? `preview-${c}-${i}` : undefined}
+                    previewId={
+                      hasPreview(item) ? `preview-${c}-${i}` : undefined
+                    }
                   />
                 ))}
               </div>
