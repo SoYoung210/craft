@@ -66,7 +66,7 @@ function InputOTPGroup({
   const { slots } = useContext(OTPInputContext);
   const isComplete = slots.length > 0 && slots.every(s => s.char);
 
-  const [prevError, setPrevError] = useState(false);
+  const [prevError, setPrevError] = useState(error);
   const [mergedOnError, setMergedOnError] = useState(false);
 
   if (error !== prevError) {
