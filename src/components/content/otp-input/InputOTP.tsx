@@ -1,13 +1,11 @@
 'use client';
 
 import {
-  forwardRef,
   useContext,
   useEffect,
   useRef,
   useState,
-  type ComponentPropsWithoutRef,
-  type ComponentRef,
+  type ComponentProps,
 } from 'react';
 import { OTPInput, OTPInputContext } from 'input-otp';
 import { animate, motion, useMotionValue } from 'motion/react';
@@ -16,22 +14,24 @@ import { cva } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
 import { createContext } from '@/components/utility/createContext';
 
-const InputOTP = forwardRef<
-  ComponentRef<typeof OTPInput>,
-  ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, autoFocus = true, ...props }, ref) => (
-  <OTPInput
-    ref={ref}
-    autoFocus={autoFocus}
-    containerClassName={cn(
-      'flex items-center gap-2 has-disabled:opacity-50',
-      containerClassName
-    )}
-    className={cn('disabled:cursor-not-allowed', className)}
-    {...props}
-  />
-));
-InputOTP.displayName = 'InputOTP';
+function InputOTP({
+  className,
+  containerClassName,
+  autoFocus = true,
+  ...props
+}: ComponentProps<typeof OTPInput>) {
+  return (
+    <OTPInput
+      autoFocus={autoFocus}
+      containerClassName={cn(
+        'flex items-center gap-2 has-disabled:opacity-50',
+        containerClassName
+      )}
+      className={cn('disabled:cursor-not-allowed', className)}
+      {...props}
+    />
+  );
+}
 
 const springConfig = { stiffness: 480, damping: 50, mass: 1 };
 const groupSpringConfig = { stiffness: 200, damping: 30, mass: 1 };
@@ -55,10 +55,14 @@ const [OtpStateProvider, useOtpState] = createContext<{
   variant: OtpVariant;
 }>('OtpState');
 
-const InputOTPGroup = forwardRef<
-  ComponentRef<'div'>,
-  ComponentPropsWithoutRef<'div'> & { error?: boolean; variant?: OtpVariant }
->(({ className, children, error = false, variant = 'dark', ...props }, ref) => {
+function InputOTPGroup({
+  ref,
+  className,
+  children,
+  error = false,
+  variant = 'dark',
+  ...props
+}: ComponentProps<'div'> & { error?: boolean; variant?: OtpVariant }) {
   const { slots } = useContext(OTPInputContext);
   const isComplete = slots.length > 0 && slots.every(s => s.char);
 
@@ -98,7 +102,7 @@ const InputOTPGroup = forwardRef<
           isMergedError && 'bg-[#fb3c83]/10',
           className
         )}
-        {...(props as ComponentPropsWithoutRef<typeof motion.div>)}
+        {...(props as ComponentProps<typeof motion.div>)}
       >
         {children}
         {showMerged && (
@@ -121,8 +125,7 @@ const InputOTPGroup = forwardRef<
       </motion.div>
     </OtpStateProvider>
   );
-});
-InputOTPGroup.displayName = 'InputOTPGroup';
+}
 
 const slotVariants = cva(
   'relative flex h-16 flex-1 items-center justify-center rounded-[18px] border font-mono text-2xl',
@@ -178,10 +181,12 @@ const caretVariants = cva(
   }
 );
 
-const InputOTPSlot = forwardRef<
-  ComponentRef<'div'>,
-  ComponentPropsWithoutRef<'div'> & { index: number }
->(({ index, className, ...props }, ref) => {
+function InputOTPSlot({
+  ref,
+  index,
+  className,
+  ...props
+}: ComponentProps<'div'> & { index: number }) {
   const inputOTPContext = useContext(OTPInputContext);
   const slot = inputOTPContext.slots[index];
   const prevCharRef = useRef<string | null>(null);
@@ -221,7 +226,7 @@ const InputOTPSlot = forwardRef<
         ...(!isFilled && { animationDelay: `${index * 150}ms` }),
       }}
       className={cn(slotVariants({ variant, state }), errorBg, className)}
-      {...(props as ComponentPropsWithoutRef<typeof motion.div>)}
+      {...(props as ComponentProps<typeof motion.div>)}
     >
       {char}
       {hasFakeCaret && (
@@ -231,17 +236,14 @@ const InputOTPSlot = forwardRef<
       )}
     </motion.div>
   );
-});
-InputOTPSlot.displayName = 'InputOTPSlot';
+}
 
-const InputOTPSeparator = forwardRef<
-  ComponentRef<'div'>,
-  ComponentPropsWithoutRef<'div'>
->(({ ...props }, ref) => (
-  <div ref={ref} role="separator" {...props}>
-    <span className="text-white/50">-</span>
-  </div>
-));
-InputOTPSeparator.displayName = 'InputOTPSeparator';
+function InputOTPSeparator(props: ComponentProps<'div'>) {
+  return (
+    <div role="separator" {...props}>
+      <span className="text-white/50">-</span>
+    </div>
+  );
+}
 
 export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator };
