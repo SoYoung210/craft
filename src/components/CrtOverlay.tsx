@@ -1,6 +1,14 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
+const HIDDEN_PATHS: string[] = ['/otp-input'];
+
 export function CrtOverlay() {
+  const pathname = usePathname();
+
+  if (HIDDEN_PATHS.includes(pathname)) return null;
+
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
       <svg
