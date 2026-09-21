@@ -24,6 +24,14 @@ export const ITEMS: CraftItem[] = [
     date: 'Sep 2026',
   },
   {
+    title: 'Blur Reveal',
+    href: '/blur-reveal',
+    thumbnail: '/thumbnails/blur-reveal.webp',
+    aspectRatio: '3/2',
+    backgroundColor: '#fdf7ef',
+    date: 'Sep 2026',
+  },
+  {
     title: 'Production',
     href: 'https://create.pika.art',
     thumbnail: '',
