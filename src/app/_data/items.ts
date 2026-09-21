@@ -26,20 +26,10 @@ export const ITEMS: CraftItem[] = [
   {
     title: 'Blur Reveal',
     href: '/blur-reveal',
-    thumbnail: '/thumbnails/blur-reveal.webp',
-    aspectRatio: '3/2',
-    backgroundColor: '#fdf7ef',
-    date: 'Sep 2026',
-  },
-  {
-    title: 'Production',
-    href: 'https://create.pika.art',
     thumbnail: '',
-    aspectRatio: '117/60',
-    backgroundColor: '#0a0a0a',
-    videoSrc: 'https://cdn.so-so.dev/pika/welcome_2_1.mp4',
-    videoStyle: { scale: '1.05' },
-    external: true,
+    aspectRatio: '33/20',
+    backgroundColor: '#fdf7ef',
+    videoSrc: 'https://cdn.so-so.dev/blur_reveal.mp4',
     date: 'Sep 2026',
   },
   {
