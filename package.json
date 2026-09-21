@@ -47,6 +47,7 @@
     "easing-coordinates": "^2.0.2",
     "gsap": "^3.13.0",
     "html2canvas": "^1.4.1",
+    "input-otp": "^1.5.0",
     "lucide-react": "^0.553.0",
     "matter-js": "^0.20.0",
     "motion": "^12.0.0",

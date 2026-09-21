@@ -15,6 +15,15 @@ export interface CraftItem {
 
 export const ITEMS: CraftItem[] = [
   {
+    title: 'OTP Input',
+    href: '/otp-input',
+    thumbnail: '',
+    aspectRatio: '83/45',
+    backgroundColor: '#0a0a0a',
+    videoSrc: 'https://cdn.so-so.dev/opt_craft.mp4',
+    date: 'Sep 2026',
+  },
+  {
     title: 'Production',
     href: 'https://create.pika.art',
     thumbnail: '',

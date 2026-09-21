@@ -280,6 +280,69 @@
 }
 
 /* Keyframes */
+@keyframes otp-wave {
+  0%,
+  100% {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes otp-caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+@property --otp-reveal {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+html.otp-theme-transition::view-transition {
+  pointer-events: none;
+}
+
+html.otp-theme-transition::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.otp-theme-transition::view-transition-new(root) {
+  mix-blend-mode: normal;
+  -webkit-mask-image: radial-gradient(
+    circle at var(--otp-reveal-x) var(--otp-reveal-y),
+    #000 calc(var(--otp-reveal) - 50%),
+    transparent var(--otp-reveal)
+  );
+  mask-image: radial-gradient(
+    circle at var(--otp-reveal-x) var(--otp-reveal-y),
+    #000 calc(var(--otp-reveal) - 50%),
+    transparent var(--otp-reveal)
+  );
+  animation: otp-theme-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes otp-theme-reveal {
+  from {
+    --otp-reveal: 0%;
+    opacity: 0;
+  }
+  to {
+    --otp-reveal: 200%;
+    opacity: 1;
+  }
+}
+
 @keyframes background-rotate {
   0% {
     transform: translateX(-50%) rotate(0deg);
